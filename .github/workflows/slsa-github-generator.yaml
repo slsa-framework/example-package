@@ -1,5 +1,9 @@
 name: Build using slsa-github-generator
-on: [push, workflow_dispatch]
+on: 
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+  
 jobs:
   build:
     outputs:
