@@ -1,0 +1,43 @@
+name: Go push main
+
+on: 
+  schedule:
+    - cron: '0 2 * * *'
+  # Too test.
+  workflow_dispatch:
+
+permissions: read-all
+
+env:
+  TARGET_REPOSITORY: slsa-framework/slsa-github-generator-go
+  ISSUE_TITLE: "E2E failure: Go push main"
+
+jobs:
+  #TODO: support multiple config files.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo hello
+          exit -1
+
+  run-if-failed:
+    runs-on: ubuntu-latest
+    needs: build
+    if: always() && (needs.build.result == 'failure')
+    env:
+      GH_TOKEN: ${{ secrets.E2E_TOKEN }}
+    steps:
+      - run: |
+          #TODO: create issue on the repo about the failure.
+          
+          cat << EOF > BODY
+          Repo: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME
+          Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          Workflow name: Go push main
+          Workflow file: https://github.com/${{ github.repository }}/tree/main/.github/workflows/e2e.yml
+          Trigger: push
+          Branch: main
+          EOF
+          
+          gh issue create -t "$ISSUE_TITLE" -F ./BODY -R "$TARGET_REPOSITORY"  
