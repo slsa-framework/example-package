@@ -1,4 +1,4 @@
-name: Go push main
+name: E2E Go push main
 
 on: 
   schedule:
@@ -10,7 +10,7 @@ permissions: read-all
 
 env:
   TARGET_REPOSITORY: slsa-framework/slsa-github-generator-go
-  ISSUE_TITLE: "E2E failure: Go push main"
+  ISSUE_TITLE: "Run failure: E2E Go push main"
 
 jobs:
   #TODO: support multiple config files.
@@ -26,7 +26,7 @@ jobs:
     needs: build
     if: always() && (needs.build.result == 'failure')
     env:
-      GH_TOKEN: ${{ secrets.E2E_TOKEN }}
+      GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
     steps:
       - run: |
           #TODO: create issue on the repo about the failure.
