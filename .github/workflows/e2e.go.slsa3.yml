@@ -15,7 +15,6 @@ env:
 jobs:
   #TODO: support multiple config files.
   build:
-    runs-on: ubuntu-latest
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
