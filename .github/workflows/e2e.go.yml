@@ -30,14 +30,17 @@ jobs:
     steps:
       - run: |
           #TODO: create issue on the repo about the failure.
+          RUN_DATE=$(date --utc)
           
           cat << EOF > BODY
           Repo: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME
           Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          Frequency: daily
           Workflow name: Go push main
           Workflow file: https://github.com/${{ github.repository }}/tree/main/.github/workflows/e2e.yml
           Trigger: push
           Branch: main
+          Date: $RUN_DATE
           EOF
           
           gh issue create -t "$ISSUE_TITLE" -F ./BODY -R "$TARGET_REPOSITORY"  
