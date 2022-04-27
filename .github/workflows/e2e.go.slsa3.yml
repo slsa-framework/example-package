@@ -10,7 +10,6 @@ permissions: read-all
 
 env:
   TARGET_REPOSITORY: slsa-framework/slsa-github-generator-go
-  WORKFLOW_NAME: "E2E SLSA3 go push main"
   THIS_FILE: e2e.go.slsa3.yml
 
 jobs:
@@ -31,17 +30,7 @@ jobs:
       GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
     steps:
       - run: |
-          #TODO: create issue on the repo about the failure.
-          RUN_DATE=$(date --utc)
+          set -euo pipefail
+
+          ./.github/workflows/e2e-runs.sh
           
-          cat << EOF > BODY
-          Repo: https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}
-          Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          Workflow name: $WORKFLOW_NAME
-          Workflow file: https://github.com/${{ github.repository }}/tree/main/.github/workflows/$THIS_FILE
-          Trigger: ${{ github.event_name }}
-          Branch: main
-          Date: $RUN_DATE
-          EOF
-          
-          gh issue create -t "Run failure: $WORKFLOW_NAME" -F ./BODY -R "$TARGET_REPOSITORY"  
