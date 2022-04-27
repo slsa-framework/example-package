@@ -35,3 +35,11 @@ jobs:
 
           ./.github/workflows/e2e-runs.sh
           
+  verify:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - run: |
+          set -euo pipefail
+          
+          echo "TODO: slsa-verify for all released and for HEAD"
