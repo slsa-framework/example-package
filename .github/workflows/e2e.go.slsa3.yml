@@ -1,4 +1,4 @@
-name: E2E Go push main
+name: E2E SLSA3 go push main
 
 on: 
   schedule:
@@ -10,7 +10,8 @@ permissions: read-all
 
 env:
   TARGET_REPOSITORY: slsa-framework/slsa-github-generator-go
-  ISSUE_TITLE: "Run failure: E2E Go push main"
+  WORKFLOW_NAME: "E2E SLSA3 go push main"
+  THIS_FILE: e2e.go.slsa3.yml
 
 jobs:
   #TODO: support multiple config files.
@@ -36,11 +37,11 @@ jobs:
           cat << EOF > BODY
           Repo: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME
           Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          Workflow name: Go push main
-          Workflow file: https://github.com/${{ github.repository }}/tree/main/.github/workflows/e2e.yml
+          Workflow name: $WORKFLOW_NAME
+          Workflow file: https://github.com/${{ github.repository }}/tree/main/.github/workflows/$THIS_FILE
           Trigger: $GITHUB_EVENT_NAME
           Branch: main
           Date: $RUN_DATE
           EOF
           
-          gh issue create -t "$ISSUE_TITLE" -F ./BODY -R "$TARGET_REPOSITORY"  
+          gh issue create -t "Run failure: $WORKFLOW_NAME" -F ./BODY -R "$TARGET_REPOSITORY"  
