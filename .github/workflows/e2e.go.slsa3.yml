@@ -35,11 +35,11 @@ jobs:
           RUN_DATE=$(date --utc)
           
           cat << EOF > BODY
-          Repo: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME
+          Repo: https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}
           Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           Workflow name: $WORKFLOW_NAME
           Workflow file: https://github.com/${{ github.repository }}/tree/main/.github/workflows/$THIS_FILE
-          Trigger: $GITHUB_EVENT_NAME
+          Trigger: ${{ github.event_name }}
           Branch: main
           Date: $RUN_DATE
           EOF
