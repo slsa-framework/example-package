@@ -23,11 +23,11 @@ jobs:
       go-version: 1.18
       #TODO: support different options
   
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          exit 1
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - run: |
+#           exit 1
     
   verify:
     runs-on: ubuntu-latest
