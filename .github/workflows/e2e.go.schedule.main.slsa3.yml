@@ -73,6 +73,7 @@ jobs:
           RES=$(slsa-verifier --versioned-tag v1.2.3 --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
           assert_not_eq($OK, 0)
           
+          #TODO: read out the provenance information once we print it
           #TODO: previous releases, curl the binary directly. We should list the releases and run all commands automatically
           
   if-failed:
