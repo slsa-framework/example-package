@@ -49,13 +49,26 @@ jobs:
           
           # Install from HEAD
           go install github.com/slsa-framework/slsa-verifier@latest
-          echo slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
-            --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
-            --source github.com/$GITHUB_REPOSITORY
+             
+          # Default parameters.
+          RES=$(slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
+          assert_eq($OK, 0)
           
-          slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
-            --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
-            --source github.com/$GITHUB_REPOSITORY
+          # Main branch
+          RES=$(slsa-verifier --branch main --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
+          assert_eq($OK, 0)
+          
+          # Wrong branch
+          RES=$(slsa-verifier --branch not-main --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
+          assert_not_eq($OK, 0)
+          
+          # Wrong tag
+          RES=$(slsa-verifier --tag v1.2.3 --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
+          assert_not_eq($OK, 0)
+          
+          # Wrong versioned-tag
+          RES=$(slsa-verifier --versioned-tag v1.2.3 --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
+          assert_not_eq($OK, 0)
           
   if-failed:
     runs-on: ubuntu-latest
