@@ -14,4 +14,12 @@ Branch: $GITHUB_REF_NAME
 Date: $RUN_DATE
 EOF
 
-gh issue create -t "BUG: $GITHUB_WORKFLOW" -F ./BODY -R "$TARGET_REPOSITORY"  
+ISSUE_ID=$(gh -R "$TARGET_REPOSITORY" issue list --state open -S "$THIS_FILE" --json number | jq '.[0]' | jq -r '.number')
+
+if [[ -z "$ISSUE_ID" ]]; then
+  gh -R "$TARGET_REPOSITORY" issue create -t "BUG: $GITHUB_WORKFLOW" -F ./BODY
+else
+  gh -R "$TARGET_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
+fi
+
+ 
