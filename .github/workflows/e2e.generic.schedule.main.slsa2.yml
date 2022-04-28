@@ -1,4 +1,4 @@
-name: Build using slsa-github-generator
+name: Generic schedule main SLSA 2
 on: 
   schedule:
     - cron: '0 3 * * *'
