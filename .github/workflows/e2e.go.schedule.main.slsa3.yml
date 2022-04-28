@@ -12,42 +12,16 @@ env:
   TARGET_REPOSITORY: laurentsimon/slsa-on-github-test
   THIS_FILE: e2e.go.schedule.main.slsa3.yml
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
-        with:
-          go-version: '1.17'
-      - run: |
-          set -euo pipefail
-        
-          go env -w GOFLAGS=-mod=mod
-          
-          # Install from HEAD
-          go install github.com/slsa-framework/slsa-verifier@latest
-          echo slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
-            --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
-            --source github.com/$GITHUB_REPOSITORY
-            
-          ls
-          ls ~/go/bin/
-          
-          slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
-            --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
-            --source github.com/$GITHUB_REPOSITORY
-            
-          exit 1
-            
-#   #TODO: support multiple config files.
-#   build:
-#     permissions:
-#       id-token: write # For signing.
-#       contents: write # For asset uploads.
-#     uses: slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@main
-#     with:
-#       go-version: 1.18
-#       #TODO: support different options
+jobs:            
+  #TODO: support multiple config files.
+  build:
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+    uses: slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@main
+    with:
+      go-version: 1.18
+      #TODO: support different options
   
   build:
     runs-on: ubuntu-latest
@@ -66,6 +40,8 @@ jobs:
         with:
           name: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
+        with:
+          go-version: '1.17'
       - run: |
           set -euo pipefail
         
