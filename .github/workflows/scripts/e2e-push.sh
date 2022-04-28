@@ -9,8 +9,14 @@ COMMIT_MESSAGE="E2e push $GITHUB_WORKFLOW"
 
 if [[ -f "$FILE" ]]; then
   # sha of existing file.
-  echo existing file with value $(cat $FILE)
-  SHA=$(cat "$FILE" | sha1sum | cut -d " " -f1)
+  CONTENT=$(cat "$FILE")
+  LEN=$(echo -n "$CONTENT" | wc -c)
+  HEADER = "blob $LEN\0"
+  COMBINED = "$HEADER$CONTENT"
+  SHA=$(echo -n "$COMBINED" | sha1sum | cut -d " " -f1)
+  
+  echo existing file with value $CONTENT
+  echo existing len $LEN
   echo sha is $SHA
 
   echo $DATE > $FILE
