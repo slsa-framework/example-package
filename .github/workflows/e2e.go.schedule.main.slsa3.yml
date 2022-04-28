@@ -43,6 +43,8 @@ jobs:
       - run: |
           set -euo pipefail
         
+          go env -w GOFLAGS=-mod=mod
+          
           # Install from HEAD
           go install github.com/slsa-framework/slsa-verifier@latest
           echo slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
