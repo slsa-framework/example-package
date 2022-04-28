@@ -34,7 +34,8 @@ jobs:
           
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
-          git commit -am "E2e push: $GITHUB_WORKFLOW"
+          git add $FILE
+          git commit -m "E2e push: $GITHUB_WORKFLOW"
           git push
   
   #TODO: support multiple config files.
