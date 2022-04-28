@@ -27,9 +27,9 @@ jobs:
           set -euo pipefail
 
           # Push to main.
-          RUN_DATE=$(date --utc)
+          DATE=$(date --utc)
           FILE=$THIS_FILE.txt
-          echo $RUN > $FILE
+          echo $DATE > $FILE
           
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
@@ -38,7 +38,7 @@ jobs:
   
   #TODO: support multiple config files.
   build:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && startsWith(github.event.push.title, "E2e push:")
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
@@ -56,7 +56,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && startsWith(github.event.push.title, "E2e push:")
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
