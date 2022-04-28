@@ -8,8 +8,8 @@ on:
 permissions: read-all
 
 env:
-  #TARGET_REPOSITORY: slsa-framework/slsa-github-generator-go
-  TARGET_REPOSITORY: laurentsimon/slsa-on-github-test
+  TARGET_REPOSITORY: slsa-framework/slsa-github-generator-go
+  #TARGET_REPOSITORY: laurentsimon/slsa-on-github-test
   THIS_FILE: e2e.go.schedule.main.slsa3.yml
 
 jobs:            
