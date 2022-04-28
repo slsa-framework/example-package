@@ -31,7 +31,7 @@ jobs:
           ls
           ls ~/go/bin/
           
-          slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
+          ~/go/bin/slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
             --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
             --source github.com/$GITHUB_REPOSITORY
             
