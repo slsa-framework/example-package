@@ -3,7 +3,6 @@ name: E2E SLSA3 go push main
 on: 
   schedule:
     - cron: '0 2 * * *'
-  # Too test.
   workflow_dispatch:
 
 permissions: read-all
