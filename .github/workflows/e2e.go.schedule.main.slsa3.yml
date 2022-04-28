@@ -47,11 +47,11 @@ jobs:
           go install github.com/slsa-framework/slsa-verifier@latest
           echo slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
             --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
-            --source github.com/$GIHUB_REPOSITORY
+            --source github.com/$GITHUB_REPOSITORY
           
           slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
             --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
-            --source github.com/$GIHUB_REPOSITORY
+            --source github.com/$GITHUB_REPOSITORY
           
   if-failed:
     runs-on: ubuntu-latest
