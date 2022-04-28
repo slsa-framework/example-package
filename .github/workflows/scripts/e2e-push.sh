@@ -15,7 +15,7 @@ if [[ -f "$FILE" ]]; then
   # sha1 = sha1(combined)
 
   CONTENT=$(cat "$FILE")
-  LEN=$(echo -n "$CONTENT" | wc -c)
+  LEN=$(echo "$CONTENT" | wc -c)
   echo -n "blob $LEN" > HEADER
   dd if=/dev/zero of=HEADER bs=1 count=1 seek=$(stat -c%s HEADER)
   cat HEADER > CONBINED
