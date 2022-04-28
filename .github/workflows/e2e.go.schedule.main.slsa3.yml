@@ -15,7 +15,6 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
       - run: |
