@@ -14,4 +14,4 @@ Branch: $GITHUB_REF_NAME
 Date: $RUN_DATE
 EOF
 
-gh issue create -t "Run failure: $GITHUB_WORKFLOW" -F ./BODY -R "$TARGET_REPOSITORY"  
+gh issue create -t "BUG: $GITHUB_WORKFLOW" -F ./BODY -R "$TARGET_REPOSITORY"  
