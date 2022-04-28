@@ -14,23 +14,15 @@ env:
 
 jobs:
   #TODO: support multiple config files.
-#   build:
-#     permissions:
-#       id-token: write # For signing.
-#       contents: write # For asset uploads.
-#     uses: slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@main
-#     with:
-#       go-version: 1.18
-      #TODO: support different options
-
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          set -euo pipefail
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+    uses: slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@main
+    with:
+      go-version: 1.18
+      TODO: support different options
 
-          exit 1
-      
   run-if-failed:
     runs-on: ubuntu-latest
     needs: build
