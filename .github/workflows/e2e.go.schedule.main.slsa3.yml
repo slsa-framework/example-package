@@ -72,7 +72,7 @@ jobs:
           RES=$(slsa-verifier --versioned-tag v1.2.3 --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
           assert_not_eq($OK, 0)
           
-          #TODO: previous releases, curl the binary directly
+          #TODO: previous releases, curl the binary directly. We should list the releases and run all commands automatically
           
   if-failed:
     runs-on: ubuntu-latest
