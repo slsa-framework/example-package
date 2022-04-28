@@ -45,6 +45,8 @@ jobs:
       - run: |
           set -euo pipefail
         
+          source "./.github/workflows/scripts/assert.sh"
+          
           go env -w GOFLAGS=-mod=mod
           
           # Install from HEAD
@@ -81,4 +83,4 @@ jobs:
       - run: |
           set -euo pipefail
 
-          ./.github/workflows/e2e-report-failure.sh
+          ./.github/workflows/scripts/e2e-report-failure.sh
