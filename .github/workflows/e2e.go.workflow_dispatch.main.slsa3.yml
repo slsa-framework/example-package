@@ -2,7 +2,7 @@ name: go workflow_dispatch main SLSA3
 
 on: 
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 permissions: read-all
