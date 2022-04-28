@@ -20,7 +20,7 @@ if [[ -f "$FILE" ]]; then
   dd if=/dev/zero of=HEADER bs=1 count=1 seek=$(stat -c%s HEADER)
   cat HEADER > CONBINED
   echo -n "$CONTENT" >> COMBINED
-  SHA=$(echo -n "$COMBINED" | sha1sum | cut -d " " -f1)
+  SHA=$(cat COMBINED | sha1sum | cut -d " " -f1)
   
   echo existing file with value $CONTENT
   echo existing len $LEN
