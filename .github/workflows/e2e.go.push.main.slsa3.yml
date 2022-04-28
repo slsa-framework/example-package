@@ -38,7 +38,7 @@ jobs:
   
   #TODO: support multiple config files.
   build:
-    if: github.event_name == 'push' && startsWith(github.event.push.title, "E2e push:")
+    if: github.event_name == 'push' && startsWith(github.event.push.title, "E2e push")
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
