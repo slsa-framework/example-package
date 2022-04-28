@@ -15,10 +15,10 @@ if [[ -f "$FILE" ]]; then
   # sha1 = sha1(combined)
 
   CONTENT=$(cat "$FILE")
-  LEN=$(echo "$CONTENT" | wc -c)
+  LEN=$(stat -c%s "$FILE")
   echo -n "blob $LEN" > HEADER
   dd if=/dev/zero of=HEADER bs=1 count=1 seek=$(stat -c%s HEADER)
-  cat HEADER > CONBINED
+  mv HEADER CONBINED
   echo -n "$CONTENT" >> COMBINED
   SHA=$(sha1sum -b COMBINED | cut -d " " -f1)
   
