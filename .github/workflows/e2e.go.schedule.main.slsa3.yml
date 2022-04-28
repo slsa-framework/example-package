@@ -1,4 +1,4 @@
-name: E2E SLSA3 go schedule main
+name: SLSA3 go schedule main
 
 on: 
   schedule:
