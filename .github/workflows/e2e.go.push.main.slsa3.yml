@@ -27,16 +27,7 @@ jobs:
       - run: |
           set -euo pipefail
 
-          # Push to main.
-          DATE=$(date --utc)
-          FILE=e2e/$THIS_FILE.txt
-          echo $DATE > $FILE
-          
-          git config --global user.name github-actions
-          git config --global user.email github-actions@github.com
-          git add $FILE
-          git commit -m "E2e push: $GITHUB_WORKFLOW"
-          git push
+          ./.github/workflows/scripts/e2e-push.sh
   
   test:
     runs-on: ubuntu-latest
