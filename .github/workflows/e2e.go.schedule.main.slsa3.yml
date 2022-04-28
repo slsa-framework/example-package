@@ -21,7 +21,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@main
     with:
       go-version: 1.18
-      TODO: support different options
+      #TODO: support different options
           
   verify:
     runs-on: ubuntu-latest
