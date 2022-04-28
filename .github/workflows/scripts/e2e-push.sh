@@ -5,14 +5,21 @@
 
 DATE=$(date --utc)
 FILE=e2e/$THIS_FILE.txt
-COMMIT_MESSAGE="e2e $GITHUB_WORKFLOW"
+COMMIT_MESSAGE="E2e push $GITHUB_WORKFLOW"
 
 if [[ -f "$FILE" ]]; then
   # sha of existing file.
+  # content = "what is up, doc?"
+  # header = "blob LEN\0"
+  # combined = header + content # will be "blob 16\u0000what is up, doc?"
+  # sha1 = sha1(combined)
+
   CONTENT=$(cat "$FILE")
   LEN=$(echo -n "$CONTENT" | wc -c)
-  HEADER = "blob $LEN\0"
-  COMBINED = "$HEADER$CONTENT"
+  echo -n "blob $LEN" > HEADER
+  dd if=/dev/zero of=HEADER bs=1 count=1 seek=$(stat -c%s HEADER)
+  cat HEADER > CONBINED
+  echo -n "$CONTENT" >> COMBINED
   SHA=$(echo -n "$COMBINED" | sha1sum | cut -d " " -f1)
   
   echo existing file with value $CONTENT
