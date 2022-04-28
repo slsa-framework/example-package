@@ -7,7 +7,7 @@ DATE=$(date --utc)
 FILE=e2e/$THIS_FILE.txt
 echo $DATE > $FILE
 
-COMMIT_MESSAGE="E2e push: $GITHUB_WORKFLOW"
+COMMIT_MESSAGE="E2e push $GITHUB_WORKFLOW"
 
 # git config --global user.name github-actions
 # git config --global user.email github-actions@github.com
