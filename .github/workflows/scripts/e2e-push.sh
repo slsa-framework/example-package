@@ -9,9 +9,16 @@ COMMIT_MESSAGE="E2e push $GITHUB_WORKFLOW"
 
 if [[ -f "$FILE" ]]; then
   # sha of existing file.
+  echo existing file with value $(cat $FILE)
   SHA=$(cat "$FILE" | sha1sum | cut -d " " -f1)
-  
+  echo sha is $SHA
+
   echo $DATE > $FILE
+
+  # Add the file content's sha to the request.
+  cat << EOF > DATA
+{"message":"$COMMIT_MESSAGE","sha":"$SHA","committer":{"name":"github-actions","email":"github-actions@github.com"},"content":"$(cat $DATE | base64 --wrap=0)"}
+EOF
   
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
   curl \
@@ -19,10 +26,10 @@ if [[ -f "$FILE" ]]; then
     -H "Accept: application/vnd.github.v3+json" \
     -H "Authorization: token $GH_TOKEN" \
     https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE \
-    -d '{"message":"$COMMIT_MESSAGE","sha":"$SHA","committer":{"name":"github-actions","email":"github-actions@github.com"},"content":"$(cat $DATE | base64 --wrap=0)"}'
+    -d @DATA
 else
   echo $DATE > $FILE
-  
+
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
   curl \
     -X PUT \
