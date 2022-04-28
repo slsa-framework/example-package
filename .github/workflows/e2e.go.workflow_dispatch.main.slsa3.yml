@@ -19,13 +19,11 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
     steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - run: |
           set -euo pipefail
 
-          curl -X POST -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/$THIS_FILE/dispatches \
-               -d '{"ref":"main"}' \
-               -H "Authorization: token $GH_TOKEN"
+          ./.github/workflows/scripts/e2e-dispatch.sh
   
   #TODO: support multiple config files.
   build:
