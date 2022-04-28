@@ -22,7 +22,7 @@ jobs:
       go-version: 1.18
       TODO: support different options
 
-  run-if-failed:
+  build-failed:
     runs-on: ubuntu-latest
     needs: build
     if: always() && (needs.build.result == 'failure')
@@ -39,7 +39,32 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: ${{ needs.build.outputs.go-binary-name }}
+      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
+      - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
       - run: |
           set -euo pipefail
+        
+          exit 1
+          # Install from HEAD
+          #go install https://github.com/slsa-framework/slsa-verifier
+          #slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
+          #  --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
+          #  --source github.com/$GIHUB_REPOSITORY
           
-          echo "TODO: slsa-verify for all released and for HEAD"
+  verify-failed:
+    runs-on: ubuntu-latest
+    needs: verify
+    if: always() && (needs.verify.result == 'failure')
+    env:
+      GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: |
+          set -euo pipefail
+
+          ./.github/workflows/e2e-report-failure.sh
