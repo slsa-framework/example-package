@@ -38,7 +38,7 @@ jobs:
   
   #TODO: support multiple config files.
   build:
-    if: github.event_name == 'push' && startsWith(github.event.push.title, "E2e push")
+    if: github.event_name == 'push' && startsWith(github.event.push.title, 'E2e push')
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
@@ -56,7 +56,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push' && startsWith(github.event.push.title, "E2e push")
+    if: github.event_name == 'push' && startsWith(github.event.push.title, 'E2e push')
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
@@ -104,7 +104,7 @@ jobs:
   if-failed:
     runs-on: ubuntu-latest
     needs: [build,verify]
-    if: always() && github.event_name == 'push' && startsWith(github.event.push.title, "E2e push") && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    if: always() && github.event_name == 'push' && startsWith(github.event.push.title, 'E2e push') && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     env:
       GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
     steps:
