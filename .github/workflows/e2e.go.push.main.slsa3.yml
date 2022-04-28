@@ -38,6 +38,15 @@ jobs:
           git commit -m "E2e push: $GITHUB_WORKFLOW"
           git push
   
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo msg1: ${{ github.event.commits[0].message }}
+          echo ${{ startsWith(github.event.commits[0].message, 'E2e push') }}
+          echo msg2: ${{ github.event.head_commit.message }}
+          echo ${{ startsWith(github.event.head_commit.message, 'E2e push') }}
+    
   #TODO: support multiple config files.
   build:
     if: ${{ github.event_name == 'push' && startsWith(github.event.head_commit.message, 'E2e push') }}
