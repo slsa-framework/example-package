@@ -30,7 +30,7 @@ jobs:
           # Push to main.
           DATE=$(date --utc)
           FILE=$THIS_FILE.txt
-          echo $DATE > $FILE
+          echo $DATE > e2e/$FILE
           
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
