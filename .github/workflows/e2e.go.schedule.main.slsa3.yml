@@ -45,6 +45,10 @@ jobs:
         
           # Install from HEAD
           go install https://github.com/slsa-framework/slsa-verifier
+          echo slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
+            --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
+            --source github.com/$GIHUB_REPOSITORY
+          
           slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} \
             --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl \
             --source github.com/$GIHUB_REPOSITORY
