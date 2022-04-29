@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 source "./.github/workflows/scripts/assert.sh"
 
