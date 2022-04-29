@@ -57,38 +57,13 @@ jobs:
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
         with:
           go-version: '1.17'
-      - run: |
+      - env:
+          BINARY: ${{ needs.build.outputs.go-binary-name }}
+          PROVENANCE: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
+        run: |
           set -euo pipefail
         
-          source "./.github/workflows/scripts/assert.sh"
-          
-          go env -w GOFLAGS=-mod=mod
-          
-          # Install from HEAD
-          go install github.com/slsa-framework/slsa-verifier@latest
-             
-          # Default parameters.
-          RES=$(slsa-verifier --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
-          assert_eq($RES, 0)
-          
-          # Main branch
-          RES=$(slsa-verifier --branch main --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
-          assert_eq($RES, 0)
-          
-          # Wrong branch
-          RES=$(slsa-verifier --branch not-main --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
-          assert_not_eq($RES, 0)
-          
-          # Wrong tag
-          RES=$(slsa-verifier --tag v1.2.3 --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
-          assert_not_eq($RES, 0)
-          
-          # Wrong versioned-tag
-          RES=$(slsa-verifier --versioned-tag v1.2.3 --artifact-path ${{ needs.build.outputs.go-binary-name }} --provenance ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl --source github.com/$GITHUB_REPOSITORY)
-          assert_not_eq($RES, 0)
-          
-          #TODO: read out the provenance information once we print it
-          #TODO: previous releases, curl the binary directly. We should list the releases and run all commands automatically
+          ./.github/workflows/scripts/e2e-verify.sh
           
   if-failed:
     runs-on: ubuntu-latest
