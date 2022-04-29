@@ -28,18 +28,6 @@ jobs:
           set -euo pipefail
 
           ./.github/workflows/scripts/e2e-push.sh
-  
-  test:
-    runs-on: ubuntu-latest
-    env:
-      COMMIT_MESSAGE: $GITHUB_WORKFLOW
-    steps:
-      - run: |
-          set -euo pipefail
-          
-          echo msg1: ${{ github.event.commits[0].message }}
-          echo msg2: ${{ github.event.head_commit.message }}
-          echo $COMMIT_MESSAGE
     
   #TODO: support multiple config files.
   build:
