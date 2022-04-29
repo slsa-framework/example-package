@@ -8,7 +8,7 @@ FILE=e2e/$THIS_FILE.txt
 COMMIT_MESSAGE="$GITHUB_WORKFLOW"
 
 if [[ -f "$FILE" ]]; then
-  SHA=$(curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE | jq -r '.sha')
+  SHA=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE | jq -r '.sha')
 
   echo -n $DATE > $FILE
 
@@ -28,7 +28,7 @@ else
   echo $DATE > $FILE
 
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
-  curl \
+  curl -s \
     -X PUT \
     -H "Accept: application/vnd.github.v3+json" \
     -H "Authorization: token $GH_TOKEN" \
