@@ -17,7 +17,7 @@ EOF
 ISSUE_ID=$(gh -R "$ISSUE_REPOSITORY" issue list --state open -S "$THIS_FILE" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
 
 if [[ -z "$ISSUE_ID" ]]; then
-  gh -R "$ISSUE_REPOSITORY" issue create -t "BUG: $GITHUB_WORKFLOW" -F ./BODY
+  gh -R "$ISSUE_REPOSITORY" issue create -t "E2E: $GITHUB_WORKFLOW" -F ./BODY
 else
   gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
 fi
