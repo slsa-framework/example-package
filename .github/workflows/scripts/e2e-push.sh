@@ -5,7 +5,7 @@
 
 DATE=$(date --utc)
 FILE=e2e/$THIS_FILE.txt
-COMMIT_MESSAGE="E2e push $GITHUB_WORKFLOW"
+COMMIT_MESSAGE="$PUSH_TITLE $GITHUB_WORKFLOW"
 
 if [[ -f "$FILE" ]]; then
   SHA=$(curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE | jq -r '.sha')
