@@ -13,7 +13,7 @@ if [[ -f "$FILE" ]]; then
   echo -n $DATE > $FILE
 
   # Add the file content's sha to the request.
-cat << EOF > DATA
+  cat << EOF > DATA
 {"message":"$COMMIT_MESSAGE","sha":"$SHA","committer":{"name":"github-actions","email":"github-actions@github.com"},"content":"$(echo -n $DATE | base64 --wrap=0)"}
 EOF
 
