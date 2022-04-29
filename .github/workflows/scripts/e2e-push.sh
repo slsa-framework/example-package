@@ -8,33 +8,17 @@ FILE=e2e/$THIS_FILE.txt
 COMMIT_MESSAGE="E2e push $GITHUB_WORKFLOW"
 
 if [[ -f "$FILE" ]]; then
-  # sha of existing file.
-  # content = "what is up, doc?"
-  # header = "blob LEN\0"
-  # combined = header + content # will be "blob 16\u0000what is up, doc?"
-  # sha1 = sha1(combined)
-
-  CONTENT=$(cat "$FILE")
-  LEN=$(stat -c%s "$FILE")
-  echo -n "blob $LEN" > HEADER
-  dd if=/dev/zero of=HEADER bs=1 count=1 seek=$(stat -c%s HEADER)
-  mv HEADER CONBINED
-  echo -n "$CONTENT" >> COMBINED
-  SHA=$(sha1sum -b COMBINED | cut -d " " -f1)
-  
-  echo existing file with value $CONTENT
-  echo existing len $LEN
-  echo sha is $SHA
+  SHA=$(curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE | jq -r '.sha')
 
   echo -n $DATE > $FILE
 
   # Add the file content's sha to the request.
-  cat << EOF > DATA
+cat << EOF > DATA
 {"message":"$COMMIT_MESSAGE","sha":"$SHA","committer":{"name":"github-actions","email":"github-actions@github.com"},"content":"$(echo -n $DATE | base64 --wrap=0)"}
 EOF
-  
+
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
-  curl \
+  curl -s \
     -X PUT \
     -H "Accept: application/vnd.github.v3+json" \
     -H "Authorization: token $GH_TOKEN" \
