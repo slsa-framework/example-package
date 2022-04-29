@@ -19,7 +19,7 @@ ISSUE_ID=$(gh -R "$ISSUE_REPOSITORY" issue list --state open -S "$THIS_FILE" --j
 if [[ -z "$ISSUE_ID" ]]; then
   gh -R "$ISSUE_REPOSITORY" issue create -t "E2E: $GITHUB_WORKFLOW" -F ./BODY -l e2e -l bug
 else
-  gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY -l e2e -l bug
+  gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
 fi
 
  
