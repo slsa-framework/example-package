@@ -8,9 +8,10 @@ on:
 permissions: read-all
 
 env:
-  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator-go
-  #ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
+  #ISSUE_REPOSITORY: slsa-framework/slsa-github-generator-go
+  ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   THIS_FILE: e2e.go.workflow_dispatch.main.config-noldflags.slsa3.yml
+  # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_GILE: .github/workflows/configs-go/config-noldflags.yml
 
 jobs:
@@ -35,7 +36,8 @@ jobs:
     uses: slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@main
     with:
       go-version: 1.18
-      config-file: ${{ env.CONFIG_GILE }}
+      # We cannot use ${{ env.CONFIG_GILE }} because env variables are not available.
+      config-file: .github/workflows/configs-go/config-noldflags.yml
   
 #   build:
 #     runs-on: ubuntu-latest
