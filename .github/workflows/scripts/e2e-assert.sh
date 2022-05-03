@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "./.github/workflows/scripts/e2e-assert.sh"
+source "./.github/workflows/scripts/assert.sh"
 
 e2e_assert_eq() {
     assert_eq "$@"
