@@ -3,9 +3,9 @@
 source "./.github/workflows/scripts/e2e-assert.sh"
 
 # Converter from yaml to JSON.
-sudo apt-get install jc
+#sudo apt-get install jc
 
-if [[ -z "$CONFIG_GILE" ]]; then
+if [[ -z "$CONFIG_FILE" ]]; then
     echo "env variable CONFIG_GILE not set"
     exit 2
 fi
