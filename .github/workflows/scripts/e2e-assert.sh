@@ -1,3 +1,7 @@
+#!/bin/bash
+
+source "./.github/workflows/scripts/e2e-assert.sh"
+
 e2e_assert_eq() {
     assert_eq "$@"
     if [ "$?" != "0" ]; then
