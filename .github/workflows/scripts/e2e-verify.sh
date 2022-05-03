@@ -28,7 +28,7 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 # e2e_assert_not_eq "$RES" "0" "wrong versioned-tag"
 
 # Provenance content verification.
-ATTESTATION=$(cat "$PROVENANCE")
+ATTESTATION=$(cat "$PROVENANCE" | jq -r '.payload' | base64 -d)
 TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f4)
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f5)
 
