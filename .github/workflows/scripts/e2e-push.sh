@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # We push to main a file e2e/wokflow-name.txt
 # with the date inside.
