@@ -28,22 +28,24 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 # e2e_assert_not_eq "$RES" "0" "wrong versioned-tag"
 
 # Provenance content verification.
-TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
-BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-e2e_verify_predicate_subject_name "$PROVENANCE" "binary-linux-amd64"
-e2e_verify_predicate_builder_id "$PROVENANCE" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@$BRANCH"
-e2e_verify_predicate_builderType "$PROVENANCE" "https://github.com/slsa-framework/slsa-github-generator-go@v1"
-e2e_verify_predicate_invocation_configSource "$PROVENANCE" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@refs/heads/$BRANCH\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\"$GITHUB_WORKFLOW\"}"
+ATTESTATION=$(cat "$PROVENANCE")
+TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f4)
+BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f5)
+
+e2e_verify_predicate_subject_name "$ATTESTATION" "binary-linux-amd64"
+e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@refs/heads/main"
+e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go@v1"
+e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@refs/heads/$BRANCH\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\"$GITHUB_WORKFLOW\"}"
 if [[ "$TRIGGER" != "tag" ]]; then
-    e2e_verify_predicate_invocation_environment "$PROVENANCE" "[\"$GITHUB_ACTOR\",\"$GITHUB_SHA\",\"ubuntu20\",\"X64\",\"$TRIGGER\",\"refs/heads/main\",\"branch\"]"
+    e2e_verify_predicate_invocation_environment "$ATTESTATION" "[\"$GITHUB_ACTOR\",\"$GITHUB_SHA\",\"ubuntu20\",\"X64\",\"$TRIGGER\",\"refs/heads/main\",\"branch\"]"
 else
-    e2e_verify_predicate_invocation_environment "$PROVENANCE" "[\"$GITHUB_ACTOR\",\"$GITHUB_SHA\",\"ubuntu20\",\"X64\",\"$TRIGGER\",\"refs/tags/main\",\"tag\"]"
+    e2e_verify_predicate_invocation_environment "$ATTESTATION" "[\"$GITHUB_ACTOR\",\"$GITHUB_SHA\",\"ubuntu20\",\"X64\",\"$TRIGGER\",\"refs/tags/main\",\"tag\"]"
 fi
 
-e2e_verify_predicate_buildConfig_command "$PROVENANCE" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
-e2e_verify_predicate_buildConfig_env "$PROVENANCE" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
-e2e_verify_predicate_metadata "$PROVENANCE" "{\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
-e2e_verify_predicate_metadata "$PROVENANCE" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@refs/heads/$BRANCH\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
+e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
+e2e_verify_predicate_buildConfig_env "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
+e2e_verify_predicate_metadata "$ATTESTATION" "{\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
+e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@refs/heads/$BRANCH\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
 
 #TODO: read out the provenance information once we print it
 #TODO: previous releases, curl the $BINARY directly. We should list the releases and run all commands automatically
