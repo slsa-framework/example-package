@@ -2,30 +2,30 @@
 
 source "./.github/workflows/scripts/e2e-utils.sh"
 
-go env -w GOFLAGS=-mod=mod
+# go env -w GOFLAGS=-mod=mod
 
-# Install from HEAD
-go install github.com/slsa-framework/slsa-verifier@latest
+# # Install from HEAD
+# go install github.com/slsa-framework/slsa-verifier@latest
     
-# Default parameters.
-RES=$(slsa-verifier --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
-e2e_assert_eq "$RES" "0" "default parameters"
+# # Default parameters.
+# RES=$(slsa-verifier --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
+# e2e_assert_eq "$RES" "0" "default parameters"
 
-# Main branch
-RES=$(slsa-verifier --branch main --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
-e2e_assert_eq "$RES" "0" "main branch"
+# # Main branch
+# RES=$(slsa-verifier --branch main --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
+# e2e_assert_eq "$RES" "0" "main branch"
 
-# Wrong branch
-RES=$(slsa-verifier --branch not-main --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
-e2e_assert_not_eq "$RES" "0" "wrong branch"
+# # Wrong branch
+# RES=$(slsa-verifier --branch not-main --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
+# e2e_assert_not_eq "$RES" "0" "wrong branch"
 
-# Wrong tag
-RES=$(slsa-verifier --tag v1.2.3 --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
-e2e_assert_not_eq "$RES" "0" "wrong tag"
+# # Wrong tag
+# RES=$(slsa-verifier --tag v1.2.3 --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
+# e2e_assert_not_eq "$RES" "0" "wrong tag"
 
-# Wrong versioned-tag
-RES=$(slsa-verifier --versioned-tag v1.2.3 --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
-e2e_assert_not_eq "$RES" "0" "wrong versioned-tag"
+# # Wrong versioned-tag
+# RES=$(slsa-verifier --versioned-tag v1.2.3 --artifact-path $BINARY --provenance $PROVENANCE --source github.com/$GITHUB_REPOSITORY)
+# e2e_assert_not_eq "$RES" "0" "wrong versioned-tag"
 
 # Provenance content verification.
 TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
