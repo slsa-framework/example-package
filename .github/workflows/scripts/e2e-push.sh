@@ -17,7 +17,16 @@ if [[ -f "$FILE" ]]; then
 {"message":"$COMMIT_MESSAGE","sha":"$SHA","committer":{"name":"github-actions","email":"github-actions@github.com"},"content":"$(echo -n $DATE | base64 --wrap=0)"}
 EOF
 
+  echo file already exists.
+  cat DATA
+
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
+  echo curl -s \
+    -X PUT \
+    -H "Accept: application/vnd.github.v3+json" \
+    -H "Authorization: token $GH_TOKEN" \
+    https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE \
+    -d @DATA
   curl -s \
     -X PUT \
     -H "Accept: application/vnd.github.v3+json" \
@@ -27,6 +36,8 @@ EOF
 else
   echo $DATE > $FILE
 
+  echo file does not exists
+  
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
   curl -s \
     -X PUT \
