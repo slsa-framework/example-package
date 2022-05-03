@@ -21,12 +21,6 @@ EOF
   cat DATA
 
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
-  echo curl -s \
-    -X PUT \
-    -H "Accept: application/vnd.github.v3+json" \
-    -H "Authorization: token $GH_TOKEN" \
-    https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE \
-    -d @DATA
   curl -s \
     -X PUT \
     -H "Accept: application/vnd.github.v3+json" \
@@ -44,7 +38,7 @@ else
     -H "Accept: application/vnd.github.v3+json" \
     -H "Authorization: token $GH_TOKEN" \
     https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE \
-    -d '{"message":"$COMMIT_MESSAGE","committer":{"name":"github-actions","email":"github-actions@github.com"},"content":"$(echo -n $DATE | base64 --wrap=0)"}'
+    -d "{\"message\":\"$COMMIT_MESSAGE\",\"committer\":{\"name\":\"github-actions\",\"email\":\"github-actions@github.com\"},\"content\":\"$(echo -n $DATE | base64 --wrap=0)\"}"
 fi
 
 
