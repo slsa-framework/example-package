@@ -61,6 +61,7 @@ if [[ -z "$LDFLAGS" ]]; then
     e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
 else
     e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef\",\"-o\",\"binary-linux-amd64\"]"
+    chmod a+x ./"$BINARY"
     V=$(./"$BINARY" | grep 'GitVersion: v1.2.3')
     C=$(./"$BINARY" | grep 'GitCommit: abcdef')
     e2e_assert_not_eq "$V" "" "GitVersion should not be empty"
