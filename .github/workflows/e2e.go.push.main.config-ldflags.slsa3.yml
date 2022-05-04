@@ -1,4 +1,4 @@
-name: go push main SLSA3 config-noldflags
+name: go push main SLSA3 config-ldflags
 
 on: 
   schedule:
