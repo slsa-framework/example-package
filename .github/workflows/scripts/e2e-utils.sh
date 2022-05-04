@@ -35,7 +35,7 @@ e2e_create_issue_success_body() {
     _create_issue_body
 
     echo "" >> ./BODY
-    echo "Tests are passing now. Closing this issue." >> ./BODY
+    echo "**Tests are passing now. Closing this issue.**" >> ./BODY
 
 }
 
