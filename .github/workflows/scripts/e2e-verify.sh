@@ -44,6 +44,7 @@ e2e_assert_not_eq "$?" "0" "wrong versioned-tag"
 ATTESTATION=$(cat ""$PROVENANCE"" | jq -r '.payload' | base64 -d)
 TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | | grep -v noldflags)
 
 e2e_verify_predicate_subject_name "$ATTESTATION" "binary-linux-amd64"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@refs/heads/main"
@@ -56,10 +57,23 @@ else
     e2e_verify_predicate_invocation_environment "$ATTESTATION" "[\"$GITHUB_ACTOR\",\"$GITHUB_SHA\",\"ubuntu20\",\"X64\",\"$TRIGGER\",\"refs/tags/main\",\"tag\"]"
 fi
 
-e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
+if [[ -z "$LDFLAGS" ]]; then
+    e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
+else
+    e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef\",\"-o\",\"binary-linux-amd64\"]"
+    V=$(./"$BINARY" | grep 'GitVersion: v1.2.3')
+    C=$(./"$BINARY" | grep 'GitCommit: abcdef')
+    e2e_assert_not_eq "$V" "" "GitVersion should not be empty"
+    e2e_assert_not_eq "$C" "" "GitCommit should not be empty"
+fi
+
+
+
 e2e_verify_predicate_buildConfig_env "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
+
 e2e_verify_predicate_metadata "$ATTESTATION" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
 e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://"github.com/$GITHUB_REPOSITORY"@refs/heads/$BRANCH\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
+
 
 #TODO: read out the provenance information once we print it
 #TODO: previous releases, curl the "$BINARY" directly. We should list the releases and run all commands automatically
