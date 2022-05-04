@@ -10,6 +10,35 @@ if [[ -z "$CONFIG_FILE" ]]; then
     exit 2
 fi
 
+# File is BODY in current directory.
+_create_issue_body() {
+    RUN_DATE=$(date --utc)
+
+# see https://docs.github.com/en/actions/learn-github-actions/environment-variables
+# https://docs.github.com/en/actions/learn-github-actions/contexts.
+cat << EOF > BODY
+Repo: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME
+Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+Workflow name: $GITHUB_WORKFLOW
+Workflow file: https://github.com/$GITHUB_REPOSITORY/tree/main/.github/workflows/$THIS_FILE
+Trigger: $GITHUB_EVENT_NAME
+Branch: $GITHUB_REF_NAME
+Date: $RUN_DATE
+EOF
+}
+
+e2e_create_issue_failure_body() {
+    _create_issue_body
+}
+
+e2e_create_issue_success_body() {
+    _create_issue_body
+
+    echo "" >> ./BODY
+    echo "Tests are passing now. Closing this issue." >> ./BODY
+
+}
+
 e2e_verify_predicate_subject_name() {
     local attestation="$1"
     local expected="$2"
