@@ -16,26 +16,26 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 go env -w GOFLAGS=-mod=mod
 
 # Install from HEAD
-go install github.com/slsa-framework/./slsa-verifier@latest
+go install github.com/slsa-framework/slsa-verifier@latest
     
 # Default parameters.
-./slsa-verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+slsa-verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
 e2e_assert_eq "$?" "0" "default parameters"
 
 # Main branch
-./slsa-verifier --branch main --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+slsa-verifier --branch main --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
 e2e_assert_eq "$?" "0" "main branch"
 
 # Wrong branch
-./slsa-verifier --branch not-main --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+slsa-verifier --branch not-main --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
 e2e_assert_not_eq "$?" "0" "wrong branch"
 
 # Wrong tag
-./slsa-verifier --tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+slsa-verifier --tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
 e2e_assert_not_eq "$?" "0" "wrong tag"
 
 # Wrong versioned-tag
-./slsa-verifier --versioned-tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+slsa-verifier --versioned-tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
 e2e_assert_not_eq "$?" "0" "wrong versioned-tag"
 
 
