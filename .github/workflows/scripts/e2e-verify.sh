@@ -44,7 +44,7 @@ e2e_assert_not_eq "$?" "0" "wrong versioned-tag"
 ATTESTATION=$(cat ""$PROVENANCE"" | jq -r '.payload' | base64 -d)
 TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | | grep -v noldflags)
+LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
 
 e2e_verify_predicate_subject_name "$ATTESTATION" "binary-linux-amd64"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@refs/heads/main"
@@ -66,8 +66,6 @@ else
     e2e_assert_not_eq "$V" "" "GitVersion should not be empty"
     e2e_assert_not_eq "$C" "" "GitCommit should not be empty"
 fi
-
-
 
 e2e_verify_predicate_buildConfig_env "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
 
