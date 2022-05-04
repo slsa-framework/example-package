@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	gitVersion   string
-	gitSomething string
+	gitVersion string
+	gitCommit  string
 )
 
 func main() {
@@ -17,6 +17,6 @@ func main() {
 	uuid := strings.Replace(uuidWithHyphen.String(), "-", "", -1)
 
 	fmt.Println("GitVersion:", gitVersion)
-	fmt.Println("GitSomething:", gitSomething)
+	fmt.Println("GitCommit:", gitCommit)
 	fmt.Println("Hello world:", uuid)
 }
