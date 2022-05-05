@@ -15,7 +15,7 @@ env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   #ISSUE_REPOSITORY: slsa-framework/slsa-github-generator-go
   ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
-  THIS_FILE: e2e.go.tag.main.config-ldflags-assets.slsa3.yml
+  THIS_FILE: e2e.go.tag.branch1.config-ldflags-assets.slsa3.yml
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-ldflags.yml
 
@@ -33,7 +33,7 @@ jobs:
           ./.github/workflows/scripts/e2e-create-release.sh
     
   args:
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event.base_ref == 'refs/heads/branch1' && github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.ldflags.outputs.version }}
@@ -49,7 +49,7 @@ jobs:
           echo "::set-output name=commit::-X main.gitCommit=abcdef"
 
   build:
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event.base_ref == 'refs/heads/branch1' && github.event_name == 'push' && github.ref_type == 'tag'
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
@@ -71,7 +71,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event.base_ref == 'refs/heads/branch1' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
@@ -94,7 +94,7 @@ jobs:
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [build,verify]
-    if: github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
+    if: github.event.base_ref == 'refs/heads/branch1' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - run: |
@@ -105,7 +105,7 @@ jobs:
   if-failed:
     runs-on: ubuntu-latest
     needs: [build,verify]
-    if: always() && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    if: always() && github.event.base_ref == 'refs/heads/branch1' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - run: |
