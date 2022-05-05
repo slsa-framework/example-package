@@ -17,9 +17,11 @@ NEW_SEMVER="$MAJOR_MINOR.$NEW_PATCH"
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
 cat << EOF > DATA
-"e2e release creation. 
-SemVer: $NEW_SEMVER
-Branch: $BRANCH"
+e2e release creation. 
+Tag: $NEW_SEMVER
+Branch: $BRANCH
+Caller file: $THIS_FILE
+Caller name: $GITHUB_WORKFLOW
 EOF
 
 gh release create "$NEW_SEMVER" --notes-file ./DATA --target "$BRANCH"
