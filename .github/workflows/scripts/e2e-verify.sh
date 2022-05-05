@@ -27,6 +27,8 @@ if [[ "$GITHUB_REF_NAME" == "main" ]] && [[ "$GITHUB_REF_TYPE" == "branch" ]]; t
     e2e_assert_eq "$?" "0" "default parameters"
 fi 
 
+echo "DEBUG: file is $THIS_FILE"
+
 # Correct branch
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 slsa-verifier --branch "$BRANCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
