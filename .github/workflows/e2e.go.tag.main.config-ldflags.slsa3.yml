@@ -1,10 +1,11 @@
-name: go tag main SLSA3 config-ldflags assets
+name: go tag main SLSA3 config-ldflags noassets
 
 on: 
   schedule:
     - cron: '0 5 * * *'
   workflow_dispatch:
   push:
+    branches: [ main ]
     tags:
       - "*" # triggers only if push new tag version, like `0.8.4` or else
 
@@ -14,7 +15,7 @@ env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   #ISSUE_REPOSITORY: slsa-framework/slsa-github-generator-go
   ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
-  THIS_FILE: e2e.go.tag.main.config-ldflags-assets.slsa3.yml
+  THIS_FILE: e2e.go.tag.main.config-ldflags-noassets.slsa3.yml
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-ldflags.yml
 

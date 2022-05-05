@@ -155,7 +155,7 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     if [[ -z "$ASSETS" ]]; then
         e2e_assert_eq "$A" "[]" "there should be no assets"
     else
-        e2e_assert_not_eq "$A" "[\"binary-linux-amd64\",\"binary-linux-amd64.intoto.jsonl\"]" "there should be assets"
+        e2e_assert_eq "$A" "[\"binary-linux-amd64\",\"binary-linux-amd64.intoto.jsonl\"]" "there should be assets"
     fi
 fi
 
