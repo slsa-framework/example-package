@@ -16,5 +16,11 @@ NEW_SEMVER="$MAJOR_MINOR.$NEW_PATCH"
 
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
-gh release create "$NEW_SEMVER" --notes "e2e release creation. SemVer: $NEW_SEMVER\nBranch: $BRANCH" --target "$BRANCH"
+cat << EOF > DATA
+"e2e release creation. 
+SemVer: $NEW_SEMVER
+Branch: $BRANCH"
+EOF
+
+gh release create "$NEW_SEMVER" --notes-file ./DATA --target "$BRANCH"
 
