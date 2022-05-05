@@ -17,4 +17,4 @@ jobs:
       - name: run
         run: |
 
-          echo it's working $GITHUB_REF_NAME
+          echo its working $GITHUB_REF_NAME
