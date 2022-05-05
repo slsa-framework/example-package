@@ -157,7 +157,7 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         e2e_assert_eq "$A" "[]" "there should be no assets"
     else
         #TODO: list the actual binary and provenance
-        e2e_assert_not_eq "$A" "[]" "there should be no assets"
+        e2e_assert_not_eq "$A" "[]" "there should be assets"
     fi
 fi
 
