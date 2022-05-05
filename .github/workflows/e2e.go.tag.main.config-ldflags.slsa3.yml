@@ -1,18 +1,20 @@
-name: go push main SLSA3 config-ldflags
+name: go tag main SLSA3 config-ldflags assets
 
 on: 
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 5 * * *'
   workflow_dispatch:
   push:
     branches: [ main ]
+    tags:
+      - "*" # triggers only if push new tag version, like `0.8.4` or else
 
 permissions: read-all
 
 env:
   #ISSUE_REPOSITORY: slsa-framework/slsa-github-generator-go
   ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
-  THIS_FILE: e2e.go.push.main.config-ldflags.slsa3.yml
+  THIS_FILE: e2e.go.tag.main.config-ldflags-assets.slsa3.yml
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-ldflags.yml
 
@@ -29,7 +31,7 @@ jobs:
       - run: |
           set -euo pipefail
 
-          ./.github/workflows/scripts/e2e-push.sh
+          ./.github/workflows/scripts/e2e-create-release.sh
     
   args:
     if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
