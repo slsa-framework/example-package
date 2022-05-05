@@ -26,3 +26,4 @@ EOF
 
 gh release create "$NEW_SEMVER" --notes-file ./DATA --target "$BRANCH"
 
+echo "::set-output name=branch::$BRANCH"

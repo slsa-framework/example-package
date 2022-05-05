@@ -30,7 +30,7 @@ fi
 # Correct branch
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 slsa-verifier --branch "$BRANCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-e2e_assert_eq "$?" "0" "should be $BRANCH branch"
+e2e_assert_eq "$?" "0" "should be branch $BRANCH"
 
 # Wrong branch
 slsa-verifier --branch "not-$GITHUB_REF_NAME" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
