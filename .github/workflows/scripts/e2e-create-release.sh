@@ -15,6 +15,7 @@ MAJOR_MINOR=$(echo "$SEMVER" | cut -d '.' -f1,2)
 NEW_SEMVER="$MAJOR_MINOR.$NEW_PATCH"
 
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+ECOSYSTEM=$(echo "$THIS_FILE" | cut -d '.' -f2)
 
 cat << EOF > DATA
 e2e release creation. 
@@ -25,4 +26,6 @@ Caller file: $THIS_FILE
 Caller name: $GITHUB_WORKFLOW
 EOF
 
-gh release create "$NEW_SEMVER" --notes-file ./DATA --target "$BRANCH"
+# Note: we use semver's metadata to avoid release collision between tests.
+# The semver verification of slsa-verifier for the versioned-tag ignores the metadata.
+gh release create "$NEW_SEMVER-$ECOSYSTEM-$BRANCH" --notes-file ./DATA --target "$BRANCH"
