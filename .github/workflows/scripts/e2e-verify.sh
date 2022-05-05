@@ -8,6 +8,7 @@
 # export GITHUB_REF=refs/heads/branch-name or refs/tags/tag-name
 # export GITHUB_REF_TYPE=branch or tag
 # export GITHUB_REPOSITORY=slsa-framework/example-package
+# export GITHUB_REF_NAME=v1.2.3
 # export GITHUB_WORKFLOW=go schedule main SLSA3 config-noldflags
 # export THIS_FILE=e2e.go.workflow_dispatch.main.config-noldflags.slsa3.yml
 # export BINARY=binary-linux-amd64
@@ -47,6 +48,7 @@ ATTESTATION=$(cat ""$PROVENANCE"" | jq -r '.payload' | base64 -d)
 TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
 #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
+ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 
 e2e_verify_predicate_subject_name "$ATTESTATION" "binary-linux-amd64"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@refs/heads/main"
@@ -71,6 +73,15 @@ e2e_verify_predicate_buildConfig_env "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=am
 e2e_verify_predicate_metadata "$ATTESTATION" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
 e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://"github.com/$GITHUB_REPOSITORY"@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
 
-
+# TODO: if tag, check assets
+if [[ "$TRIGGER" == "tag" ]]; then
+    A=$(gh release view --json assets "$GITHUB_REF_NAME" | jq '.assets')
+    if [[ -z "$ASSETS" ]]; then
+        e2e_assert_eq "$A" "[]" "there should be no assets"
+    else
+        #TODO: list the actual binari and provenance
+        e2e_assert_not_eq "$A" "[]" "there should be no assets"
+    fi
+fi
 #TODO: read out the provenance information once we print it
 #TODO: previous releases, curl the "$BINARY" directly. We should list the releases and run all commands automatically
