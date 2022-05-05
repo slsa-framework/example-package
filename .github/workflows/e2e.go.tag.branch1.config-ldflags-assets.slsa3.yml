@@ -51,7 +51,7 @@ jobs:
         run: |
           echo "::set-output name=version::-X main.gitVersion=v1.2.3"
           echo "::set-output name=commit::-X main.gitCommit=abcdef"
-          echo ${{ needs.release.outputs.branch }}
+          echo "the branch is ${{ needs.release.outputs.branch }}"
 
   build:
     needs: [release,args]
