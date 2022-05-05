@@ -19,7 +19,7 @@ env:
   CONFIG_FILE: .github/configs-go/config-ldflags.yml
 
 jobs:
-  push:
+  release:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     permissions:
