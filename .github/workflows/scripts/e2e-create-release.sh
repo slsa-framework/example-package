@@ -14,5 +14,7 @@ NEW_PATCH=$((PATCH + 1))
 MAJOR_MINOR=$(echo "$SEMVER" | cut -d '.' -f1,2)
 NEW_SEMVER="$MAJOR_MINOR.$NEW_PATCH"
 
-gh release create "$NEW_SEMVER" --notes "e2e release creation: $NEW_SEMVER"
+BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+
+gh release create "$NEW_SEMVER" --notes "e2e release creation: $NEW_SEMVER" --target "$BRANCH"
 
