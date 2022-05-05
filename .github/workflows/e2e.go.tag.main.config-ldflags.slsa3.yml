@@ -31,6 +31,7 @@ jobs:
       - run: |
           set -euo pipefail
 
+          ls -l ./.github/workflows/scripts/
           ./.github/workflows/scripts/e2e-create-release.sh
     
   args:
