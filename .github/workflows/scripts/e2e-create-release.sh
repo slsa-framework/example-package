@@ -20,6 +20,7 @@ cat << EOF > DATA
 e2e release creation. 
 Tag: $NEW_SEMVER
 Branch: $BRANCH
+Commit: $GITHUB_SHA
 Caller file: $THIS_FILE
 Caller name: $GITHUB_WORKFLOW
 EOF

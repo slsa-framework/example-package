@@ -32,7 +32,7 @@ jobs:
           ./.github/workflows/scripts/e2e-create-release.sh
     
   args:
-    if: github.event.base_ref == 'refs/heads/branch1' && github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.ldflags.outputs.version }}
@@ -46,6 +46,8 @@ jobs:
         run: |
           echo "::set-output name=version::-X main.gitVersion=v1.2.3"
           echo "::set-output name=commit::-X main.gitCommit=abcdef"
+
+          echo ${{ github.event.base_ref }}
 
   build:
     needs: [args]
