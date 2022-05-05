@@ -59,15 +59,15 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
 
     # Correct vM.N.P
     slsa-verifier --versioned-tag "$MAJOR.$MINOR.$PATCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_eq "$?" "0" "$MAJOR.$MINOR.$PATCH versioned-tag should be correct"
+    e2e_assert_eq "$?" "0" "$MAJOR.$MINOR.$PATCH versioned-tag vM.N.P ($MAJOR.$MINOR.$PATCH) should be correct"
 
     # Correct vM.N
     slsa-verifier --versioned-tag "$MAJOR.$MINOR" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_eq "$?" "0" "$MAJOR.$MINOR versioned-tag should be correct"
+    e2e_assert_eq "$?" "0" "$MAJOR.$MINOR versioned-tag vM.N ($MAJOR.$MINOR) should be correct"
 
     # Correct vM
     slsa-verifier --versioned-tag "$MAJOR" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_eq "$?" "0" "$MAJOR versioned-tag should be correct"
+    e2e_assert_eq "$?" "0" "$MAJOR versioned-tag vm ($MAJOR) should be correct"
 
     # Incorrect v(M-1)
     slsa-verifier --versioned-tag "$MAJOR_LESS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
