@@ -22,14 +22,15 @@ go env -w GOFLAGS=-mod=mod
 go install github.com/slsa-framework/slsa-verifier@latest
     
 # Default parameters.
-if [[ "$GITHUB_REF_NAME" == "main" ]] && [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+if [[ "$GITHUB_REF_NAME" == "main" ]] && [[ "$GITHUB_REF_TYPE" == "branch" ]]; then
     slsa-verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "default parameters"
 fi 
 
 # Correct branch
-slsa-verifier --branch "$GITHUB_REF_NAME" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-e2e_assert_eq "$?" "0" "should be $GITHUB_REF_NAME branch"
+BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+slsa-verifier --branch "$BRANCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+e2e_assert_eq "$?" "0" "should be $BRANCH branch"
 
 # Wrong branch
 slsa-verifier --branch "not-$GITHUB_REF_NAME" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
@@ -47,10 +48,10 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     MAJOR=$(echo "$SEMVER" | cut -d '.' -f1)
 
     M="${MAJOR:1}"
-    MAJOR_LESS_ONE=$((M - 1))
+    MAJOR_LESS_ONE="v$((M - 1))"
     MINOR_LESS_ONE=$((MINOR - 1))
     PATCH_LESS_ONE=$((PATCH - 1))
-    MAJOR_PLUS_ONE=$((M + 1))
+    MAJOR_PLUS_ONE="v$((M + 1))"
     MINOR_PLUS_ONE=$((MINOR + 1))
     PATCH_PLUS_ONE=$((PATCH + 1))
 
@@ -75,8 +76,8 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE.$MINOR versioned-tag should be incorrect"
 
     # Incorrect v(M-1).N.P
-    slsa-verifier --versioned-tag "$MAJOR_LESS_ONE.$MINOR.$PATH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE.$MINOR.$PATH versioned-tag should be incorrect"
+    slsa-verifier --versioned-tag "$MAJOR_LESS_ONE.$MINOR.$PATCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+    e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE.$MINOR.$PATCH versioned-tag should be incorrect"
 
     # Incorrect vM.(N-1)
     slsa-verifier --versioned-tag "$MAJOR.$MINOR_LESS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
@@ -87,8 +88,8 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_LESS_ONE.$PATCH versioned-tag should be incorrect"
 
     # Incorrect vM.N.(P-1)
-    slsa-verifier --versioned-tag "$MAJOR.$MINOR.$PATH_LESS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR.$PATH_LESS_ONE versioned-tag should be incorrect"
+    slsa-verifier --versioned-tag "$MAJOR.$MINOR.$PATCH_LESS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+    e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR.$PATCH_LESS_ONE versioned-tag should be incorrect"
 
     # Incorrect v(M+1)
     slsa-verifier --versioned-tag "$MAJOR_PLUS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
@@ -111,8 +112,8 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_PLUS_ONE.$PATCH versioned-tag should be incorrect"
 
     # Incorrect vM.N.(P+1)
-    slsa-verifier --versioned-tag "$MAJOR.$MINOR.$PATH_PLUS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR.$PATH_PLUS_ONE versioned-tag should be incorrect"
+    slsa-verifier --versioned-tag "$MAJOR.$MINOR.$PATCH_PLUS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+    e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR.$PATCH_PLUS_ONE versioned-tag should be incorrect"
 else
     # Wrong versioned-tag
     slsa-verifier --versioned-tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
