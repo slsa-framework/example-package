@@ -1,0 +1,20 @@
+name: goreleaser
+
+on:
+  push:
+    tags:
+      - "*" # triggers only if push new tag version, like `0.8.4` or else
+
+permissions:
+  contents: read
+
+jobs:
+  goreleaser:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: run
+        run: |
+
+          echo it's working $GITHUB_REF_NAME
