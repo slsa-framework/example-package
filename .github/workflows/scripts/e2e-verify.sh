@@ -150,14 +150,12 @@ e2e_verify_predicate_buildConfig_env "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=am
 e2e_verify_predicate_metadata "$ATTESTATION" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
 e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://"github.com/$GITHUB_REPOSITORY"@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
 
-# TODO: if tag, check assets
 if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-    A=$(gh release view --json assets "$GITHUB_REF_NAME" | jq '.assets')
+    A=$(gh release view --json assets "$GITHUB_REF_NAME" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
     if [[ -z "$ASSETS" ]]; then
         e2e_assert_eq "$A" "[]" "there should be no assets"
     else
-        #TODO: list the actual binary and provenance
-        e2e_assert_not_eq "$A" "[]" "there should be assets"
+        e2e_assert_not_eq "$A" "[\"binary-linux-amd64\",\"binary-linux-amd64.intoto.jsonl\"]" "there should be assets"
     fi
 fi
 
