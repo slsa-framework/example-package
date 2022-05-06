@@ -44,8 +44,6 @@ jobs:
           set -euo pipefail
 
           ./.github/workflows/scripts/e2e-verify-release.sh
-          
-          echo "::set-output name=continue::yes"
 
   args:
     needs: [shim]
@@ -63,7 +61,7 @@ jobs:
       - id: ldflags
         run: |
           set -euo pipefail
-          
+
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
           echo "::set-output name=version::-X main.gitVersion=v1.2.3"
           echo "::set-output name=commit::-X main.gitCommit=abcdef"
