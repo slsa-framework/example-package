@@ -7,13 +7,15 @@ if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
     exit 4
 fi
 
+# WARNING: GITHUB_BASE_REF is empty on tag releases.
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+ENV_BRANCH=(cat "$GITHUB_EVENT_PATH" | jq -r '.base_ref')
 
-echo "env:"
+echo "id: $GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 cat "$GITHUB_EVENT_PATH"
 
-if [[ "$GITHUB_BASE_REF" != "refs/heads/$BRANCH" ]]; then
-    echo "mismatch branch: file contains refs/heads/$BRANCH; GitHub env contains $GITHUB_BASE_REF"
+if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]]; then
+    echo "mismatch branch: file contains refs/heads/$BRANCH; GitHub env contains $ENV_BRANCH"
     exit 0
 fi
 
