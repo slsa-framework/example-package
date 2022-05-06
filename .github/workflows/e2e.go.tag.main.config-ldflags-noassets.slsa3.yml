@@ -48,7 +48,7 @@ jobs:
 
   args:
     needs: [shim]
-    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.ldflags.outputs.version }}
@@ -61,6 +61,7 @@ jobs:
           fetch-depth: 0
       - id: ldflags
         run: |
+          echo "continue: ${{ needs.shim.outputs.continue }}"
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
           echo "::set-output name=version::-X main.gitVersion=v1.2.3"
           echo "::set-output name=commit::-X main.gitCommit=abcdef"
