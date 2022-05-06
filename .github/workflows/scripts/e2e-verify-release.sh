@@ -7,6 +7,13 @@ if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
     exit 4
 fi
 
+BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+
+if [[ "$GITHUB_BASE_REF" != "refs/heads/$BRANCH" ]]; then
+    echo "mismatch branch: file contains $BRANCH; GitHub env contains $GITHUB_REF_TYPE"
+    exit 0
+fi
+
 # Verify that the release is intended for this e2e workflow
 #, ie that the notes contains the string $THIS_FILE
 TAG="$GITHUB_REF_NAME"
