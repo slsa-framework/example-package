@@ -60,8 +60,10 @@ jobs:
         with:
           fetch-depth: 0
       - id: ldflags
+        env:
+          CONTINUE: ${{ needs.shim.outputs.continue }}
         run: |
-          echo "continue: ${{ needs.shim.outputs.continue }}"
+          echo "continue: $CONTINUE"
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
           echo "::set-output name=version::-X main.gitVersion=v1.2.3"
           echo "::set-output name=commit::-X main.gitCommit=abcdef"
