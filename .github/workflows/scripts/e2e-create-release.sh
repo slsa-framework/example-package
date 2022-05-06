@@ -4,7 +4,8 @@
 source "./.github/workflows/scripts/e2e-utils.sh"
 
 SEMVER=$(gh release list -L 1 | cut -f1)
-PATCH=$(echo "$SEMVER" | cut -d '.' -f3)
+PATCH_METADATA=$(echo "$SEMVER" | cut -d '.' -f3)
+PATCH=$(echo "$PATCH_METADATA" | cut -d '-' -f1)
 if ! [[ "$PATCH" =~ ^[0-9]+$ ]]; then
     echo "patch ($PATCH) is not a number"
     exit 1
@@ -18,7 +19,8 @@ BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 ECOSYSTEM=$(echo "$THIS_FILE" | cut -d '.' -f2)
 
 cat << EOF > DATA
-e2e release creation. 
+**E2e release creation**:
+Ecosystem: $ECOSYSTEM
 Tag: $NEW_SEMVER
 Branch: $BRANCH
 Commit: $GITHUB_SHA
