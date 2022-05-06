@@ -17,6 +17,7 @@ NEW_SEMVER="$MAJOR_MINOR.$NEW_PATCH"
 
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 ECOSYSTEM=$(echo "$THIS_FILE" | cut -d '.' -f2)
+CONFIG=$(echo "$THIS_FILE" | cut -d '.' -f5)
 
 cat << EOF > DATA
 **E2e release creation**:
@@ -30,4 +31,4 @@ EOF
 
 # Note: we use semver's metadata to avoid release collision between tests.
 # The semver verification of slsa-verifier for the versioned-tag ignores the metadata.
-gh release create "$NEW_SEMVER-$ECOSYSTEM-$BRANCH" --notes-file ./DATA --target "$BRANCH"
+gh release create "$NEW_SEMVER-$ECOSYSTEM-$BRANCH-$CONFIG" --notes-file ./DATA --target "$BRANCH"
