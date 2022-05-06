@@ -48,6 +48,7 @@ jobs:
           echo "::set-output name=branch::-X main.gitBranch=$BRANCH"
 
   build:
+    needs: [args]
     if: github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write # For signing.
