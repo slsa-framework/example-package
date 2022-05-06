@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 
 # We push to main a file e2e/wokflow-name.txt
-# with the date inside.
+# with the date inside, to be sure the file is different.
 
 DATE=$(date --utc)
 FILE=e2e/$THIS_FILE.txt
 COMMIT_MESSAGE="$GITHUB_WORKFLOW"
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
-# Ccheck presence of file in the correct branch.
-REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
-git clone git@github.com:"$GITHUB_REPOSITORY".git
-cd "$REPOSITORY_NAME"
+# Check presence of file in the correct branch.
+URL="https://github.com/$GITHUB_REPOSITORY/blob/$BRANCH/.github/workflows/$FILE"
+curl -sf "$URL" 1>/dev/null
+if [ "$?" != "0" ]; then
 
-# this workflow is called on main branch and must create a file in the targeted branch.
-if [[ -f "$FILE" ]]; then
   SHA=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE | jq -r '.sha')
 
   echo -n $DATE > $FILE
