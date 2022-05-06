@@ -48,8 +48,7 @@ e2e_assert_not_eq "$?" "0" "wrong tag"
 if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     #TODO: try several versioned-tags and tags.
     SEMVER="$GITHUB_REF_NAME"
-    PATCH_METADATA=$(echo "$SEMVER" | cut -d '.' -f3)
-    PATCH=$(echo "$PATCH_METADATA" | cut -d '-' -f1)
+    PATCH=$(echo "$SEMVER" | cut -d '.' -f3)
     MINOR=$(echo "$SEMVER" | cut -d '.' -f2)
     MAJOR=$(echo "$SEMVER" | cut -d '.' -f1)
 

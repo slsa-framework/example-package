@@ -3,27 +3,36 @@
 
 source "./.github/workflows/scripts/e2e-utils.sh"
 
-SEMVER=$(gh release list -L 1 | cut -f1)
-PATCH_METADATA=$(echo "$SEMVER" | cut -d '.' -f3)
-PATCH=$(echo "$PATCH_METADATA" | cut -d '-' -f1)
-if ! [[ "$PATCH" =~ ^[0-9]+$ ]]; then
-    echo "patch ($PATCH) is not a number"
-    exit 1
+RELEASE_TAG=""
+
+# List the releases and find the latest for THIS_FILE.
+RELEASE_LIST=$(gh release list)
+while read line; do
+    TAG=$(echo "$line" | cut -f1)
+    BODY=$(gh release view "$TAG" --json body | jq -r '.body')
+    if [[ "$BODY" == *"$THIS_FILE"* ]]; then
+        RELEASE_TAG="$TAG"
+        break
+    fi
+done <<< "$RELEASE_LIST"
+
+if [[ -z "$RELEASE_TAG" ]]; then 
+    echo "Tag not found for $THIS_FILE"
+    exit 3
 fi
 
+PATCH=$(echo "$RELEASE_TAG" | cut -d '.' -f3)
+
 NEW_PATCH=$((PATCH + 1))
-MAJOR_MINOR=$(echo "$SEMVER" | cut -d '.' -f1,2)
-NEW_SEMVER="$MAJOR_MINOR.$NEW_PATCH"
+MAJOR_MINOR=$(echo "$RELEASE_TAG" | cut -d '.' -f1,2)
+NEW_RELEASE_TAG="$MAJOR_MINOR.$NEW_PATCH"
 
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-ECOSYSTEM=$(echo "$THIS_FILE" | cut -d '.' -f2)
-CONFIG=$(echo "$THIS_FILE" | cut -d '.' -f5)
 
-TAG="$NEW_SEMVER-$ECOSYSTEM-$BRANCH-$CONFIG"
+TAG="$NEW_RELEASE_TAG"
 
 cat << EOF > DATA
 **E2e release creation**:
-Ecosystem: $ECOSYSTEM
 Tag: $TAG
 Branch: $BRANCH
 Commit: $GITHUB_SHA
@@ -31,6 +40,4 @@ Caller file: $THIS_FILE
 Caller name: $GITHUB_WORKFLOW
 EOF
 
-# Note: we use semver's metadata to avoid release collision between tests.
-# The semver verification of slsa-verifier for the versioned-tag ignores the metadata.
 gh release create "$TAG" --notes-file ./DATA --target "$BRANCH"
