@@ -23,6 +23,11 @@ go install github.com/slsa-framework/slsa-verifier@latest
 
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
+echo "branch is $BRANCH"
+echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
+echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
+echo "GITHUB_REF: $GITHUB_REF"
+
 # Default parameters.
 if [[ "$BRANCH" == "main" ]]; then
     slsa-verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
