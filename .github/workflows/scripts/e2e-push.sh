@@ -8,6 +8,8 @@ FILE=e2e/$THIS_FILE.txt
 COMMIT_MESSAGE="$GITHUB_WORKFLOW"
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
+#TODO: need to check presence if file in the correct branch.
+# this workflow is called on main branch and must create a file in the targeted branch.
 if [[ -f "$FILE" ]]; then
   SHA=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE | jq -r '.sha')
 
