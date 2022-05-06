@@ -25,8 +25,5 @@ TAG="$GITHUB_REF_NAME"
 BODY=$(gh release view "$TAG" --json body | jq -r '.body')
 if [[ "$BODY" == *"$THIS_FILE"* ]]; then
     RELEASE_TAG="$TAG"
-    echo "::set-output name=continue::yes"
     exit 0
 fi
-
-echo "::set-output name=continue::no"
