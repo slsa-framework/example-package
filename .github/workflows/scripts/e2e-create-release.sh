@@ -19,10 +19,12 @@ BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 ECOSYSTEM=$(echo "$THIS_FILE" | cut -d '.' -f2)
 CONFIG=$(echo "$THIS_FILE" | cut -d '.' -f5)
 
+TAG="$NEW_SEMVER-$ECOSYSTEM-$BRANCH-$CONFIG"
+
 cat << EOF > DATA
 **E2e release creation**:
 Ecosystem: $ECOSYSTEM
-Tag: $NEW_SEMVER
+Tag: $TAG
 Branch: $BRANCH
 Commit: $GITHUB_SHA
 Caller file: $THIS_FILE
@@ -31,4 +33,4 @@ EOF
 
 # Note: we use semver's metadata to avoid release collision between tests.
 # The semver verification of slsa-verifier for the versioned-tag ignores the metadata.
-gh release create "$NEW_SEMVER-$ECOSYSTEM-$BRANCH-$CONFIG" --notes-file ./DATA --target "$BRANCH"
+gh release create "$TAG" --notes-file ./DATA --target "$BRANCH"
