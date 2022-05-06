@@ -44,8 +44,6 @@ jobs:
           set -euo pipefail
 
           ./.github/workflows/scripts/e2e-verify-release.sh
-          
-          echo "::set-output name=continue::yes"
 
   args:
     needs: [shim]

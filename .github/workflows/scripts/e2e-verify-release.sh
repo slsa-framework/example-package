@@ -7,6 +7,7 @@ if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
     exit 4
 fi
 
+# 1- Verify the branch
 # WARNING: GITHUB_BASE_REF is empty on tag releases.
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 ENV_BRANCH=$(cat "$GITHUB_EVENT_PATH" | jq -r '.base_ref')
@@ -16,7 +17,7 @@ if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]]; then
     exit 0
 fi
 
-# Verify that the release is intended for this e2e workflow
+# 2-Verify that the release is intended for this e2e workflow
 #, ie that the notes contains the string $THIS_FILE
 TAG="$GITHUB_REF_NAME"
 BODY=$(gh release view "$TAG" --json body | jq -r '.body')
