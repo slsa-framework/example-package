@@ -22,8 +22,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    outputs:
-      branch: ${{ steps.create.outputs.branch }}
     permissions:
       contents: write
     steps:
