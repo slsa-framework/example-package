@@ -21,9 +21,10 @@ go env -w GOFLAGS=-mod=mod
 # Install from HEAD
 go install github.com/slsa-framework/slsa-verifier@latest
 
-echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
+BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+
 # Default parameters.
-if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+if [[ "$BRANCH" == "main" ]]; then
     slsa-verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "main default parameters"
 else
@@ -34,7 +35,6 @@ fi
 echo "DEBUG: file is $THIS_FILE"
 
 # Correct branch
-BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 slsa-verifier --branch "$BRANCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
 e2e_assert_eq "$?" "0" "should be branch $BRANCH"
 
