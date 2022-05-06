@@ -9,7 +9,7 @@ fi
 
 # WARNING: GITHUB_BASE_REF is empty on tag releases.
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-ENV_BRANCH=(cat "$GITHUB_EVENT_PATH" | jq -r '.base_ref')
+ENV_BRANCH=$(cat "$GITHUB_EVENT_PATH" | jq -r '.base_ref')
 
 echo "id: $GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 cat "$GITHUB_EVENT_PATH"
