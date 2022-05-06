@@ -9,9 +9,12 @@ COMMIT_MESSAGE="$GITHUB_WORKFLOW"
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
 # Check presence of file in the correct branch.
-URL="https://github.com/$GITHUB_REPOSITORY/blob/$BRANCH/.github/workflows/$FILE"
-curl -sf "$URL" 1>/dev/null
-if [ "$?" != "0" ]; then
+gh repo clone "$GITHUB_REPOSITORY"
+REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
+cd ./"$REPOSITORY_NAME"
+
+if [ -f "$FILE" ]; then
+  echo "DEBUG: file $FILE exists on branch $BRANCH"
 
   SHA=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE | jq -r '.sha')
 
@@ -32,13 +35,15 @@ EOF
 else
   echo $DATE > $FILE
   
+  echo "DEBUG: file $FILE exists on branch $BRANCH"
+
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
   curl -s \
     -X PUT \
     -H "Accept: application/vnd.github.v3+json" \
     -H "Authorization: token $GH_TOKEN" \
     https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE \
-    -d "{\"message\":\"$COMMIT_MESSAGE\",\"committer\":{\"name\":\"github-actions\",\"email\":\"github-actions@github.com\"},\"content\":\"$(echo -n $DATE | base64 --wrap=0)\"}"
+    -d "{\"branch\":\"$BRANCH\",\"message\":\"$COMMIT_MESSAGE\",\"committer\":{\"name\":\"github-actions\",\"email\":\"github-actions@github.com\"},\"content\":\"$(echo -n $DATE | base64 --wrap=0)\"}"
 fi
 
 
