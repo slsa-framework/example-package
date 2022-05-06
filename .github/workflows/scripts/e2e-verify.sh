@@ -166,7 +166,7 @@ e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://"github.co
 if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     A=$(gh release view --json assets "$GITHUB_REF_NAME" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
     if [[ -z "$ASSETS" ]]; then
-        e2e_assert_eq "$A" "[]" "there should be no assets"
+        e2e_assert_eq "$A" "[\"null\",\"null\"]" "there should be no assets"
     else
         e2e_assert_eq "$A" "[\"binary-linux-amd64\",\"binary-linux-amd64.intoto.jsonl\"]" "there should be assets"
     fi
