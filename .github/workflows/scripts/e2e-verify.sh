@@ -143,12 +143,14 @@ e2e_verify_predicate_invocation_environment "$ATTESTATION" "[\"$GITHUB_ACTOR\",\
 if [[ -z "$LDFLAGS" ]]; then
     e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
 else
-    e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef\",\"-o\",\"binary-linux-amd64\"]"
+    e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"binary-linux-amd64\"]"
     chmod a+x ./"$BINARY"
     V=$(./"$BINARY" | grep 'GitVersion: v1.2.3')
     C=$(./"$BINARY" | grep 'GitCommit: abcdef')
+    B=$(./"$BINARY" | grep "GitBranch: $BRANCH")
     e2e_assert_not_eq "$V" "" "GitVersion should not be empty"
     e2e_assert_not_eq "$C" "" "GitCommit should not be empty"
+    e2e_assert_not_eq "$B" "" "GitBranch should not be empty"
 fi
 
 e2e_verify_predicate_buildConfig_env "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
@@ -165,5 +167,6 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     fi
 fi
 
+#TODO: for different branches, run the program and verify it outputs its branch
 #TODO: read out the provenance information once we print it
 #TODO: previous releases, curl the "$BINARY" directly. We should list the releases and run all commands automatically
