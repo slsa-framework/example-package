@@ -10,7 +10,7 @@ fi
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
 echo "env:"
-cat "$GITHUB_ACTION_PATH"
+cat "$GITHUB_EVENT_PATH"
 
 if [[ "$GITHUB_BASE_REF" != "refs/heads/$BRANCH" ]]; then
     echo "mismatch branch: file contains refs/heads/$BRANCH; GitHub env contains $GITHUB_BASE_REF"
