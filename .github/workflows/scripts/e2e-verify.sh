@@ -20,7 +20,8 @@ go env -w GOFLAGS=-mod=mod
 
 # Install from HEAD
 go install github.com/slsa-framework/slsa-verifier@latest
-    
+
+echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 # Default parameters.
 if [[ "$GITHUB_REF_NAME" == "main" ]]; then
     slsa-verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
