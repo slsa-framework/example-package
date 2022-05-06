@@ -94,7 +94,7 @@ jobs:
     needs: [shim]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
-      # - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       # - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
       #   with:
       #     name: ${{ needs.build.outputs.go-binary-name }}
