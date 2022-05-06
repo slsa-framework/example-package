@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git checkout branch1
-git pull origin main
-git push
+git branch -D branch1
+git checkout -b branch1
+git push --set-upstream origin branch1 -f
 git checkout main

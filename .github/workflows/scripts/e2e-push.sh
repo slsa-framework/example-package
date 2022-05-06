@@ -9,7 +9,7 @@ COMMIT_MESSAGE="$GITHUB_WORKFLOW"
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
 # Check presence of file in the correct branch.
-gh repo clone "$GITHUB_REPOSITORY"
+gh repo clone "$GITHUB_REPOSITORY" -- -b "$BRANCH"
 REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
 cd ./"$REPOSITORY_NAME"
 
