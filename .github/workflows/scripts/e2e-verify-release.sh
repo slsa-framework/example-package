@@ -17,7 +17,7 @@ if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]]; then
     exit 0
 fi
 
-# 2-Verify that the release is intended for this e2e workflow
+# 2- Verify that the release is intended for this e2e workflow
 #, ie that the notes contains the string $THIS_FILE
 TAG="$GITHUB_REF_NAME"
 BODY=$(gh release view "$TAG" --json body | jq -r '.body')
