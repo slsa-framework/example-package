@@ -45,7 +45,7 @@ jobs:
   
   if-succeeded:
     runs-on: ubuntu-latest
-    needs: [build,verify]
+    needs: [build]
     if: needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
@@ -57,7 +57,7 @@ jobs:
 
   if-failed:
     runs-on: ubuntu-latest
-    needs: [build,verify]
+    needs: [build]
     if: always() && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
