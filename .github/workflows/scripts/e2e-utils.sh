@@ -55,9 +55,9 @@ e2e_verify_predicate_invocation_configSource() {
     _e2e_verify_query "$1" "$2" '.predicate.invocation.configSource'
 }
 
-# e2e_verify_predicate_invocation_environment(attestation, expected, env_key)
+# e2e_verify_predicate_invocation_environment(attestation, env_key, expected)
 e2e_verify_predicate_invocation_environment() {
-    _e2e_verify_query "$1" "$2" '.predicate.invocation.environment.'"$3"
+    _e2e_verify_query "$1" "$3" '.predicate.invocation.environment.'"$2"
 }
 
 e2e_verify_predicate_buildConfig_command() {

@@ -144,13 +144,13 @@ e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framewo
 
 e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\"$GITHUB_WORKFLOW\"}"
 
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_ACTOR" "github_actor"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_SHA" "github_sha1"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "ubuntu20" "os"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "X64" "arch"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_EVENT_NAME" "github_event_name"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_REF" "github_ref"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_REF_TYPE" "github_ref_type"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_actor" "$GITHUB_ACTOR"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_sha1" "$GITHUB_SHA"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "os" "ubuntu20"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "arch" "X64"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_event_name" "$GITHUB_EVENT_NAME"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref" "$GITHUB_REF"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$GITHUB_REF_TYPE"
 
 if [[ -z "$LDFLAGS" ]]; then
     e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
