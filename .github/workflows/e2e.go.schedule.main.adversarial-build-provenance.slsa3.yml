@@ -1,0 +1,70 @@
+name: go schedule main SLSA3 adversarial build provenance
+
+on: 
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions: read-all
+
+env:
+  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  #ISSUE_REPOSITORY: slsa-framework/slsa-github-generator-go
+  ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
+  THIS_FILE: e2e.go.schedule.main.adversarial-build-provenance.slsa3.yml
+  # WARNING: update build job if CONFIG_FILE changes.
+  CONFIG_FILE: .github/configs-go/config-noldflags.yml
+
+jobs:            
+  build-dry-tamper:
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACT: builder
+      AFTER: 135
+      FOR: 30
+      EVERY: 2
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      # Note: build-dry and build shoudl fail. It's hard to tell which failed, 
+      # but they both should. It's good enough to verify that the re-usable workflow always fails.
+      - uses: ./.github/actions/tamper-artifact
+
+  build:
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+    uses: slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@main
+    with:
+      go-version: 1.18
+      # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
+      config-file: .github/configs-go/config-noldflags.yml
+  
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - run: |
+#           exit 1
+  
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: |
+          set -euo pipefail
+
+          # The builder should fail if the builder is tampered with.
+          ./.github/workflows/scripts/e2e-report-failure.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: always() && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: |
+          set -euo pipefail
+
+          # The builder should fail if the builder is tampered with.
+          ./.github/workflows/scripts/e2e-report-success.sh
