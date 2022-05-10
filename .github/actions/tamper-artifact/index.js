@@ -1,25 +1,24 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const artifact = require('@actions/artifact');
+const fs = require('fs');
 const varToString = varObj => Object.keys(varObj)[0]
 
 // https://github.com/actions/toolkit
+// https://docs.github.com/en/actions/creating-actions/creating-a-javascript-action
 async function main() {
   try {
-    // `who-to-greet` input defined in action metadata file
-    const nameToGreet = core.getInput('who-to-greet');
-    console.log(`Hello ${nameToGreet}!`);
-    const time = (new Date()).toTimeString();
-    core.setOutput("time", time);
-    // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(github.context.payload, undefined, 2)
-    console.log(`The event payload: ${payload}`);
-
-    artifactName = get_variable(process.env.ARTIFACT, "ARTIFACT")
-    after = get_variable(process.env.AFTER, "AFTER")
-    duration = get_variable(process.env.FOR, "FOR")
-    every = get_variable(process.env.EVERY, "EVERY")
-
+    const artifactName = get_variable(process.env.ARTIFACT, "ARTIFACT")
+    const after = get_variable(process.env.AFTER, "AFTER")
+    const duration = get_variable(process.env.FOR, "FOR")
+    const every = get_variable(process.env.EVERY, "EVERY")
+    const now = new Date().toUTCString()
+    
+    // Create file.
+    fs.writeFile(artifactName, `some content with date ${now}`, function (err) {
+      if (err) throw err;
+      console.log('File is created successfully.');
+    });
 
     // Wait for after seconds.
     await sleep(after);
@@ -28,6 +27,7 @@ async function main() {
     var startTime = Date.now();
     while ((Date.now() - startTime) < (duration*1000)) {
       console.log(`${Date.now()}`)
+      //uploadArtifact()
       await sleep(every);
     }
 
@@ -58,7 +58,7 @@ function get_variable(variable, name) {
 
 // https://github.com/actions/toolkit/tree/main/packages/artifact
 // Note: we could also do it entirely in the workflows, as in https://github.com/actions/toolkit/blob/37f5a852195044ba36b22b05242b57bd41e84370/.github/workflows/artifact-tests.yml
-/*async function uploadArtifact(filename) {
+async function uploadArtifact(filename) {
   const artifactClient = artifact.create()
   const artifactName = filename;
   const files = [filename]
@@ -70,6 +70,6 @@ function get_variable(variable, name) {
 
   const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
   console.log(uploadResponse);
-}*/
+}
 
 main()
