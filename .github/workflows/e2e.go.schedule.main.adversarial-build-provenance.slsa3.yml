@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ARTIFACT: builder
-      AFTER: 135
+      AFTER: 155
       FOR: 30
       EVERY: 2
     steps:
