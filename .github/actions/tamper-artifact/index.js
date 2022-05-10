@@ -27,7 +27,7 @@ async function main() {
     var startTime = Date.now();
     while ((Date.now() - startTime) < (duration*1000)) {
       console.log(`${Date.now()}`)
-      //uploadArtifact()
+      await uploadArtifact(artifactName)
       await sleep(every);
     }
 
@@ -68,8 +68,7 @@ async function uploadArtifact(filename) {
     continueOnError: false
   }
 
-  const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
-  console.log(uploadResponse);
+  return artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
 }
 
 main()
