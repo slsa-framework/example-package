@@ -18,11 +18,11 @@ env:
 jobs:            
   build-dry-tamper:
     runs-on: ubuntu-latest
-    - env:
-        ARTIFACT: builder
-        AFTER: 120s
-        FOR: 60s
-        EVERY: 5s 
+    env:
+      ARTIFACT: builder
+      AFTER: 120
+      FOR: 60
+      EVERY: 5 
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - uses: ./.github/actions/tamper-artifact
