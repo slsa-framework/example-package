@@ -35,7 +35,7 @@ EOF
 else
   echo $DATE > $FILE
   
-  echo "DEBUG: file $FILE exists on branch $BRANCH"
+  echo "DEBUG: file $FILE does not exist on branch $BRANCH"
 
   # https://docs.github.com/en/rest/repos/contents#create-a-file.
   curl -s \

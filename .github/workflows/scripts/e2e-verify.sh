@@ -172,6 +172,5 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     fi
 fi
 
-#TODO: for different branches, run the program and verify it outputs its branch
 #TODO: read out the provenance information once we print it
 #TODO: previous releases, curl the "$BINARY" directly. We should list the releases and run all commands automatically
