@@ -35,7 +35,7 @@ if [[ "$BRANCH" == "main" ]]; then
 else
     slsa-verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "not main default parameters"
-fi 
+fi
 
 echo "DEBUG: file is $THIS_FILE"
 
@@ -143,7 +143,14 @@ e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framewor
 e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go@v1"
 
 e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+https://"github.com/$GITHUB_REPOSITORY"@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\"$GITHUB_WORKFLOW\"}"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "[\"$GITHUB_ACTOR\",\"$GITHUB_SHA\",\"ubuntu20\",\"X64\",\"$GITHUB_EVENT_NAME\",\"$GITHUB_REF\",\"$GITHUB_REF_TYPE\"]"
+
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_ACTOR" "github_actor"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_SHA" "github_sha1"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "ubuntu20" "os"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "X64" "arch"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_EVENT_NAME" "github_event_name"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_REF" "github_ref"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "$GITHUB_REF_TYPE" "github_ref_type"
 
 if [[ -z "$LDFLAGS" ]]; then
     e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
