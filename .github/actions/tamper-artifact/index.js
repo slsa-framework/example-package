@@ -6,6 +6,7 @@ const varToString = varObj => Object.keys(varObj)[0]
 
 // https://github.com/actions/toolkit
 // https://docs.github.com/en/actions/creating-actions/creating-a-javascript-action
+// Use ncc https://docs.github.com/en/actions/creating-actions/creating-a-javascript-action#commit-tag-and-push-your-action-to-github
 async function main() {
   try {
     const artifactName = get_variable(process.env.ARTIFACT, "ARTIFACT")
