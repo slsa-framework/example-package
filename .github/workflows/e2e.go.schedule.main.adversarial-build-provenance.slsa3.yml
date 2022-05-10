@@ -16,17 +16,17 @@ env:
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
 jobs:            
-  build-dry-tamper:
+  provenance-builder:
     runs-on: ubuntu-latest
     env:
       ARTIFACT: builder
+      # Note: pretty hard to time correctly in practice. Often times the build part will fail instead.
+      # It worked well in https://github.com/slsa-framework/example-package/runs/6379434930?check_suite_focus=true.
       AFTER: 155
       FOR: 30
       EVERY: 2
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      # Note: build-dry and build shoudl fail. It's hard to tell which failed, 
-      # but they both should. It's good enough to verify that the re-usable workflow always fails.
       - uses: ./.github/actions/tamper-artifact
 
   build:

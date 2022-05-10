@@ -16,17 +16,15 @@ env:
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
 jobs:            
-  build-dry-tamper:
+  binary-upload:
     runs-on: ubuntu-latest
     env:
       ARTIFACT: compiled-binary
-      AFTER: 120
+      AFTER: 135
       FOR: 45
       EVERY: 5
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      # Note: build-dry and build shoudl fail. It's hard to tell which failed, 
-      # but they both should. It's good enough to verify that the re-usable workflow always fails.
       - uses: ./.github/actions/tamper-artifact
 
   build:
