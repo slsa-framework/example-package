@@ -1,4 +1,4 @@
-name: go schedule main SLSA3 adversarial binary-upload
+name: go schedule main SLSA3 adversarial build provenance
 
 on: 
   schedule:
@@ -11,7 +11,7 @@ env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   #ISSUE_REPOSITORY: slsa-framework/slsa-github-generator-go
   ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
-  THIS_FILE: e2e.go.schedule.main.adversarial-binary-upload.slsa3.yml
+  THIS_FILE: e2e.go.schedule.main.adversarial-build-provenance.slsa3.yml
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
@@ -19,10 +19,10 @@ jobs:
   build-dry-tamper:
     runs-on: ubuntu-latest
     env:
-      ARTIFACT: compiled-binary
-      AFTER: 120
-      FOR: 60
-      EVERY: 5
+      ARTIFACT: builder
+      AFTER: 135
+      FOR: 30
+      EVERY: 2
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       # Note: build-dry and build shoudl fail. It's hard to tell which failed, 
