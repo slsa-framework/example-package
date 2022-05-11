@@ -21,6 +21,8 @@ if [[ -z "$RELEASE_TAG" ]]; then
     exit 3
 fi
 
+echo "Latest tag found is $RELEASE_TAG"
+
 PATCH=$(echo "$RELEASE_TAG" | cut -d '.' -f3)
 
 NEW_PATCH=$((PATCH + 1))
@@ -30,6 +32,8 @@ NEW_RELEASE_TAG="$MAJOR_MINOR.$NEW_PATCH"
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
 TAG="$NEW_RELEASE_TAG"
+
+echo "New release tag used: $TAG"
 
 cat << EOF > DATA
 **E2e release creation**:
