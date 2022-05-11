@@ -51,9 +51,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ARTIFACT: binary-linux-amd64
-      AFTER: 145
-      FOR: 45
-      EVERY: 5
+      AFTER: 155
+      FOR: 30
+      EVERY: 2
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - uses: ./.github/actions/tamper-artifact
@@ -132,7 +132,7 @@ jobs:
       - run: |
           set -euo pipefail
 
-          ./.github/workflows/scripts/e2e-report-success.sh
+          ./.github/workflows/scripts/e2e-report-failure.sh
 
   if-failed:
     runs-on: ubuntu-latest
@@ -143,4 +143,4 @@ jobs:
       - run: |
           set -euo pipefail
 
-          ./.github/workflows/scripts/e2e-report-failure.sh
+          ./.github/workflows/scripts/e2e-report-success.sh
