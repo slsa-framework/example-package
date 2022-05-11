@@ -30,6 +30,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Note: we use v12.x.y
           ./.github/workflows/scripts/e2e-create-release.sh
   
   shim: 
@@ -51,9 +52,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ARTIFACT: binary-linux-amd64
-      AFTER: 155
-      FOR: 30
-      EVERY: 2
+      AFTER: 175
+      FOR: 45
+      EVERY: 5
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - uses: ./.github/actions/tamper-artifact

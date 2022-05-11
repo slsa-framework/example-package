@@ -2,7 +2,7 @@ name: go tag main SLSA3 adversarial asset provenance
 
 on: 
   schedule:
-    - cron: '0 5 * * *'
+    - cron: '0 3 * * *'
   workflow_dispatch:
   push:
     tags:
@@ -30,6 +30,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Note: we use v11.x.y
           ./.github/workflows/scripts/e2e-create-release.sh
   
   shim: 

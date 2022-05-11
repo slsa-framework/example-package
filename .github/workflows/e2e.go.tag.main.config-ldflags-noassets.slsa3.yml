@@ -43,6 +43,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Note: we use v14.x.y
           ./.github/workflows/scripts/e2e-verify-release.sh
 
   args:
