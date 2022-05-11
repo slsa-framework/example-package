@@ -2,7 +2,7 @@ name: go schedule main SLSA3 adversarial build provenance
 
 on: 
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 9 * * *'
   workflow_dispatch:
 
 permissions: read-all
