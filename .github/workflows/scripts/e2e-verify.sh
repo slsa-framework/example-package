@@ -35,7 +35,7 @@ if [[ "$BRANCH" == "main" ]]; then
 else
     slsa-verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "not main default parameters"
-fi 
+fi
 
 echo "DEBUG: file is $THIS_FILE"
 
@@ -132,7 +132,7 @@ else
 fi
 
 # Provenance content verification.
-ATTESTATION=$(cat ""$PROVENANCE"" | jq -r '.payload' | base64 -d)
+ATTESTATION=$(cat "$PROVENANCE" | jq -r '.payload' | base64 -d)
 #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
 #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
@@ -142,8 +142,15 @@ e2e_verify_predicate_subject_name "$ATTESTATION" "binary-linux-amd64"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@refs/heads/main"
 e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go@v1"
 
-e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+https://"github.com/$GITHUB_REPOSITORY"@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\"$GITHUB_WORKFLOW\"}"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "[\"$GITHUB_ACTOR\",\"$GITHUB_SHA\",\"ubuntu20\",\"X64\",\"$GITHUB_EVENT_NAME\",\"$GITHUB_REF\",\"$GITHUB_REF_TYPE\"]"
+e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\"$GITHUB_WORKFLOW\"}"
+
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_actor" "$GITHUB_ACTOR"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_sha1" "$GITHUB_SHA"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "os" "ubuntu20"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "arch" "X64"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_event_name" "$GITHUB_EVENT_NAME"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref" "$GITHUB_REF"
+e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$GITHUB_REF_TYPE"
 
 if [[ -z "$LDFLAGS" ]]; then
     e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
@@ -161,7 +168,7 @@ fi
 e2e_verify_predicate_buildConfig_env "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
 
 e2e_verify_predicate_metadata "$ATTESTATION" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
-e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://"github.com/$GITHUB_REPOSITORY"@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
+e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
 
 if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     A=$(gh release view --json assets "$GITHUB_REF_NAME" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
