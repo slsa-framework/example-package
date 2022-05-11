@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ARTIFACT: binary-linux-amd64.intoto.jsonl
-      AFTER: 155
+      AFTER: 165
       FOR: 30
       EVERY: 2
     steps:
