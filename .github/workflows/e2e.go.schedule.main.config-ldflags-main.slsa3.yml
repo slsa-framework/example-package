@@ -38,6 +38,7 @@ jobs:
           echo "::set-output name=main::-X main.gitMain=./e2e/go/main.go"
 
   build:
+    needs: [args]
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
