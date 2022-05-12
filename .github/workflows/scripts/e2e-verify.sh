@@ -137,6 +137,7 @@ ATTESTATION=$(cat "$PROVENANCE" | jq -r '.payload' | base64 -d)
 #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
+MAIN=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '-main')
 
 e2e_verify_predicate_subject_name "$ATTESTATION" "binary-linux-amd64"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@refs/heads/main"
@@ -155,7 +156,14 @@ e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$G
 if [[ -z "$LDFLAGS" ]]; then
     e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
 else
-    e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"binary-linux-amd64\"]"
+    if [[ -z "$MAIN" ]]; then
+        e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"binary-linux-amd64\"]"
+    else
+        e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=./e2e/go/main.go\",\"-o\",\"binary-linux-amd64\"]"
+        M=$(./"$BINARY" | grep 'GitMain: ./e2e/go/main.go')
+        e2e_assert_not_eq "$M" "" "GitMain should not be empty"
+    fi
+
     chmod a+x ./"$BINARY"
     V=$(./"$BINARY" | grep 'GitVersion: v1.2.3')
     C=$(./"$BINARY" | grep 'GitCommit: abcdef')
