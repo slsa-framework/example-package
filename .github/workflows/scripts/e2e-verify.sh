@@ -159,7 +159,7 @@ else
     if [[ -z "$MAIN" ]]; then
         e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"binary-linux-amd64\"]"
     else
-        e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=./e2e/go/main.go\",\"-o\",\"binary-linux-amd64\"]"
+        e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=./e2e/go/main.go\",\"-o\",\"binary-linux-amd64\",\"./e2e/go/main.go\"]"
         M=$(./"$BINARY" | grep 'GitMain: ./e2e/go/main.go')
         e2e_assert_not_eq "$M" "" "GitMain should not be empty"
     fi
