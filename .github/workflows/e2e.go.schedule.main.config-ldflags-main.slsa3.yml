@@ -22,7 +22,7 @@ jobs:
       version: ${{ steps.ldflags.outputs.version }}
       commit: ${{ steps.ldflags.outputs.commit }}
       branch: ${{ steps.ldflags.outputs.branch }}
-      path: ${{ steps.ldflags.outputs.main }}
+      main: ${{ steps.ldflags.outputs.main }}
     steps:
       - id: checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.3.4
