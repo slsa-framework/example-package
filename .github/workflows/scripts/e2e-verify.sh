@@ -137,7 +137,7 @@ ATTESTATION=$(cat "$PROVENANCE" | jq -r '.payload' | base64 -d)
 #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
-MAIN=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '-main')
+MAIN=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-main')
 
 e2e_verify_predicate_subject_name "$ATTESTATION" "binary-linux-amd64"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@refs/heads/main"
