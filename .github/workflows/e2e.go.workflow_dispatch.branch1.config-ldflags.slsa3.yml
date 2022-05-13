@@ -18,6 +18,7 @@ env:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
+    # WARNING: need `github.ref_name == 'main'` to avoid infinite loop when triggering manually.
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref_name == 'main')
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
