@@ -1,0 +1,16 @@
+Info about e2e tests:
+- We run the re-usable workflow and we veriy using the slsa-verify at HEAD and for all previous releases. This ensures that ayn upcoming re-usable workflow (builder) release is compatible (i.e., can be verified) using any prior version of the slsa-verify. See [e2e-verify.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/e2e-verify.sh)
+
+- Each file is named e2e.<ecosystem>.<trigger>.<branch>.<config-parameters>.slsa<level>.yml. There is one exception to this: the `tag` trigger: there's not
+tag trigger per se, but we use it to differentiate it fron a push. 
+
+- Each workflow runs on a `schedule` event. For push, we create a commit (see [e2e-push.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/e2e-push.sh)); for tags we create a version (see [e2e-create-release.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/e2e-create-release.sh)), for dispatch we create a workflow_dispatch (see [e2e-dispatch.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/e2e-dispatch.sh)) etc
+
+- Each push has a commit message containing the name of the workflow it's intended for (`$THIS_FILE` in workflow definitions), to ensure other workflows triggered by
+a commit don't run - this is especially useful when we update the codes repo.
+
+- Each version created has the workflow name (`$THIS_FILE`) as part of the release notes. This allows workflow to exit early if the release it not intended for them, e.g. differnet branch, etc. The version created is the same as the latest version +1 for the PATCH. To ensure workflows don't race on release version, they each use a different MAJOR. (v10 - v15 as of today). If there is no existing version for the `$THIS_FILE`, release cration will fail. This mean that when creating a new e2e workflow  for tag trgger, you need to manually create the first release and the notes must contain the `$THIS_FILE`. use the same branch the e2e workflow tests is intended for.
+
+- When a workflow does not complete with the expected outcome (fail instead of success; or success instead of failure), we create an issue on the slsa-framework-slsa-github-generator-go repo. Upon new failures, we append a comment to an existing opened issue (see [e2e-report-failure.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/e2e-report-failure.sh)). When the tests are fixed and succeed again, we close the open issues automatically (see [e2e-report-success.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/e2e-report-success.sh)). We identify existing opened issues because their bdy contains the workflow file `$THIS_FILE`
+
+- We have adversarial tests (`<config-parameters>` = `adversarial-XXX`) that shoudl fail. They use a rough time-estimate to start tampering with the artifacts used bu the builder. This can be a bit flaky at times.
