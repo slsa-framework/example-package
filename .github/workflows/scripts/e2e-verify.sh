@@ -139,7 +139,7 @@ LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 MAIN=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-main')
 
-e2e_verify_predicate_subject_name "$ATTESTATION" "binary-linux-amd64"
+e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@refs/heads/main"
 e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go@v1"
 
@@ -154,14 +154,14 @@ e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref" "$GITHUB
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$GITHUB_REF_TYPE"
 
 if [[ -z "$LDFLAGS" ]]; then
-    e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"binary-linux-amd64\"]"
+    e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"$BINARY\"]"
 else
     chmod a+x ./"$BINARY"
  
     if [[ -z "$MAIN" ]]; then
-        e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"binary-linux-amd64\"]"
+        e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"$BINARY\"]"
     else
-        e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=./e2e/go/main.go\",\"-o\",\"binary-linux-amd64\",\"./e2e/go/main.go\"]"
+        e2e_verify_predicate_buildConfig_command "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=./e2e/go/main.go\",\"-o\",\"$BINARY\",\"./e2e/go/main.go\"]"
         M=$(./"$BINARY" | grep 'GitMain: ./e2e/go/main.go')
         e2e_assert_not_eq "$M" "" "GitMain should not be empty"
     fi
@@ -184,7 +184,7 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     if [[ -z "$ASSETS" ]]; then
         e2e_assert_eq "$A" "[\"null\",\"null\"]" "there should be no assets"
     else
-        e2e_assert_eq "$A" "[\"binary-linux-amd64\",\"binary-linux-amd64.intoto.jsonl\"]" "there should be assets"
+        e2e_assert_eq "$A" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
     fi
 fi
 
