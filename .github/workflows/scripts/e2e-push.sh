@@ -16,7 +16,11 @@ cd ./"$REPOSITORY_NAME"
 if [ -f "$FILE" ]; then
   echo "DEBUG: file $FILE exists on branch $BRANCH"
 
-  SHA=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE | jq -r '.sha')
+  SHA=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" -X GET "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE?ref=$BRANCH" | jq -r '.sha')
+  if [[ -z "$SHA" ]]; then
+    echo "SHA is empty"
+    exit 4
+  fi
 
   echo -n $DATE > $FILE
 
