@@ -11,7 +11,7 @@ permissions: read-all
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
-  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator-go
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   #ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   THIS_FILE: e2e.go.push.main.config-ldflags.slsa3.yml
   # WARNING: update build job if CONFIG_FILE changes.
@@ -54,7 +54,7 @@ jobs:
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
-    uses: slsa-framework/slsa-github-generator-go/.github/workflows/slsa3_builder.yml@main
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@main
     needs: args
     with:
       go-version: 1.18
