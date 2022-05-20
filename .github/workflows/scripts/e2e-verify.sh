@@ -136,8 +136,16 @@ ATTESTATION=$(cat "$PROVENANCE" | jq -r '.payload' | base64 -d)
 #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
 #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
+DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v '\-dir')
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 MAIN=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-main')
+if [[ -n "$MAIN" ]]; then
+    MAIN="./e2e/go/main.go"
+fi
+
+if [[ -n "$DIR" ]]; then
+    DIR="e2e/go"
+fi
 
 e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
@@ -156,11 +164,11 @@ e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$G
 # First step is vendoring
 e2e_verify_predicate_buildConfig_step_command "0" "$ATTESTATION" "[\"mod\",\"vendor\"]"
 e2e_verify_predicate_buildConfig_step_env "0" "$ATTESTATION" "[]"
-e2e_verify_predicate_buildConfig_step_workingDir "0" "$ATTESTATION" "$PWD"
+e2e_verify_predicate_buildConfig_step_workingDir "0" "$ATTESTATION" "$PWD/$DIR"
 
 # Second step is the actual compilation.
 e2e_verify_predicate_buildConfig_step_env "1" "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
-e2e_verify_predicate_buildConfig_step_workingDir "1" "$ATTESTATION" "$PWD"
+e2e_verify_predicate_buildConfig_step_workingDir "1" "$ATTESTATION" "$PWD/$DIR"
 
 if [[ -z "$LDFLAGS" ]]; then
     e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"$BINARY\"]"
@@ -170,7 +178,7 @@ else
     if [[ -z "$MAIN" ]]; then
         e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"$BINARY\"]"
     else
-        e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=./e2e/go/main.go\",\"-o\",\"$BINARY\",\"./e2e/go/main.go\"]"
+        e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=./e2e/go/main.go\",\"-o\",\"$BINARY\",\"$MAIN\"]"
         M=$(./"$BINARY" | grep 'GitMain: ./e2e/go/main.go')
         e2e_assert_not_eq "$M" "" "GitMain should not be empty"
     fi
