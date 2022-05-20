@@ -35,7 +35,7 @@ jobs:
           echo "::set-output name=commit::-X main.gitCommit=abcdef"
           echo "::set-output name=branch::-X main.gitBranch=$BRANCH"
           # Note: this must be the same path defined in the config file.
-          echo "::set-output name=main::-X main.gitMain=./e2e/go/main.go"
+          echo "::set-output name=main::-X main.gitMain=main.go"
 
   build:
     needs: [args]
