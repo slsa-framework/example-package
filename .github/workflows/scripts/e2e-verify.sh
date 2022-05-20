@@ -136,7 +136,7 @@ ATTESTATION=$(cat "$PROVENANCE" | jq -r '.payload' | base64 -d)
 #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
 #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
-DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v '\-dir')
+DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 MAIN=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-main')
 if [[ -n "$MAIN" ]]; then
