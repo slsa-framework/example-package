@@ -14,6 +14,7 @@ env:
   THIS_FILE: e2e.go.schedule.main.config-ldflags-main.slsa3.yml
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-ldflags-main.yml
+  GO_MAIN: ./e2e/go/main.go
 
 jobs:            
   args:
@@ -35,7 +36,7 @@ jobs:
           echo "::set-output name=commit::-X main.gitCommit=abcdef"
           echo "::set-output name=branch::-X main.gitBranch=$BRANCH"
           # Note: this must be the same path defined in the config file.
-          echo "::set-output name=main::-X main.gitMain=./e2e/go/main.go"
+          echo "::set-output name=main::-X main.gitMain=$GO_MAIN"
 
   build:
     needs: [args]
