@@ -41,7 +41,7 @@ jobs:
       - run: |
           set -euo pipefail
 
-          ./.github/workflows/scripts/e2e-report-success.sh
+          ./.github/workflows/scripts/e2e-report-failure.sh
 
 
   if-failed:
@@ -53,4 +53,4 @@ jobs:
       - run: |
           set -euo pipefail
 
-          ./.github/workflows/scripts/e2e-report-failure.sh
+          ./.github/workflows/scripts/e2e-report-success.sh
