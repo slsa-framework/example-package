@@ -136,10 +136,13 @@ ATTESTATION=$(cat "$PROVENANCE" | jq -r '.payload' | base64 -d)
 #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
 #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
-DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
+#DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
-
+DIR="$PWD"
+if [[ -n "$GO_MAIN" ]]; then
+    DIR = "$DIR/$GO_MAIN"
+fi
 e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
 e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go@v1"
