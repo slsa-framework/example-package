@@ -141,8 +141,8 @@ ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
 DIR="$PWD"
 echo "$DIR"
-if [[ -n "$GO_MAIN" ]]; then
-    DIR="$DIR/$GO_MAIN"
+if [[ -n "$GO_DIR" ]]; then
+    DIR="$DIR/$GO_DIR"
     echo "now DIR is $DIR"
 fi
 e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
@@ -162,11 +162,11 @@ e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$G
 # First step is vendoring
 e2e_verify_predicate_buildConfig_step_command "0" "$ATTESTATION" "[\"mod\",\"vendor\"]"
 e2e_verify_predicate_buildConfig_step_env "0" "$ATTESTATION" "[]"
-e2e_verify_predicate_buildConfig_step_workingDir "0" "$ATTESTATION" "$PWD/$GO_DIR"
+e2e_verify_predicate_buildConfig_step_workingDir "0" "$ATTESTATION" "$GO_DIR"
 
 # Second step is the actual compilation.
 e2e_verify_predicate_buildConfig_step_env "1" "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
-e2e_verify_predicate_buildConfig_step_workingDir "1" "$ATTESTATION" "$PWD/$GO_DIR"
+e2e_verify_predicate_buildConfig_step_workingDir "1" "$ATTESTATION" "$GO_DIR"
 
 if [[ -z "$LDFLAGS" ]]; then
     e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"$BINARY\"]"

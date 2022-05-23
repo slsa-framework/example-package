@@ -14,7 +14,7 @@ env:
   THIS_FILE: e2e.go.schedule.main.config-ldflags-main.slsa3.yml
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-ldflags-main.yml
-  GO_MAIN: ./e2e/go/main.go
+  GO_MAIN: e2e/go/main.go
 
 jobs:            
   args:
