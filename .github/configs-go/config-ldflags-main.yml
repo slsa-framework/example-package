@@ -11,7 +11,7 @@ flags:
 
 goos: linux
 goarch: amd64
-main: ./e2e/go/main.go
+main: e2e/go/main.go
 binary: binary-{{ .Os }}-{{ .Arch }}
 ldflags:
   - '{{ .Env.VERSION }}'  

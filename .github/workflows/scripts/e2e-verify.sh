@@ -140,10 +140,8 @@ LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
 DIR="$PWD"
-echo "$DIR"
 if [[ -n "$GO_DIR" ]]; then
     DIR="$DIR/$GO_DIR"
-    echo "now DIR is $DIR"
 fi
 e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
 e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
