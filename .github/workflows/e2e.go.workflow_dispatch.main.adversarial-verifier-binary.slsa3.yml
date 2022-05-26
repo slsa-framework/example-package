@@ -1,0 +1,30 @@
+name: go workflow_dispatch main SLSA3 adversarial verifier build
+
+on: 
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:            
+  build:
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+    # Update this line: the repo name and the reference
+    uses: laurentsimon/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@release/bad-verifier
+    with:
+      go-version: 1.18
+      config-file: .github/configs-go/config-noldflags.yml
+  
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: needs.build.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: |
+          set -euo pipefail
+
+          echo "This test should fail"
+          exit 1
+
