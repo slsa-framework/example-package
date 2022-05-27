@@ -1,6 +1,7 @@
 name: go workflow_dispatch main SLSA3 adversarial builder build
 
-on: 
+on:
+  # Only triggered manually for pre-release.
   workflow_dispatch:
 
 permissions: read-all

@@ -80,6 +80,7 @@ jobs:
       config-file: .github/configs-go/config-ldflags.yml
       evaluated-envs: "VERSION:${{needs.args.outputs.version}},COMMIT:${{needs.args.outputs.commit}},BRANCH:${{needs.args.outputs.branch}}"
       upload-assets: false
+      compile-builder: true
   
   # build:
   #   runs-on: ubuntu-latest
