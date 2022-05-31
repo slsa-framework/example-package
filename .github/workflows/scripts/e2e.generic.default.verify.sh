@@ -119,7 +119,6 @@ fi
 
 # Provenance content verification.
 ATTESTATION=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
-LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 DIR="$PWD"
 e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
@@ -130,53 +129,9 @@ e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+http
 
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_actor" "$GITHUB_ACTOR"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_sha1" "$GITHUB_SHA"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "os" "ubuntu20"
-e2e_verify_predicate_invocation_environment "$ATTESTATION" "arch" "X64"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_event_name" "$GITHUB_EVENT_NAME"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref" "$GITHUB_REF"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$GITHUB_REF_TYPE"
 
-# First step is vendoring
-e2e_verify_predicate_buildConfig_step_command "0" "$ATTESTATION" "[\"mod\",\"vendor\"]"
-e2e_verify_predicate_buildConfig_step_env "0" "$ATTESTATION" "[]"
-e2e_verify_predicate_buildConfig_step_workingDir "0" "$ATTESTATION" "$DIR"
-
-# Second step is the actual compilation.
-e2e_verify_predicate_buildConfig_step_env "1" "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
-e2e_verify_predicate_buildConfig_step_workingDir "1" "$ATTESTATION" "$DIR"
-
-if [[ -z "$LDFLAGS" ]]; then
-    e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"$BINARY\"]"
-else
-    chmod a+x ./"$BINARY"
-
-    if [[ -z "$GO_MAIN" ]]; then
-        e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"$BINARY\"]"
-    else
-        e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=$GO_MAIN\",\"-o\",\"$BINARY\",\"$GO_MAIN\"]"
-        M=$(./"$BINARY" | grep "GitMain: $GO_MAIN")
-        e2e_assert_not_eq "$M" "" "GitMain should not be empty"
-    fi
-
-    V=$(./"$BINARY" | grep 'GitVersion: v1.2.3')
-    C=$(./"$BINARY" | grep 'GitCommit: abcdef')
-    B=$(./"$BINARY" | grep "GitBranch: $BRANCH")
-    e2e_assert_not_eq "$V" "" "GitVersion should not be empty"
-    e2e_assert_not_eq "$C" "" "GitCommit should not be empty"
-    e2e_assert_not_eq "$B" "" "GitBranch should not be empty"
-fi
-
 e2e_verify_predicate_metadata "$ATTESTATION" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
 e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
-
-if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-    A=$(gh release view --json assets "$GITHUB_REF_NAME" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
-    if [[ -z "$ASSETS" ]]; then
-        e2e_assert_eq "$A" "[\"null\",\"null\"]" "there should be no assets"
-    else
-        e2e_assert_eq "$A" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
-    fi
-fi
-
-#TODO: read out the provenance information once we print it
-#TODO: previous releases, curl the "$BINARY" directly. We should list the releases and run all commands automatically
