@@ -13,7 +13,6 @@ env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   #ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
-  THIS_FILE: e2e.go.push.branch1.config-ldflags.slsa3.yml
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-ldflags.yml
 
@@ -41,6 +40,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
           if [[ "$BRANCH" == "${{ github.ref_name }}" ]]; then
             echo "::set-output name=continue::yes"
@@ -61,6 +61,9 @@ jobs:
           fetch-depth: 0
       - id: ldflags
         run: |
+          set -euo pipefail
+
+          THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
           echo "::set-output name=version::-X main.gitVersion=v1.2.3"
           echo "::set-output name=commit::-X main.gitCommit=abcdef"

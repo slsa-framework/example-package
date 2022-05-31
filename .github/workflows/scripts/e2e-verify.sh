@@ -21,8 +21,8 @@ go env -w GOFLAGS=-mod=mod
 # Install from HEAD
 go install github.com/slsa-framework/slsa-verifier@latest
 
-# Get the filename.
-THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" /repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID | jq -r '.path' | cut -d '/' -f3)
+# Get the filename. Note: requires GH_TOKEN to be set in the workflows.
+THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
 
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
