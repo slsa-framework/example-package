@@ -159,9 +159,9 @@ e2e_verify_predicate_invocation_environment "$ATTESTATION" "arch" "X64"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_event_name" "$GITHUB_EVENT_NAME"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref" "$GITHUB_REF"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$GITHUB_REF_TYPE"
-ACTOR_ID=$(gh api -H "Accept: application/vnd.github.v3+json"   /users/"$GITHUB_ACTOR" | jq -r '.id')
-OWNER_ID=$(gh api -H "Accept: application/vnd.github.v3+json"   /users/"$GITHUB_REPOSITORY_OWNER" | jq -r '.id')
-REPO_ID=$(gh api -H "Accept: application/vnd.github.v3+json"   /repos/"$GITHUB_REPOSITORY" | jq -r '.id')
+ACTOR_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_ACTOR" | jq -r '.id')
+OWNER_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_REPOSITORY_OWNER" | jq -r '.id')
+REPO_ID=$(gh api -H "Accept: application/vnd.github.v3+json"  /repos/"$GITHUB_REPOSITORY" | jq -r '.id')
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_actor_id" "$ACTOR_ID"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_repository_owner_id" "$OWNER_ID"
 e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_repository_id" "$REPO_ID"
