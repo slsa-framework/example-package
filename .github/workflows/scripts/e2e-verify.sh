@@ -38,9 +38,8 @@ echo "Verifying provenance with verifier at HEAD"
 #verify_provenance "slsa-verifier" "HEAD"
 
 # Second, retrieve all previous versions of the verifier,
-# and verifier the provenance. This is essential regression tests.
-# List the releases and find the corepsonding hash.
-RELEASE_LIST=$(gh release -R "$GITHUB_REPOSITORY" -L 100 list)
+# and verify the provenance. This is essentially regression tests.
+RELEASE_LIST=$(gh release -R "$VERIFIER_REPOSITORY" -L 100 list)
 while read line; do
     TAG=$(echo "$line" | cut -f1)
     gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
