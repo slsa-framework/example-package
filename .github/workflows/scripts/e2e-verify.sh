@@ -33,7 +33,6 @@ VERIFIER_BINARY="slsa-verifier-linux-amd64"
 # First, verify provenance with the verifier at HEAD.
 go env -w GOFLAGS=-mod=mod
 go install "github.com/$VERIFIER_REPOSITORY@latest"
-chmod a+x "slsa-verifier"
 echo "Verifying provenance with verifier at HEAD"
 #verify_provenance "slsa-verifier" "HEAD"
 
@@ -45,15 +44,15 @@ while read line; do
     gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
 
     # Use the compiled verifier to verify the provenance (Optional)
-    ./slsa-verifier --branch "main" \
+    slsa-verifier --branch "main" \
                     --tag "$TAG" \
                     --artifact-path "$VERIFIER_BINARY" \
                     --provenance "$VERIFIER_BINARY.intoto.jsonl" \
                     --source "github.com/$VERIFIER_REPOSITORY" || exit 6
 
     echo "Verifying provenance with verifier at $TAG"
-    chmod a+x "$VERIFIER_BINARY"
-    verify_provenance "$VERIFIER_BINARY" "$TAG"
+    chmod a+x "./$VERIFIER_BINARY"
+    verify_provenance "./$VERIFIER_BINARY" "$TAG"
 
 done <<< "$RELEASE_LIST"
 
