@@ -3,6 +3,8 @@
 # We push to main a file e2e/wokflow-name.txt
 # with the date inside, to be sure the file is different.
 
+THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+
 DATE=$(date --utc)
 FILE=e2e/$THIS_FILE.txt
 COMMIT_MESSAGE="$GITHUB_WORKFLOW"
