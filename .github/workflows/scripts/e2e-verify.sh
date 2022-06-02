@@ -136,7 +136,7 @@ verify_provenance() {
     if [[ -n "$GO_DIR" ]]; then
         DIR="$DIR/$GO_DIR"
     fi
-    
+
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1" 
@@ -150,15 +150,13 @@ verify_provenance() {
     e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_event_name" "$GITHUB_EVENT_NAME"
     e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref" "$GITHUB_REF"
     e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$GITHUB_REF_TYPE"
-    # We added new fields after v0.0.1 - https://github.com/slsa-framework/slsa-github-generator/pull/142
-    if [[ "$version" != "v0.0.1" ]]; then
-        ACTOR_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_ACTOR" | jq -r '.id')
-        OWNER_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_REPOSITORY_OWNER" | jq -r '.id')
-        REPO_ID=$(gh api -H "Accept: application/vnd.github.v3+json"  /repos/"$GITHUB_REPOSITORY" | jq -r '.id')
-        e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_actor_id" "$ACTOR_ID"
-        e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_repository_owner_id" "$OWNER_ID"
-        e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_repository_id" "$REPO_ID"
-    fi
+
+    ACTOR_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_ACTOR" | jq -r '.id')
+    OWNER_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_REPOSITORY_OWNER" | jq -r '.id')
+    REPO_ID=$(gh api -H "Accept: application/vnd.github.v3+json"  /repos/"$GITHUB_REPOSITORY" | jq -r '.id')
+    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_actor_id" "$ACTOR_ID"
+    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_repository_owner_id" "$OWNER_ID"
+    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_repository_id" "$REPO_ID"
 
     # First step is vendoring
     e2e_verify_predicate_buildConfig_step_command "0" "$ATTESTATION" "[\"mod\",\"vendor\"]"
