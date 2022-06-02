@@ -1,4 +1,5 @@
-#!/usr/bin/env bash -euo pipefail
+#!/usr/bin/env bash
+set -euo pipefail
 
 # We push to main a file e2e/wokflow-name.txt
 # with the date inside, to be sure the file is different.

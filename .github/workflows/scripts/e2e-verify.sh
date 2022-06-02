@@ -1,4 +1,5 @@
-#!/usr/bin/env bash -euo pipefail
+#!/usr/bin/env bash
+set -euo pipefail
 
 # To test:
 # export GITHUB_SHA=6f3b6435f5a17a25ad6cf2704d0c192bcef8193f
