@@ -4,6 +4,7 @@ set -euo pipefail
 source "./.github/workflows/scripts/e2e-utils.sh"
 
 THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+echo "THIS_FILE: $THIS_FILE"
 
 if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
     echo "unexpected ref type $GITHUB_REF_TYPE"
