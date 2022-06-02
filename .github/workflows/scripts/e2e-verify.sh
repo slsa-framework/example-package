@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Comment out the line below to be able to verify failure of certain commands.
+#set -euo pipefail
 
 # To test:
 # export GITHUB_SHA=6f3b6435f5a17a25ad6cf2704d0c192bcef8193f
@@ -136,10 +138,12 @@ verify_provenance() {
     fi
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
-    
+    echo "version: $version"
     if [[ "$version" == "v0.0.1" ]]; then
+        echo "trying -go"
         e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go@v1"
     else
+        echo "trying /go"
         # The builderType string was updated after v0.0.1 - https://github.com/slsa-framework/slsa-github-generator/pull/142
         e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1"
     fi
