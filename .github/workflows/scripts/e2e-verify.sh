@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -euo pipefail
 
 # To test:
 # export GITHUB_SHA=6f3b6435f5a17a25ad6cf2704d0c192bcef8193f
@@ -16,47 +16,7 @@
 
 source "./.github/workflows/scripts/e2e-utils.sh"
 
-# Get the filename. Note: requires GH_TOKEN to be set in the workflows.
-THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
-
-BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-
-echo "branch is $BRANCH"
-echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
-echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
-echo "GITHUB_REF: $GITHUB_REF"
-echo "DEBUG: file is $THIS_FILE"
-
-VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
-VERIFIER_BINARY="slsa-verifier-linux-amd64"
-
-# First, verify provenance with the verifier at HEAD.
-go env -w GOFLAGS=-mod=mod
-go install "github.com/$VERIFIER_REPOSITORY@latest"
-echo "Verifying provenance with verifier at HEAD"
-verify_provenance "slsa-verifier" "HEAD"
-
-# Second, retrieve all previous versions of the verifier,
-# and verify the provenance. This is essentially regression tests.
-RELEASE_LIST=$(gh release -R "$VERIFIER_REPOSITORY" -L 100 list)
-while read line; do
-    TAG=$(echo "$line" | cut -f1)
-    gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
-
-    # Use the compiled verifier to verify the provenance (Optional)
-    slsa-verifier --branch "main" \
-                    --tag "$TAG" \
-                    --artifact-path "$VERIFIER_BINARY" \
-                    --provenance "$VERIFIER_BINARY.intoto.jsonl" \
-                    --source "github.com/$VERIFIER_REPOSITORY" || exit 6
-
-    echo "Verifying provenance with verifier at $TAG"
-    chmod a+x "./$VERIFIER_BINARY"
-    verify_provenance "./$VERIFIER_BINARY" "$TAG"
-
-done <<< "$RELEASE_LIST"
-
-
+# Function used to verify provenance.
 verify_provenance() {
     local verifier="$1"
     local version="$2"
@@ -248,3 +208,49 @@ verify_provenance() {
 
     #TODO: read out the provenance information once we print it
 }
+
+# =====================================
+# ===== main execution starts =========
+# =====================================
+
+# Get the filename. Note: requires GH_TOKEN to be set in the workflows.
+THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+
+BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+
+echo "branch is $BRANCH"
+echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
+echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
+echo "GITHUB_REF: $GITHUB_REF"
+echo "DEBUG: file is $THIS_FILE"
+
+VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
+VERIFIER_BINARY="slsa-verifier-linux-amd64"
+
+# First, verify provenance with the verifier at HEAD.
+go env -w GOFLAGS=-mod=mod
+go install "github.com/$VERIFIER_REPOSITORY@latest"
+echo "Verifying provenance with verifier at HEAD"
+verify_provenance "slsa-verifier" "HEAD"
+
+# Second, retrieve all previous versions of the verifier,
+# and verify the provenance. This is essentially regression tests.
+RELEASE_LIST=$(gh release -R "$VERIFIER_REPOSITORY" -L 100 list)
+while read line; do
+    TAG=$(echo "$line" | cut -f1)
+    gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
+
+    # Use the compiled verifier to verify the provenance (Optional)
+    slsa-verifier --branch "main" \
+                    --tag "$TAG" \
+                    --artifact-path "$VERIFIER_BINARY" \
+                    --provenance "$VERIFIER_BINARY.intoto.jsonl" \
+                    --source "github.com/$VERIFIER_REPOSITORY" || exit 6
+
+    echo "Verifying provenance with verifier at $TAG"
+    chmod a+x "./$VERIFIER_BINARY"
+    verify_provenance "./$VERIFIER_BINARY" "$TAG"
+
+done <<< "$RELEASE_LIST"
+
+

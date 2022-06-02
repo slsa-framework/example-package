@@ -1,5 +1,5 @@
 
-#!/usr/bin/env bash
+#!/usr/bin/env bash -euo pipefail
 
 source "./.github/workflows/scripts/e2e-utils.sh"
 
