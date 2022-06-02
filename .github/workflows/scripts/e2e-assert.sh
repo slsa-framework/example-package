@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 source "./.github/workflows/scripts/assert.sh"
 

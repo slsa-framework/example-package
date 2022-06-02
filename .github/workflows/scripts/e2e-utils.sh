@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Comment out the line below to be able to verify failure of certain commands.
+#set -euo pipefail
 
 source "./.github/workflows/scripts/e2e-assert.sh"
 
