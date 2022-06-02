@@ -136,18 +136,10 @@ verify_provenance() {
     if [[ -n "$GO_DIR" ]]; then
         DIR="$DIR/$GO_DIR"
     fi
+    
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
-    echo "version: $version"
-    if [[ "$version" == "v0.0.1" ]]; then
-        echo "trying -go"
-        e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator-go@v1"
-    else
-        echo "trying /go"
-        # The builderType string was updated after v0.0.1 - https://github.com/slsa-framework/slsa-github-generator/pull/142
-        e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1"
-    fi
-    
+    e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1" 
 
     e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\".github/workflows/$THIS_FILE\"}"
 
@@ -234,7 +226,7 @@ VERIFIER_BINARY="slsa-verifier-linux-amd64"
 # First, verify provenance with the verifier at HEAD.
 go env -w GOFLAGS=-mod=mod
 go install "github.com/$VERIFIER_REPOSITORY@latest"
-echo "Verifying provenance with verifier at HEAD"
+echo "**** Verifying provenance with verifier at HEAD *****"
 verify_provenance "slsa-verifier" "HEAD"
 
 # Second, retrieve all previous versions of the verifier,
@@ -251,7 +243,7 @@ while read line; do
                     --provenance "$VERIFIER_BINARY.intoto.jsonl" \
                     --source "github.com/$VERIFIER_REPOSITORY" || exit 6
 
-    echo "Verifying provenance with verifier at $TAG"
+    echo "**** Verifying provenance with verifier at $TAG ****"
     chmod a+x "./$VERIFIER_BINARY"
     verify_provenance "./$VERIFIER_BINARY" "$TAG"
 
