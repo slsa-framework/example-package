@@ -6,7 +6,7 @@ go env -w GOFLAGS=-mod=mod
 
 # Install from HEAD
 # go install github.com/slsa-framework/slsa-verifier@latest
-go install github.com/ianlewis/slsa-verifier@ianlewis-test
+go install github.com/ianlewis/slsa-verifier@4058d2ce230ab09ed3463d4e6e7123e0ceda34f2
 
 THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
 
