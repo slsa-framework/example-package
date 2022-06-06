@@ -5,8 +5,7 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 go env -w GOFLAGS=-mod=mod
 
 # Install from HEAD
-# go install github.com/slsa-framework/slsa-verifier@latest
-go install github.com/ianlewis/slsa-verifier@4058d2ce230ab09ed3463d4e6e7123e0ceda34f2
+go install github.com/slsa-framework/slsa-verifier@latest
 
 THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
 
@@ -125,8 +124,7 @@ ATTESTATION=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
 ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
 DIR="$PWD"
 e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
-# e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/slsa2_provenance.yml@refs/heads/main"
-e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/ianlewis/slsa-github-generator/.github/workflows/slsa2_provenance.yml@refs/heads/main"
+e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/slsa2_provenance.yml@refs/heads/main"
 e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator@v1"
 
 e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\".github/workflows/$THIS_FILE\"}"
