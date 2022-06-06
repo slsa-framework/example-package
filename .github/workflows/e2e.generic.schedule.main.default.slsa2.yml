@@ -4,6 +4,12 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch:
 
+env:
+  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  # ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  ISSUE_REPOSITORY: ianlewis/slsa-github-generator
+  THIS_FILE: e2e.generic.push.main.default.slsa2.yml
+
 jobs:
   build:
     outputs:
@@ -51,7 +57,8 @@ jobs:
       id-token: write
       contents: read
       actions: read
-    uses: slsa-framework/slsa-github-generator/.github/workflows/slsa2_provenance.yml@main
+    # uses: slsa-framework/slsa-github-generator/.github/workflows/slsa2_provenance.yml@main
+    uses: ianlewis/slsa-github-generator/.github/workflows/slsa2_provenance.yml@main
     with:
       subjects: "${{ needs.build.outputs.digest }}"
 
