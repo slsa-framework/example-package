@@ -8,6 +8,8 @@ go env -w GOFLAGS=-mod=mod
 # go install github.com/slsa-framework/slsa-verifier@latest
 go install github.com/ianlewis/slsa-verifier@ianlewis-test
 
+THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
 echo "branch is $BRANCH"
