@@ -7,11 +7,6 @@ source "./.github/workflows/scripts/e2e-assert.sh"
 # Converter from yaml to JSON.
 #sudo apt-get install jc
 
-if [[ -z "$CONFIG_FILE" ]]; then
-    echo "env variable CONFIG_FILE not set"
-    exit 2
-fi
-
 # File is BODY in current directory.
 _create_issue_body() {
     RUN_DATE=$(date --utc)
@@ -75,11 +70,11 @@ e2e_verify_predicate_buildConfig_step_command() {
 e2e_verify_predicate_buildConfig_step_env() {
     local attestation="$2"
     local expected="$(echo -n "$3" | jq -c '.| sort')"
-    
+
     if [[ "${expected}" == "[]" ]]; then
-        _e2e_verify_query "${attestation}" "null"  ".predicate.buildConfig.steps[$1].env"
+        _e2e_verify_query "${attestation}" "null" ".predicate.buildConfig.steps[$1].env"
     else
-        _e2e_verify_query "${attestation}" "${expected}"  ".predicate.buildConfig.steps[$1].env | sort"
+        _e2e_verify_query "${attestation}" "${expected}" ".predicate.buildConfig.steps[$1].env | sort"
     fi
 }
 
@@ -87,7 +82,7 @@ e2e_verify_predicate_buildConfig_step_env() {
 # $2: the attestation content
 # $3: expected value.
 e2e_verify_predicate_buildConfig_step_workingDir() {
-     _e2e_verify_query "$2" "$3" ".predicate.buildConfig.steps[$1].workingDir"
+    _e2e_verify_query "$2" "$3" ".predicate.buildConfig.steps[$1].workingDir"
 }
 
 e2e_verify_predicate_metadata() {
