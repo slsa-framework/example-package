@@ -5,7 +5,8 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 go env -w GOFLAGS=-mod=mod
 
 # Install from HEAD
-go install github.com/slsa-framework/slsa-verifier@latest
+# go install github.com/slsa-framework/slsa-verifier@latest
+go install github.com/ianlewis/slsa-verifier@ianlewis-test
 
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
