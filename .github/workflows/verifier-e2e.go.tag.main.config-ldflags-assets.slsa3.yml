@@ -103,5 +103,4 @@ jobs:
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
       config-file: .github/configs-go/config-ldflags.yml
       evaluated-envs: "VERSION:${{needs.args.outputs.version}},COMMIT:${{needs.args.outputs.commit}},BRANCH:${{needs.args.outputs.branch}}"
-      compile-builder: true
   
