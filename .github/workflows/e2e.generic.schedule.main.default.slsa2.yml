@@ -43,11 +43,7 @@ jobs:
           BINARY_NAME: ${{ steps.build.outputs.binary-name }}
         run: |
           set -euo pipefail
-          DIGEST=$(sha256sum $BINARY_NAME)
-          DIGEST="${DIGEST//'%'/'%25'}"
-          DIGEST="${DIGEST//$'\n'/'%0A'}"
-          DIGEST="${DIGEST//$'\r'/'%0D'}"
-          echo "::set-output name=digest::$DIGEST"
+          echo "::set-output name=digest::$(sha256sum $BINARY_NAME | base64 -w0)"
 
   provenance:
     needs: [build]
@@ -57,7 +53,7 @@ jobs:
       actions: read
     uses: slsa-framework/slsa-github-generator/.github/workflows/slsa2_provenance.yml@main
     with:
-      subjects: "${{ needs.build.outputs.digest }}"
+      base64-subjects: "${{ needs.build.outputs.digest }}"
 
   verify:
     runs-on: ubuntu-latest
