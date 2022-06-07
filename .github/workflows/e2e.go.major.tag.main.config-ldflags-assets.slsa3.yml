@@ -34,6 +34,7 @@ jobs:
           echo "THIS_FILE: $THIS_FILE"
 
           TAG=$(echo $GITHUB_REF | cut -d "/" -f3)
+          echo "TAG: $TAG"
 
           cat << EOF > DATA
           **E2e release creation**:
