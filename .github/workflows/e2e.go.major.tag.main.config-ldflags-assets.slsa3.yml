@@ -35,6 +35,8 @@ jobs:
 
           TAG=$(echo $GITHUB_REF | cut -d "/" -f3)
           echo "TAG: $TAG"
+          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
+
 
           cat << EOF > DATA
           **E2e release creation**:
