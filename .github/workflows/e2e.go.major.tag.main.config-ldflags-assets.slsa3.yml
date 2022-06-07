@@ -45,7 +45,7 @@ jobs:
           Caller name: $GITHUB_WORKFLOW
           EOF
 
-          gh release create "$TAG" --notes-file ./DATA --target "$TAG"
+          gh release create "$TAG" --notes-file ./DATA --target "$GITHUB_REF_NAME"
 
   shim: 
     needs: [release]
