@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+exit_with_msg() {
+    echo "exit with $1"
+    echo "$1"
+}
+
 if [ "$#" -ne 1 ]; then
     echo "Usage: $(basename $0) workflow-name"
     exit 1
@@ -24,4 +29,4 @@ FILE="$1"
 curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
     "https://api.github.com/repos/$REPOSITORY/actions/workflows/$FILE/dispatches" \
     -d "{\"ref\":\"$BRANCH\"}" \
-    -H "Authorization: token $GH_TOKEN"
+    -H "Authorization: token $GH_TOKEN" || exit_with_msg 1
