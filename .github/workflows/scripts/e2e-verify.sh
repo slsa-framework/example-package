@@ -232,6 +232,9 @@ verify_provenance "slsa-verifier" "HEAD"
 RELEASE_LIST=$(gh release -R "$VERIFIER_REPOSITORY" -L 100 list)
 while read line; do
     TAG=$(echo "$line" | cut -f1)
+
+    # Always remove the binary, because `gh release download` fails if the file already exists.
+    rm "$VERIFIER_BINARY*" 2>/dev/null
     gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
 
     # Use the compiled verifier to verify the provenance (Optional)
