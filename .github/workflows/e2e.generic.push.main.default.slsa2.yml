@@ -84,7 +84,7 @@ jobs:
         with:
           go-version: "1.18"
       - env:
-          BINARY: ${{ needs.build.outputs.go-binary-name }}
+          BINARY: ${{ needs.build.outputs.binary-name }}
           PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
