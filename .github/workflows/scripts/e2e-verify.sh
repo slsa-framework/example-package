@@ -25,22 +25,27 @@ verify_provenance() {
     
     # Default parameters.
     if [[ "$BRANCH" == "main" ]]; then
+        echo "  **** Default parameters (main) *****"
         $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "main default parameters"
     else
+        echo "  **** Default parameters *****"
         $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "not main default parameters"
     fi
 
     # Correct branch
+    echo "  **** Correct branch *****"
     $verifier --branch "$BRANCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "should be branch $BRANCH"
 
     # Wrong branch
+    echo "  **** Wrong branch *****"
     $verifier --branch "not-$GITHUB_REF_NAME" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong branch"
 
     # Wrong tag
+    echo "  **** Wrong branch *****"
     $verifier --tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong tag"
 
@@ -60,66 +65,82 @@ verify_provenance() {
         PATCH_PLUS_ONE=$((PATCH + 1))
 
         # Correct vM.N.P
+        echo "  **** Correct vM.N.P *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR.$MINOR.$PATCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "$MAJOR.$MINOR.$PATCH versioned-tag vM.N.P ($MAJOR.$MINOR.$PATCH) should be correct"
 
         # Correct vM.N
+        echo "  **** Correct vM.N *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR.$MINOR" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "$MAJOR.$MINOR versioned-tag vM.N ($MAJOR.$MINOR) should be correct"
 
         # Correct vM
+        echo "  **** Correct vM *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "$MAJOR versioned-tag vm ($MAJOR) should be correct"
 
         # Incorrect v(M-1)
+        echo "  **** Incorrect v(M-1) *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR_LESS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE versioned-tag should be incorrect"
 
         # Incorrect v(M-1).N
+        echo "  **** Incorrect v(M-1).N *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR_LESS_ONE.$MINOR" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE.$MINOR versioned-tag should be incorrect"
 
         # Incorrect v(M-1).N.P
+        echo "  **** Incorrect v(M-1).N.P *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR_LESS_ONE.$MINOR.$PATCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE.$MINOR.$PATCH versioned-tag should be incorrect"
 
         # Incorrect vM.(N-1)
+        echo "  **** Incorrect vM.(N-1) *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR.$MINOR_LESS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_LESS_ONE versioned-tag should be incorrect"
 
         # Incorrect vM.(N-1).P
+        echo "  **** Incorrect vM.(N-1).P *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR.$MINOR_LESS_ONE.$PATCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_LESS_ONE.$PATCH versioned-tag should be incorrect"
 
         # Incorrect vM.N.(P-1)
+        echo "  **** Incorrect vM.N.(P-1) *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR.$MINOR.$PATCH_LESS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR.$PATCH_LESS_ONE versioned-tag should be incorrect"
 
         # Incorrect v(M+1)
+        echo "  **** Incorrect v(M+1) *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR_PLUS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_PLUS_ONE versioned-tag should be incorrect"
 
         # Incorrect v(M+1).N
+        echo "  **** Incorrect v(M+1).N *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR_PLUS_ONE.$MINOR" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_PLUS_ONE.$MINOR versioned-tag should be incorrect"
 
         # Incorrect v(M+1).N.P
+        echo "  **** Incorrect v(M+1).N.P *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR_PLUS_ONE.$MINOR.$PATCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_PLUS_ONE.$MINOR.$PATCH versioned-tag should be incorrect"
 
         # Incorrect vM.(N+1)
+        echo "  **** Incorrect vM.(N+1) *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR.$MINOR_PLUS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_PLUS_ONE versioned-tag should be incorrect"
 
         # Incorrect vM.(N+1).P
+        echo "  **** Incorrect vM.(N+1).P *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR.$MINOR_PLUS_ONE.$PATCH" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_PLUS_ONE.$PATCH versioned-tag should be incorrect"
 
         # Incorrect vM.N.(P+1)
+        echo "  **** Incorrect vM.N.(P+1) *****"
         $verifier --branch "$BRANCH" --versioned-tag "$MAJOR.$MINOR.$PATCH_PLUS_ONE" --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR.$PATCH_PLUS_ONE versioned-tag should be incorrect"
     else
         # Wrong versioned-tag
+        echo "  **** Wrong versioned-tag *****"
         $verifier --branch "$BRANCH" --versioned-tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "wrong versioned-tag"
     fi
@@ -137,6 +158,7 @@ verify_provenance() {
         DIR="$DIR/$GO_DIR"
     fi
 
+    echo "  **** Provenance content verification *****"
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1" 
@@ -230,6 +252,10 @@ verify_provenance "slsa-verifier" "HEAD"
 # Second, retrieve all previous versions of the verifier,
 # and verify the provenance. This is essentially regression tests.
 RELEASE_LIST=$(gh release -R "$VERIFIER_REPOSITORY" -L 100 list)
+echo "Releases found:"
+echo "$RELEASE_LIST"
+echo
+
 while read line; do
     TAG=$(echo "$line" | cut -f1)
 
