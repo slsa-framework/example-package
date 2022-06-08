@@ -21,7 +21,7 @@ BRANCH="main"
 FILE="$1"
 
 # Trigger the workflow.
-echo curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
+curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
     "https://api.github.com/repos/$REPOSITORY/actions/workflows/$FILE/dispatches" \
     -d "{\"ref\":\"$BRANCH\"}" \
     -H "Authorization: token $GH_TOKEN"
