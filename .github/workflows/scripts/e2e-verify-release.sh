@@ -29,4 +29,3 @@ if [[ "$BODY" == *"$THIS_FILE"* ]]; then
     RELEASE_TAG="$TAG"
     echo "::set-output name=continue::yes"
 fi
-

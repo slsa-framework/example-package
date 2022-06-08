@@ -16,13 +16,12 @@
 # export BINARY=binary-linux-amd64
 # export PROVENANCE=example.intoto.jsonl
 
-source "./.github/workflows/scripts/e2e-utils.sh"
+source "./.github/workflows/scripts/e2e-verify.common.sh"
 
 # Function used to verify provenance.
 verify_provenance() {
     local verifier="$1"
-    local version="$2"
-    
+
     # Default parameters.
     if [[ "$BRANCH" == "main" ]]; then
         $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
@@ -125,7 +124,7 @@ verify_provenance() {
     fi
 
     # Provenance content verification.
-    ATTESTATION=$(cat "$PROVENANCE" | jq -r '.payload' | base64 -d)
+    ATTESTATION=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
     #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
     #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
     LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
@@ -137,26 +136,15 @@ verify_provenance() {
         DIR="$DIR/$GO_DIR"
     fi
 
+    # Verify all common provenance fields.
+    e2e_verify_common_all "$ATTESTATION"
+
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
-    e2e_verify_predicate_builderType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1" 
+    e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1"
 
-    e2e_verify_predicate_invocation_configSource "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\".github/workflows/$THIS_FILE\"}"
-
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_actor" "$GITHUB_ACTOR"
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_sha1" "$GITHUB_SHA"
     e2e_verify_predicate_invocation_environment "$ATTESTATION" "os" "ubuntu20"
     e2e_verify_predicate_invocation_environment "$ATTESTATION" "arch" "X64"
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_event_name" "$GITHUB_EVENT_NAME"
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref" "$GITHUB_REF"
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_ref_type" "$GITHUB_REF_TYPE"
-
-    ACTOR_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_ACTOR" | jq -r '.id')
-    OWNER_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_REPOSITORY_OWNER" | jq -r '.id')
-    REPO_ID=$(gh api -H "Accept: application/vnd.github.v3+json"  /repos/"$GITHUB_REPOSITORY" | jq -r '.id')
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_actor_id" "$ACTOR_ID"
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_repository_owner_id" "$OWNER_ID"
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "github_repository_id" "$REPO_ID"
 
     # First step is vendoring
     e2e_verify_predicate_buildConfig_step_command "0" "$ATTESTATION" "[\"mod\",\"vendor\"]"
@@ -171,7 +159,7 @@ verify_provenance() {
         e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"$BINARY\"]"
     else
         chmod a+x ./"$BINARY"
-    
+
         if [[ -z "$GO_MAIN" ]]; then
             e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"$BINARY\"]"
         else
@@ -187,9 +175,6 @@ verify_provenance() {
         e2e_assert_not_eq "$C" "" "GitCommit should not be empty"
         e2e_assert_not_eq "$B" "" "GitBranch should not be empty"
     fi
-
-    e2e_verify_predicate_metadata "$ATTESTATION" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
-    e2e_verify_predicate_materials "$ATTESTATION" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         A=$(gh release view --json assets "$GITHUB_REF_NAME" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
@@ -207,44 +192,12 @@ verify_provenance() {
 # ===== main execution starts =========
 # =====================================
 
-# Get the filename. Note: requires GH_TOKEN to be set in the workflows.
-THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
-
+THIS_FILE=$(e2e_this_file)
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-
 echo "branch is $BRANCH"
 echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 
-VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
-VERIFIER_BINARY="slsa-verifier-linux-amd64"
-
-# First, verify provenance with the verifier at HEAD.
-go env -w GOFLAGS=-mod=mod
-go install "github.com/$VERIFIER_REPOSITORY@latest"
-echo "**** Verifying provenance with verifier at HEAD *****"
-verify_provenance "slsa-verifier" "HEAD"
-
-# Second, retrieve all previous versions of the verifier,
-# and verify the provenance. This is essentially regression tests.
-RELEASE_LIST=$(gh release -R "$VERIFIER_REPOSITORY" -L 100 list)
-while read line; do
-    TAG=$(echo "$line" | cut -f1)
-    gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
-
-    # Use the compiled verifier to verify the provenance (Optional)
-    slsa-verifier --branch "main" \
-                    --tag "$TAG" \
-                    --artifact-path "$VERIFIER_BINARY" \
-                    --provenance "$VERIFIER_BINARY.intoto.jsonl" \
-                    --source "github.com/$VERIFIER_REPOSITORY" || exit 6
-
-    echo "**** Verifying provenance with verifier at $TAG ****"
-    chmod a+x "./$VERIFIER_BINARY"
-    verify_provenance "./$VERIFIER_BINARY" "$TAG"
-
-done <<< "$RELEASE_LIST"
-
-
+e2e_run_verifier_all_releases verify_provenance
