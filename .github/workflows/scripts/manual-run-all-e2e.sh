@@ -31,6 +31,7 @@ for row in $(echo "$FILES" | jq -r '.[] | @base64'); do
         continue
     fi
     
+    echo "$FILE"
     # Trigger the workflow.
     curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
         "https://api.github.com/repos/$REPOSITORY/actions/workflows/$FILE/dispatches" \
