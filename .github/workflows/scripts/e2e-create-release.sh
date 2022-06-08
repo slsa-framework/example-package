@@ -5,7 +5,7 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 
 RELEASE_TAG=""
 
-THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+THIS_FILE=$(e2e_this_file)
 echo "THIS_FILE: $THIS_FILE"
 
 # List the releases and find the latest for THIS_FILE.
