@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "./.github/workflows/scripts/e2e-utils.sh"
+source "./.github/workflows/scripts/e2e-verify.common.sh"
 
 go env -w GOFLAGS=-mod=mod
 
