@@ -60,13 +60,17 @@ e2e_verify_common_materials() {
 # $1: command to run. The command should take the verifier binary as an
 #     argument.
 e2e_run_verifier_all_releases() {
-    VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
+    # FIXME
+    # VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
+    VERIFIER_REPOSITORY="ianlewis/slsa-verifier"
     VERIFIER_BINARY="slsa-verifier-linux-amd64"
     VERIFY_COMMAND=$1
 
     # First, verify provenance with the verifier at HEAD.
     go env -w GOFLAGS=-mod=mod
-    go install "github.com/$VERIFIER_REPOSITORY@latest"
+    # FIXME
+    # go install "github.com/$VERIFIER_REPOSITORY@latest"
+    go install "github.com/$VERIFIER_REPOSITORY@ianlewis-test"
     echo "**** Verifying provenance with verifier at HEAD *****"
     verify_provenance "slsa-verifier" "HEAD"
 
