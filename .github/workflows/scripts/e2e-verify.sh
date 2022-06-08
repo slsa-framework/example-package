@@ -45,7 +45,7 @@ verify_provenance() {
     e2e_assert_not_eq "$?" "0" "wrong branch"
 
     # Wrong tag
-    echo "  **** Wrong branch *****"
+    echo "  **** Wrong tag *****"
     $verifier --tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong tag"
 
@@ -258,9 +258,15 @@ echo
 
 while read line; do
     TAG=$(echo "$line" | cut -f1)
+    echo "  *** Starting with verifier at $TAG ****"
 
     # Always remove the binary, because `gh release download` fails if the file already exists.
-    rm "$VERIFIER_BINARY*" 2>/dev/null
+    # Note: Don't quote the `$VERIFIER_BINARY*`, as it will cause new lines being inserted and
+    # deletion will fail.
+    if [[ -f "$VERIFIER_BINARY" ]]; then
+        rm $VERIFIER_BINARY*
+    fi
+    
     gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
 
     # Use the compiled verifier to verify the provenance (Optional)
