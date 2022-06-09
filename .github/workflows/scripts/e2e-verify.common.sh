@@ -73,8 +73,21 @@ e2e_run_verifier_all_releases() {
     # Second, retrieve all previous versions of the verifier,
     # and verify the provenance. This is essentially regression tests.
     RELEASE_LIST=$(gh release -R "$VERIFIER_REPOSITORY" -L 100 list)
+    echo "Releases found:"
+    echo "$RELEASE_LIST"
+    echo
+
     while read -r line; do
         TAG=$(echo "$line" | cut -f1)
+        echo "  *** Starting with verifier at $TAG ****"
+
+        # Always remove the binary, because `gh release download` fails if the file already exists.
+        if [[ -f "$VERIFIER_BINARY" ]]; then
+            # Note: Don't quote `$VERIFIER_BINARY*`, as it will cause new lines to be inserted and
+            # deletion will fail.
+            rm $VERIFIER_BINARY*
+        fi
+
         gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
 
         # Use the compiled verifier to verify the provenance (Optional)

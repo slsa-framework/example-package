@@ -16,3 +16,5 @@ a commit don't run - this is especially useful when we update the repo's code ma
 - We have adversarial tests (`<config-parameters>` = `adversarial-XXX`) that should fail. They use a rough time-estimate to start tampering with the artifacts used by the builder. This can be a bit flaky at times.
 
 - When you update the main branch, try to regularily update the branch1 manually. You can use `bash sync-branch1.sh` for that.
+
+- We have scripts to run the e2e tests via CLI: [manual-run-all-e2e.sh](./manual-run-all-e2e.sh) to run them all, [manual-run-e2e.sh](./manual-run-e2e.sh) to run a single one of them.
