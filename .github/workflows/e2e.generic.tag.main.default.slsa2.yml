@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - id: create
-        # Note: we use v16.x.y
+        # Note: we use v18.x.y
         run: ./.github/workflows/scripts/e2e-create-release.sh
 
   shim:
