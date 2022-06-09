@@ -16,8 +16,8 @@ fi
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 ENV_BRANCH=$(cat "$GITHUB_EVENT_PATH" | jq -r '.base_ref')
 
-if [[ -z "$ENV_BRANCH" ]]; then
-    echo "ENV_BRANCH is empty"
+# On release events, the base_ref above is empty.
+if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
     ENV_BRANCH="refs/heads/$(cat $GITHUB_EVENT_PATH | jq -r '.release.target_commitish')"
 fi
 
