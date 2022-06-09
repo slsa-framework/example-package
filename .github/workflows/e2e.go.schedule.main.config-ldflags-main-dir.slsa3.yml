@@ -81,7 +81,7 @@ jobs:
         run: |
           set -euo pipefail
         
-          ./.github/workflows/scripts/e2e-verify.sh
+          ./.github/workflows/scripts/e2e.go.default.verify.sh
   
   if-succeeded:
     runs-on: ubuntu-latest
