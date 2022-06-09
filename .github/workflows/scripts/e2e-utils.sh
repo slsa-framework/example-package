@@ -4,6 +4,12 @@
 
 source "./.github/workflows/scripts/e2e-assert.sh"
 
+# Gets the name of the currently running workflow file.
+# Note: this requires GH_TOKEN to be set in the workflows.
+e2e_this_file() {
+    gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3
+}
+
 # Converter from yaml to JSON.
 #sudo apt-get install jc
 
@@ -44,7 +50,7 @@ e2e_verify_predicate_builder_id() {
     _e2e_verify_query "$1" "$2" '.predicate.builder.id'
 }
 
-e2e_verify_predicate_builderType() {
+e2e_verify_predicate_buildType() {
     _e2e_verify_query "$1" "$2" '.predicate.buildType'
 }
 
@@ -69,7 +75,8 @@ e2e_verify_predicate_buildConfig_step_command() {
 # $3: expected value.
 e2e_verify_predicate_buildConfig_step_env() {
     local attestation="$2"
-    local expected="$(echo -n "$3" | jq -c '.| sort')"
+    local expected
+    expected="$(echo -n "$3" | jq -c '.| sort')"
 
     if [[ "${expected}" == "[]" ]]; then
         _e2e_verify_query "${attestation}" "null" ".predicate.buildConfig.steps[$1].env"

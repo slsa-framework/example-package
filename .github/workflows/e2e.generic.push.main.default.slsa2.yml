@@ -1,4 +1,5 @@
-name: Generic push main default SLSA 2
+name: Generic push main default SLSA2
+
 on:
   schedule:
     - cron: "0 3 * * *"
