@@ -151,6 +151,7 @@ verify_provenance() {
     LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
     #DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
     ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
+    VERSION=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v version)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
     DIR="$PWD"
     if [[ -n "$GO_DIR" ]]; then
@@ -197,6 +198,19 @@ verify_provenance() {
         e2e_assert_not_eq "$V" "" "GitVersion should not be empty"
         e2e_assert_not_eq "$C" "" "GitCommit should not be empty"
         e2e_assert_not_eq "$B" "" "GitBranch should not be empty"
+
+        # Verify the TagVersion is set to the dynamic version using {{ .Version }}.
+        # and that the name of the binary is set properly.
+        if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$VERSION" ]]; then
+            T=$(./"$BINARY" | grep "TagVersion: $GITHUB_REF_NAME")
+            e2e_assert_not_eq "$T" "" "TagVersion should not be empty"
+
+            e2e_assert_eq "$BINARY" "binary-linux-amd64-$GITHUB_REF_NAME"
+        else
+            T=$(./"$BINARY" | grep "TagVersion: unknownVersion")
+            e2e_assert_not_eq "$T" "" "TagVersion should contain unknownVersion"
+        fi
+
     fi
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
@@ -222,5 +236,6 @@ echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
+echo "BINARY: file is $BINARY"
 
 e2e_run_verifier_all_releases verify_provenance

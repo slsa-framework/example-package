@@ -12,6 +12,7 @@ var (
 	gitCommit  string
 	gitBranch  string
 	gitMain    string
+	tagVersion string
 )
 
 func main() {
@@ -19,6 +20,7 @@ func main() {
 	uuid := strings.Replace(uuidWithHyphen.String(), "-", "", -1)
 
 	fmt.Println("GitBranch:", gitBranch)
+	fmt.Println("TagVersion:", tagVersion)
 	fmt.Println("GitVersion:", gitVersion)
 	fmt.Println("GitCommit:", gitCommit)
 	fmt.Println("GitMain:", gitMain)
