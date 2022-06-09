@@ -9,7 +9,7 @@ THIS_FILE=$(e2e_this_file)
 echo "THIS_FILE: $THIS_FILE"
 
 # List the releases and find the latest for THIS_FILE.
-RELEASE_LIST=$(gh release list)
+RELEASE_LIST=$(gh release -L 100 list)
 while read -r line; do
     TAG=$(echo "$line" | cut -f1)
     BODY=$(gh release view "$TAG" --json body | jq -r '.body')
