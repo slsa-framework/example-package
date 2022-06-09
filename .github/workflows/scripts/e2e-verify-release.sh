@@ -16,6 +16,11 @@ fi
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 ENV_BRANCH=$(cat "$GITHUB_EVENT_PATH" | jq -r '.base_ref')
 
+if [[ -z "$ENV_BRANCH" ]]; then
+    echo "ENV_BRANCH is empty"
+    ENV_BRANCH="refs/heads/$(cat $GITHUB_EVENT_PATH | jq -r '.release.target_commitish')"
+fi
+
 if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]]; then
     echo "mismatch branch: file contains refs/heads/$BRANCH; GitHub env contains $ENV_BRANCH"
     exit 0
