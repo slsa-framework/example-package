@@ -23,7 +23,7 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
     steps:
