@@ -2,11 +2,10 @@ name: go release main SLSA3 config-ldflags noassets
 
 on: 
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 1 * * *'
   workflow_dispatch:
-  push:
-    tags:
-      - "*" # triggers only if push new tag version, like `0.8.4` or else
+  release: 
+    types: [created]
 
 permissions: read-all
 
