@@ -37,7 +37,7 @@ BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 TAG="$NEW_RELEASE_TAG"
 
 echo "New release tag used: $TAG"
-echo "target branch $BRANCH"
+echo "Target branch: $BRANCH"
 
 cat <<EOF >DATA
 **E2e release creation**:
