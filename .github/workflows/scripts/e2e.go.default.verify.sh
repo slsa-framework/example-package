@@ -211,10 +211,14 @@ verify_provenance() {
             e2e_assert_not_eq "$T" "" "TagVersion should not be empty"
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64-$GITHUB_REF_NAME"
+        elif [[ "$GITHUB_REF_TYPE" != "tag" ]] && [[ -n "$VERSION" ]]; then
+            ./"$BINARY"
+            T=$(./"$BINARY" | grep "TagVersion: unknown")
+            e2e_assert_not_eq "$T" "" "TagVersion should contain unknown"
         else
             ./"$BINARY"
-            T=$(./"$BINARY" | grep "TagVersion: unknownVersion")
-            e2e_assert_not_eq "$T" "" "TagVersion should contain unknownVersion"
+            T=$(./"$BINARY" | grep -zoP "TagVersion: \n")
+            e2e_assert_not_eq "$T" "" "TagVersion should be empty"
         fi
 
     fi
