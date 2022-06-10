@@ -187,7 +187,7 @@ verify_provenance() {
         if [[ -z "$GO_MAIN" ]]; then
             # Note: Tests with version don't use the`main:` field in config file. 
             if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$VERSION" ]]; then
-                e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH main.tagVersion=$GITHUB_REF_NAME\",\"-o\",\"$BINARY\"]"
+                e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.tagVersion=$GITHUB_REF_NAME\",\"-o\",\"$BINARY\"]"
             else
                 e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"$BINARY\"]"
             fi
