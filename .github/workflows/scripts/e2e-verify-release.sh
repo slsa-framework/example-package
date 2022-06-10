@@ -23,6 +23,8 @@ fi
 
 if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]]; then
     echo "mismatch branch: file contains refs/heads/$BRANCH; GitHub env contains $ENV_BRANCH"
+    echo "GITHUB_EVENT_PATH:"
+    cat "$GITHUB_EVENT_PATH"
     exit 0
 fi
 
