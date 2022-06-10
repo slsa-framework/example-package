@@ -1,0 +1,95 @@
+name: Generic (Bazel) schedule main default SLSA2
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+env:
+  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+jobs:
+  build:
+    outputs:
+      binary-name: ${{ steps.build.outputs.binary-name }}
+      digest: ${{ steps.hash.outputs.digest }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Bazelisk
+        uses: actions/setup-bazelisk@95c9bf48d0c570bb3e28e57108f3450cd67c1a44 # v2.0.0
+        with:
+          bazelisk-version: "1.11"
+      - name: Build artifact
+        id: build
+        run: |
+          bazelisk build //:hello
+          cp bazel-bin/hello_/hello . # Copy binary from Bazel path to root
+          echo "::set-output name=binary-name::hello"
+      - name: Upload binary
+        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # v2.3.1
+        with:
+          name: ${{ steps.build.outputs.binary-name }}
+          path: ${{ steps.build.outputs.binary-name }}
+          if-no-files-found: error
+          retention-days: 5
+      - name: Generate hash
+        shell: bash
+        id: hash
+        env:
+          BINARY_NAME: ${{ steps.build.outputs.binary-name }}
+        run: |
+          set -euo pipefail
+          echo "::set-output name=digest::$(sha256sum $BINARY_NAME | base64 -w0)"
+
+  provenance:
+    needs: [build]
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/slsa2_provenance.yml@main
+    with:
+      base64-subjects: "${{ needs.build.outputs.digest }}"
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: [build, provenance]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - name: Download binary
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: ${{ needs.build.outputs.binary-name }}
+      - name: Download provenance
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: ${{ needs.provenance.outputs.attestation-name }}
+      - name: Setup Go
+        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
+        with:
+          go-version: "1.17"
+      - name: Verify provenance
+        env:
+          BINARY: ${{ needs.build.outputs.binary-name }}
+          PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
+        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, verify]
+    if: needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, verify]
+    if: always() && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
