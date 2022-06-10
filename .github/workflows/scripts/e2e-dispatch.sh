@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+source "./.github/workflows/scripts/e2e-utils.sh"
+
+THIS_FILE=$(e2e_this_file)
+echo "THIS_FILE: $THIS_FILE"
+
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
-     https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/$THIS_FILE/dispatches \
-     -d "{\"ref\":\"$BRANCH\"}" \
-     -H "Authorization: token $GH_TOKEN"
+    "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/$THIS_FILE/dispatches" \
+    -d "{\"ref\":\"$BRANCH\"}" \
+    -H "Authorization: token $GH_TOKEN"
