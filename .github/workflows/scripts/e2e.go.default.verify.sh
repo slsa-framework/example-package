@@ -151,7 +151,7 @@ verify_provenance() {
     LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
     #DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
     ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
-    VERSION=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v version)
+    VERSION=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep version)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
     DIR="$PWD"
     if [[ -n "$GO_DIR" ]]; then
