@@ -1,4 +1,4 @@
-name: generic tag main default SLSA2
+name: Generic tag main default SLSA2
 
 on:
   schedule:

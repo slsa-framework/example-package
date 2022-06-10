@@ -1,11 +1,9 @@
-name: Generic push main default SLSA2
+name: Generic workflow_dispatch main default SLSA2
 
 "on":
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
-  push:
-    branches: [main]
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
