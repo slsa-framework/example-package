@@ -215,10 +215,14 @@ verify_provenance() {
             ./"$BINARY"
             T=$(./"$BINARY" | grep "TagVersion: unknown")
             e2e_assert_not_eq "$T" "" "TagVersion should contain unknown"
+
+            e2e_assert_eq "$BINARY" "binary-linux-amd64-unknown"
         else
             ./"$BINARY"
             T=$(./"$BINARY" | grep -zoP "TagVersion: \n")
             e2e_assert_not_eq "$T" "" "TagVersion should be empty"
+
+            e2e_assert_eq "$BINARY" "binary-linux-amd64"
         fi
 
     fi
