@@ -212,6 +212,7 @@ verify_provenance() {
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64-$GITHUB_REF_NAME"
         else
+            ./"$BINARY"
             T=$(./"$BINARY" | grep "TagVersion: unknownVersion")
             e2e_assert_not_eq "$T" "" "TagVersion should contain unknownVersion"
         fi
