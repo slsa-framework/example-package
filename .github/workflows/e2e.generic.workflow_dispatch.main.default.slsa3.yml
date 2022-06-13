@@ -1,6 +1,6 @@
-name: Generic (Bazel) schedule main default SLSA2
+name: Generic workflow_dispatch main default SLSA2
 
-on:
+"on":
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
@@ -10,7 +10,17 @@ env:
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
 jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-dispatch.sh
+
   build:
+    if: github.event_name == 'workflow_dispatch'
     outputs:
       binary-name: ${{ steps.build.outputs.binary-name }}
       digest: ${{ steps.hash.outputs.digest }}
@@ -18,15 +28,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Setup Bazelisk
-        uses: bazelbuild/setup-bazelisk@95c9bf48d0c570bb3e28e57108f3450cd67c1a44 # v2.0.0
+      - name: Setup Go
+        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
         with:
-          bazelisk-version: "1.11"
+          go-version: "1.18"
       - name: Build artifact
         id: build
         run: |
-          bazelisk build //:hello
-          cp bazel-bin/hello_/hello . # Copy binary from Bazel path to root
+          go mod vendor
+
+          go build -mod=vendor -o hello .
+
           echo "::set-output name=binary-name::hello"
       - name: Upload binary
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # v2.3.1
@@ -45,35 +57,32 @@ jobs:
           echo "::set-output name=digest::$(sha256sum $BINARY_NAME | base64 -w0)"
 
   provenance:
+    if: github.event_name == 'workflow_dispatch'
     needs: [build]
     permissions:
       id-token: write
       contents: read
       actions: read
-    uses: slsa-framework/slsa-github-generator/.github/workflows/slsa2_provenance.yml@main
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
 
   verify:
     runs-on: ubuntu-latest
     needs: [build, provenance]
+    if: github.event_name == 'workflow_dispatch'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      - name: Download binary
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
           name: ${{ needs.build.outputs.binary-name }}
-      - name: Download provenance
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
-      - name: Setup Go
-        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
+      - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
         with:
-          go-version: "1.17"
-      - name: Verify provenance
-        env:
+          go-version: "1.18"
+      - env:
           BINARY: ${{ needs.build.outputs.binary-name }}
           PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
@@ -81,15 +90,15 @@ jobs:
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [build, provenance, verify]
-    if: needs.build.result == 'success' && needs.verify.result == 'success'
+    if: github.event_name == 'workflow_dispatch' && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
     runs-on: ubuntu-latest
     needs: [build, provenance, verify]
-    if: always() && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    if: always() && github.event_name == 'workflow_dispatch' && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
