@@ -10,12 +10,16 @@ echo "THIS_FILE: $THIS_FILE"
 
 # List the releases and find the latest for THIS_FILE.
 RELEASE_LIST=$(gh release -L 200 list)
+PATCH="0"
 while read -r line; do
     TAG=$(echo "$line" | cut -f1)
     BODY=$(gh release view "$TAG" --json body | jq -r '.body')
     if [[ "$BODY" == *"$THIS_FILE"* ]]; then
-        RELEASE_TAG="$TAG"
-        break
+        # We only bump the patch, so we need not verifi major/minor.
+        P=$(echo "$TAG" | cut -d '.' -f3)
+        if [[ "$P" -gt "$PATCH" ]];
+            RELEASE_TAG="$TAG"
+        fi
     fi
 done <<<"$RELEASE_LIST"
 
