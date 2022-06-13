@@ -68,7 +68,7 @@ e2e_run_verifier_all_releases() {
     go env -w GOFLAGS=-mod=mod
     go install "github.com/$VERIFIER_REPOSITORY@latest"
     echo "**** Verifying provenance with verifier at HEAD *****"
-    verify_provenance "slsa-verifier"
+    $VERIFY_COMMAND "slsa-verifier" "main"
 
     # Second, retrieve all previous versions of the verifier,
     # and verify the provenance. This is essentially regression tests.
@@ -99,7 +99,7 @@ e2e_run_verifier_all_releases() {
 
         echo "**** Verifying provenance with verifier at $TAG ****"
         chmod a+x "./$VERIFIER_BINARY"
-        $VERIFY_COMMAND "./$VERIFIER_BINARY"
+        $VERIFY_COMMAND "./$VERIFIER_BINARY" "$TAG"
 
     done <<<"$RELEASE_LIST"
 }

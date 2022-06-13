@@ -18,9 +18,15 @@
 
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
-# Function used to verify provenance.
-verify_provenance() {
+# Function to verify authenticity of provenance using verifier.
+verify_provenance_authenticity() {
     local verifier="$1"
+    local tag="$2"
+
+    if [[ "$GITHUB_REF_NAME" == "v1.0.0" ]] && [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
+        echo "release trigger at v1.0.0: skipping authenticity verification (https://github.com/slsa-framework/slsa-verifier/pull/89)"
+        return 0
+    fi
 
     # Default parameters.
     if [[ "$BRANCH" == "main" ]]; then
@@ -143,8 +149,11 @@ verify_provenance() {
         $verifier --branch "$BRANCH" --versioned-tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "wrong versioned-tag"
     fi
+}
 
-    # Provenance content verification.
+# Function used to verify the content of the provenance.
+verify_provenance_content() {
+
     ATTESTATION=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
     #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
     #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
@@ -235,6 +244,17 @@ verify_provenance() {
             e2e_assert_eq "$A" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
         fi
     fi
+}
+
+# Function used to verify provenance.
+verify_provenance() {
+    local verifier="$1"
+    local tag="$2"
+
+    verify_provenance_authenticity "$verifier" "$tag"
+       
+
+    verify_provenance_content
 
     #TODO: read out the provenance information once we print it
 }
