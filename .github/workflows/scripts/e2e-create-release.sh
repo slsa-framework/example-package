@@ -15,10 +15,11 @@ while read -r line; do
     TAG=$(echo "$line" | cut -f1)
     BODY=$(gh release view "$TAG" --json body | jq -r '.body')
     if [[ "$BODY" == *"$THIS_FILE"* ]]; then
-        # We only bump the patch, so we need not verifi major/minor.
+        # We only bump the patch, so we need not verify major/minor.
         P=$(echo "$TAG" | cut -d '.' -f3)
         if [[ "$P" -gt "$PATCH" ]]; then
             echo " INFO: updating to $TAG"
+            PATCH="$P"
             RELEASE_TAG="$TAG"
         fi
     fi
