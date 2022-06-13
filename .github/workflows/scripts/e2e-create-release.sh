@@ -17,6 +17,10 @@ while read -r line; do
     if [[ "$BODY" == *"$THIS_FILE"* ]]; then
         # We only bump the patch, so we need not verify major/minor.
         P=$(echo "$TAG" | cut -d '.' -f3)
+        echo "  Processing $TAG"
+        echo "  P: $P"
+        echo "  PATCH: $PATCH"
+        echo "  RELEASE_TAG: $RELEASE_TAG"
         if [[ "$P" -gt "$PATCH" ]]; then
             echo " INFO: updating to $TAG"
             PATCH="$P"
