@@ -23,8 +23,8 @@ verify_provenance_authenticity() {
     local verifier="$1"
     local tag="$2"
 
-    if [[ "$GITHUB_REF_NAME" == "v1.0.0" ]] && [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
-        echo "release trigger at v1.0.0: skipping authenticity verification (https://github.com/slsa-framework/slsa-verifier/pull/89)"
+    if [[ "$tag" == "v1.0.0" ]] && [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
+        echo "release trigger at v1.0.0: skipping authenticity verification due to lack of support (https://github.com/slsa-framework/slsa-verifier/pull/89)"
         return 0
     fi
 
