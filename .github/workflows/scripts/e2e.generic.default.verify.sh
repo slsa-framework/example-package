@@ -115,7 +115,7 @@ verify_provenance() {
     e2e_verify_common_all "$ATTESTATION"
 
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
-    e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/slsa2_provenance.yml@refs/heads/main"
+    e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator@v1"
 }
 
