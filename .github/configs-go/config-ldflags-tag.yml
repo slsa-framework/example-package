@@ -11,9 +11,9 @@ flags:
 
 goos: linux
 goarch: amd64
-binary: binary-{{ .Os }}-{{ .Arch }}-{{ .Version }}
+binary: binary-{{ .Os }}-{{ .Arch }}-{{ .Tag }}
 ldflags:
   - '{{ .Env.VERSION }}'  
   - '{{ .Env.COMMIT }}'
   - '{{ .Env.BRANCH }}'
-  - -X main.tagVersion={{ .Version }}
+  - -X main.gitTag={{ .Tag }}

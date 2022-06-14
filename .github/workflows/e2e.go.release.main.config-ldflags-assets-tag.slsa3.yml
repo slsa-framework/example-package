@@ -1,12 +1,11 @@
-name: go tag main SLSA3 config-ldflags assets version
+name: go release main SLSA3 config-ldflags assets version
 
 on: 
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 4 * * *'
   workflow_dispatch:
-  push:
-    tags:
-      - "*" # triggers only if push new tag version, like `0.8.4` or else
+  release: 
+    types: [created]
 
 permissions: read-all
 
@@ -15,7 +14,7 @@ env:
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   #ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   # WARNING: update build job if CONFIG_FILE changes.
-  CONFIG_FILE: .github/configs-go/config-ldflags-version.yml
+  CONFIG_FILE: .github/configs-go/config-ldflags-tag.yml
 
 jobs:
   release:
@@ -29,12 +28,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Note: we use v20.x.y
+          # Note: we use v19.x.y
           ./.github/workflows/scripts/e2e-create-release.sh
   
   shim: 
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'release' && github.ref_type == 'tag'
     outputs:
       continue: ${{ steps.verify.outputs.continue }}
     steps:
@@ -47,7 +46,7 @@ jobs:
 
   args:
     needs: [shim]
-    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.ldflags.outputs.version }}
@@ -70,7 +69,7 @@ jobs:
 
   build:
     needs: [shim,args]
-    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag'
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
@@ -79,7 +78,7 @@ jobs:
     with:
       go-version: 1.18
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
-      config-file: .github/configs-go/config-ldflags-version.yml
+      config-file: .github/configs-go/config-ldflags-tag.yml
       evaluated-envs: "VERSION:${{needs.args.outputs.version}},COMMIT:${{needs.args.outputs.commit}},BRANCH:${{needs.args.outputs.branch}}"
       compile-builder: true
   
@@ -93,7 +92,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     needs: [shim,build]
-    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
@@ -116,7 +115,7 @@ jobs:
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [shim,build,verify]
-    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - run: |
@@ -127,7 +126,7 @@ jobs:
   if-failed:
     runs-on: ubuntu-latest
     needs: [shim,build,verify]
-    if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
       - run: |

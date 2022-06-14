@@ -163,7 +163,7 @@ verify_provenance_content() {
     LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
     #DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
     ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
-    VERSION=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep version)
+    TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
     DIR="$PWD"
     if [[ -n "$GO_DIR" ]]; then
@@ -197,8 +197,8 @@ verify_provenance_content() {
         chmod a+x ./"$BINARY"
 
         if [[ -z "$GO_MAIN" ]]; then
-            # Note: Tests with version don't use the`main:` field in config file. 
-            if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$VERSION" ]]; then
+            # Note: Tests with tag don't use the `main:` field in config file. 
+            if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG" ]]; then
                 e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.tagVersion=$GITHUB_REF_NAME\",\"-o\",\"$BINARY\"]"
             else
                 e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"$BINARY\"]"
@@ -216,23 +216,23 @@ verify_provenance_content() {
         e2e_assert_not_eq "$C" "" "GitCommit should not be empty"
         e2e_assert_not_eq "$B" "" "GitBranch should not be empty"
 
-        # Verify the TagVersion is set to the dynamic version using {{ .Version }}.
+        # Verify the GitTag is set to the dynamic version using {{ .Version }}.
         # and that the name of the binary is set properly.
-        if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$VERSION" ]]; then
-            T=$(./"$BINARY" | grep "TagVersion: $GITHUB_REF_NAME")
-            e2e_assert_not_eq "$T" "" "TagVersion should not be empty"
+        if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG" ]]; then
+            T=$(./"$BINARY" | grep "GitTag: $GITHUB_REF_NAME")
+            e2e_assert_not_eq "$T" "" "GitTag should not be empty"
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64-$GITHUB_REF_NAME"
-        elif [[ "$GITHUB_REF_TYPE" != "tag" ]] && [[ -n "$VERSION" ]]; then
+        elif [[ "$GITHUB_REF_TYPE" != "tag" ]] && [[ -n "$TAG" ]]; then
             ./"$BINARY"
-            T=$(./"$BINARY" | grep "TagVersion: unknown")
-            e2e_assert_not_eq "$T" "" "TagVersion should contain unknown"
+            T=$(./"$BINARY" | grep "GitTag: unknown")
+            e2e_assert_not_eq "$T" "" "GitTag should contain unknown"
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64-unknown"
         else
             ./"$BINARY"
-            T=$(./"$BINARY" | grep -zoP "TagVersion: \n")
-            e2e_assert_not_eq "$T" "" "TagVersion should be empty"
+            T=$(./"$BINARY" | grep -zoP "GitTag: \n")
+            e2e_assert_not_eq "$T" "" "GitTag should be empty"
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64"
         fi
