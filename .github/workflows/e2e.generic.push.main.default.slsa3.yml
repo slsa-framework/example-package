@@ -1,4 +1,4 @@
-name: Generic push main default SLSA2
+name: Generic push main default SLSA3
 
 on:
   schedule:

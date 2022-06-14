@@ -1,4 +1,4 @@
-name: Generic (Bazel) push main default SLSA2
+name: Generic (Bazel) push main default SLSA3
 
 on:
   schedule:
@@ -18,7 +18,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-push.sh
 
   build:
@@ -72,7 +72,7 @@ jobs:
     needs: [build, provenance]
     if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
           name: ${{ needs.build.outputs.binary-name }}
@@ -92,7 +92,7 @@ jobs:
     needs: [build, provenance, verify]
     if: github.event_name == 'push' && github.event.head_commit.message == github.workflow && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -100,5 +100,5 @@ jobs:
     needs: [build, provenance, verify]
     if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

@@ -1,4 +1,4 @@
-name: Generic workflow_dispatch main default SLSA2
+name: Generic workflow_dispatch main default SLSA3
 
 on:
   schedule:

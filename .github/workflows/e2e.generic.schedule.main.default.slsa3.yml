@@ -1,4 +1,4 @@
-name: Generic schedule main default SLSA2
+name: Generic schedule main default SLSA3
 
 on:
   schedule:

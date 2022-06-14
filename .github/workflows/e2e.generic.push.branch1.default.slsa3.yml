@@ -1,11 +1,11 @@
-name: Generic push branch1 default SLSA2
+name: Generic push branch1 default SLSA3
 
 on:
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
   push:
-    branches: [main, branch1]
+    branches: [branch1]
 
 permissions: read-all
 
@@ -38,7 +38,7 @@ jobs:
 
           THIS_FILE=$(e2e_this_file)
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-          if [[ "$BRANCH" == "${{ github.ref_name }}" ]]; then
+          if [[ "$BRANCH" == "$GITHUB_REF_NAME" ]]; then
             echo "::set-output name=continue::yes"
           fi
 
