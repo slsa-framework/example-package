@@ -1,6 +1,6 @@
 name: Generic workflow_dispatch main default SLSA2
 
-"on":
+on:
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:

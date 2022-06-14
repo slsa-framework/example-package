@@ -1,4 +1,7 @@
-name: Generic tag main default SLSA2
+name: Generic tag branch1 default SLSA2
+
+# NOTE: this file is identical to the 'main' version of this test.
+# The only logic that's different is in e2e-create-release.sh
 
 on:
   schedule:
