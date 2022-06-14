@@ -1,4 +1,4 @@
-name: go tag main SLSA3 config-ldflags assets version
+name: go tag main SLSA3 config-ldflags assets tag
 
 on: 
   schedule:
