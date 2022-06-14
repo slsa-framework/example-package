@@ -35,7 +35,8 @@ done <<<"$RELEASE_LIST"
 
 if [[ -z "$RELEASE_TAG" ]]; then
     echo "Tag not found for $THIS_FILE"
-    exit 3
+    echo "defaulting to DEFAULT_VERSION: $DEFAULT_VERSION"
+    RELEASE_TAG="$DEFAULT_VERSION"
 fi
 
 echo "Latest tag found is $RELEASE_TAG"

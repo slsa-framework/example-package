@@ -13,6 +13,7 @@ env:
   #ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-ldflags.yml
+  DEFAULT_VERSION: v16.0.0
 
 jobs:
   release:
@@ -26,7 +27,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Note: we use v16.x.y
           ./.github/workflows/scripts/e2e-create-release.sh
   
   shim: 

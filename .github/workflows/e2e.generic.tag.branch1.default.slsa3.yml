@@ -14,6 +14,7 @@ permissions: read-all
 env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  DEFAULT_VERSION: v22.0.0
 
 jobs:
   release:
@@ -24,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - id: create
-        # Note: we use v18.x.y
+        
         run: ./.github/workflows/scripts/e2e-create-release.sh
 
   shim:
