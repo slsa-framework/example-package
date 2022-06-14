@@ -10,8 +10,8 @@ e2e_create_issue_failure_body
 ISSUE_ID=$(gh -R "$ISSUE_REPOSITORY" issue list --state open -S "$THIS_FILE" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
 
 if [[ -z "$ISSUE_ID" ]]; then
-    # Replace `.`` by ` ` and remove the last 3 characters `yml`
-    TITLE=$(echo "$THIS_FILE" | sed -e 's/\./ /g' | rev | cut -c4- | rev)
+    # Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
+    TITLE=$(echo "$THIS_FILE" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
     gh -R "$ISSUE_REPOSITORY" issue create -t "E2E: $TITLE" -F ./BODY -l e2e -l "type:bug"
 else
     gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY

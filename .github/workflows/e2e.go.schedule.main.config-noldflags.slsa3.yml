@@ -1,5 +1,3 @@
-name: go schedule main SLSA3 config-noldflags
-
 on: 
   schedule:
     - cron: '0 2 * * *'

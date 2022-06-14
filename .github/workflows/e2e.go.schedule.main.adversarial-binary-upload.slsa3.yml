@@ -1,5 +1,3 @@
-name: go schedule main SLSA3 adversarial binary-upload
-
 on: 
   schedule:
     - cron: '0 8 * * *'

@@ -1,5 +1,3 @@
-name: go tag main SLSA3 adversarial asset provenance
-
 on: 
   schedule:
     - cron: '0 3 * * *'

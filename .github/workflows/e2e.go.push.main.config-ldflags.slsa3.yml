@@ -1,5 +1,3 @@
-name: go push main SLSA3 config-ldflags
-
 on: 
   schedule:
     - cron: '0 6 * * *'

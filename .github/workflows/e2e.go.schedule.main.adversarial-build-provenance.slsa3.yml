@@ -1,5 +1,3 @@
-name: go schedule main SLSA3 adversarial build provenance
-
 on: 
   schedule:
     - cron: '0 9 * * *'

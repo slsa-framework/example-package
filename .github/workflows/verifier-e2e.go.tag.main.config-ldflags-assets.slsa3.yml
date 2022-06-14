@@ -1,7 +1,4 @@
 # Creates a new release on vX and vX.Y tag push for verifier testdata.
-
-name: go tag main SLSA3 config-ldflags assets
-
 on: 
   workflow_dispatch:
   push:

@@ -1,7 +1,4 @@
 # Creates workflow dispatch provenance with a pinned builder for verifier testdata.
-
-name: go workflow_dispatch main SLSA3 config-noldflags
-
 on: 
   schedule:
     - cron: '0 1 * * *'

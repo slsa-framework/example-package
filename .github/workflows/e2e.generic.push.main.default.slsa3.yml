@@ -1,5 +1,3 @@
-name: Generic push main default SLSA3
-
 on:
   schedule:
     - cron: "0 3 * * *"

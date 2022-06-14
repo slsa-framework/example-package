@@ -1,5 +1,3 @@
-name: Generic workflow_dispatch main default SLSA3
-
 # NOTE: this file is identical to the 'main' version of this test.
 # The only logic that's different is in e2e-create-release.sh
 

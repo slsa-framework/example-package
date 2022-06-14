@@ -1,5 +1,3 @@
-name: Generic tag main default SLSA3
-
 on:
   schedule:
     - cron: "0 2 * * *"
