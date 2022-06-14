@@ -60,7 +60,6 @@ Tag: $TAG
 Branch: $BRANCH
 Commit: $GITHUB_SHA
 Caller file: $THIS_FILE
-Caller name: $GITHUB_WORKFLOW
 EOF
 
 gh release create "$TAG" --notes-file ./DATA --target "$BRANCH"
