@@ -7,7 +7,7 @@ THIS_FILE=$(e2e_this_file)
 
 e2e_create_issue_success_body
 
-ISSUE_ID=$(gh -R "$ISSUE_REPOSITORY" issue list --state open -S "$THIS_FILE" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
+ISSUE_ID=$(gh -R "$ISSUE_REPOSITORY" issue list --label "e2e" --label "type:bug" --state open -S "$THIS_FILE" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
 
 if [[ -n "$ISSUE_ID" ]]; then
     echo gh -R "$ISSUE_REPOSITORY" issue close "$ISSUE_ID" -c "$(cat ./BODY)"
