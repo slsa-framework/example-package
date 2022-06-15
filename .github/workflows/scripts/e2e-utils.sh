@@ -2,6 +2,7 @@
 # Comment out the line below to be able to verify failure of certain commands.
 #set -euo pipefail
 
+# shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-assert.sh"
 
 # Gets the name of the currently running workflow file.
@@ -28,6 +29,117 @@ Trigger: $GITHUB_EVENT_NAME
 Branch: $GITHUB_REF_NAME
 Date: $RUN_DATE
 EOF
+}
+
+# strip_zeros strips leading zeros.
+strip_zeros() {
+    # shellcheck disable=SC2001
+    echo "$1" | sed -e 's/0*\([0-9]\)/\1/g'
+}
+
+# version_major prints the major version number if numeric.
+version_major() {
+    # sed strips off remaining non-digit text. e.g. v1-rc0 will return 1
+    VER=$(strip_zeros "$(echo "${1#"v"}" | cut -s -d '.' -f1 | sed -e 's/^\([0-9]*\).*/\1/g')")
+    if [ "$VER" == "" ]; then
+        # string may not contain delimiters.
+        VER=$(strip_zeros "${1#"v"}" | sed -e 's/^\([0-9]*\).*/\1/g')
+    fi
+    echo "$VER"
+}
+
+# version_minor prints the minor version number if numeric.
+version_minor() {
+    # sed strips off remaining non-digit text. e.g. v1.2-rc0 will return 2
+    strip_zeros "$(echo "${1#"v"}" | cut -s -d '.' -f2 | sed -e 's/^\([0-9]*\).*/\1/g')"
+}
+
+# version_patch prints the patch version number if numeric.
+version_patch() {
+    # sed strips off remaining non-digit text. e.g. v1.3.4-rc0 will return 4
+    strip_zeros "$(echo "${1#"v"}" | cut -s -d '.' -f3 | sed -e 's/^\([0-9]*\).*/\1/g')"
+}
+
+# version_eq returns 1 if the left-hand version is equal to the right-hand
+# version.
+# $1: left-hand version string
+# $2: right-hand version string
+version_eq() {
+    # strip 'v' prefix from versions
+    RH=${1#+"v"}
+    LH=${2#+"v"}
+
+    if [ "$RH" == "$LH" ]; then
+        return 1
+    fi
+
+    RH_MAJOR=$(version_major "$RH")
+    RH_MINOR=$(version_minor "$RH")
+    RH_PATCH=$(version_patch "$RH")
+
+    LH_MAJOR=$(version_major "$LH")
+    LH_MINOR=$(version_minor "$LH")
+    LH_PATCH=$(version_patch "$LH")
+
+    [ "${RH_MAJOR:-0}" -eq "${LH_MAJOR:-0}" ] && [ "${RH_MINOR:-0}" -eq "${LH_MINOR:-0}" ] && [ "${RH_PATCH:-0}" -eq "${LH_PATCH:-0}" ]
+}
+
+# version_gt returns 1 if the left-hand version is greater than the right-handd
+# version.
+# $1: left-hand version string
+# $2: right-hand version string
+version_gt() {
+    # strip 'v' prefix from versions
+    RH=${1#+"v"}
+    LH=${2#+"v"}
+
+    if [ "$RH" == "$LH" ]; then
+        return 1
+    fi
+
+    RH_MAJOR=$(version_major "$RH")
+    RH_MINOR=$(version_minor "$RH")
+    RH_PATCH=$(version_patch "$RH")
+
+    LH_MAJOR=$(version_major "$LH")
+    LH_MINOR=$(version_minor "$LH")
+    LH_PATCH=$(version_patch "$LH")
+
+    if [ "${RH_MAJOR:-0}" == "${LH_MAJOR:-0}" ]; then
+        version_gt "${RH_MINOR:-0}.${RH_PATCH:-0}" "${LH_MINOR:-0}.${LH_PATCH:-0}"
+    else
+        # return if RH is greater than LH
+        [ "${RH_MAJOR:-0}" -gt "${LH_MAJOR:-0}" ]
+    fi
+}
+
+# version_lt returns 1 if the left-hand version is less than the right-hand
+# version.
+# $1: left-hand version string
+# $2: right-hand version string
+version_lt() {
+    # strip 'v' prefix from versions
+    RH=${1#+"v"}
+    LH=${2#+"v"}
+
+    if [ "$RH" == "$LH" ]; then
+        return 1
+    fi
+
+    RH_MAJOR=$(version_major "$RH")
+    RH_MINOR=$(version_minor "$RH")
+    RH_PATCH=$(version_patch "$RH")
+
+    LH_MAJOR=$(version_major "$LH")
+    LH_MINOR=$(version_minor "$LH")
+    LH_PATCH=$(version_patch "$LH")
+
+    if [ "${RH_MAJOR:-0}" == "${LH_MAJOR:-0}" ]; then
+        version_lt "${RH_MINOR:-0}.${RH_PATCH:-0}" "${LH_MINOR:-0}.${LH_PATCH:-0}"
+    else
+        # return if RH is greater than LH
+        [ "${RH_MAJOR:-0}" -lt "${LH_MAJOR:-0}" ]
+    fi
 }
 
 e2e_create_issue_failure_body() {

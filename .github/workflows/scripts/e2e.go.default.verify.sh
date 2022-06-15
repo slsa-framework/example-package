@@ -16,6 +16,7 @@
 # export BINARY=binary-linux-amd64
 # export PROVENANCE=example.intoto.jsonl
 
+# shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
 # Function to verify authenticity of provenance using verifier.
@@ -23,8 +24,8 @@ verify_provenance_authenticity() {
     local verifier="$1"
     local tag="$2"
 
-    MAJOR=$(echo $tag | cut -d '.' -f1)
-    if [[ "$MAJOR" == "v0" ]] || [[ "$tag" == "v1.0.0" ]]; then
+    MAJOR=$(version_major "$tag")
+    if [[ "${MAJOR:-0}" == "0" ]] || [[ "$tag" == "v1.0.0" ]]; then
         if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
             echo "  INFO: release trigger at v1.0.0: skipping authenticity verification due to lack of support (https://github.com/slsa-framework/slsa-verifier/pull/89)"
             return 0
@@ -197,7 +198,7 @@ verify_provenance_content() {
         chmod a+x ./"$BINARY"
 
         if [[ -z "$GO_MAIN" ]]; then
-            # Note: Tests with tag don't use the `main:` field in config file. 
+            # Note: Tests with tag don't use the `main:` field in config file.
             if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG" ]]; then
                 e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitTag=$GITHUB_REF_NAME\",\"-o\",\"$BINARY\"]"
             else
@@ -255,7 +256,6 @@ verify_provenance() {
     local tag="$2"
 
     verify_provenance_authenticity "$verifier" "$tag"
-       
 
     verify_provenance_content
 
