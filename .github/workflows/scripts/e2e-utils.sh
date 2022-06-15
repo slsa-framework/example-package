@@ -60,7 +60,7 @@ version_patch() {
     strip_zeros "$(echo "${1#"v"}" | cut -s -d '.' -f3 | sed -e 's/^\([0-9]*\).*/\1/g')"
 }
 
-# version_eq returns 1 if the left-hand version is equal to the right-hand
+# version_eq returns 0 if the left-hand version is equal to the right-hand
 # version.
 # $1: left-hand version string
 # $2: right-hand version string
@@ -68,10 +68,6 @@ version_eq() {
     # strip 'v' prefix from versions
     RH=${1#+"v"}
     LH=${2#+"v"}
-
-    if [ "$RH" == "$LH" ]; then
-        return 1
-    fi
 
     RH_MAJOR=$(version_major "$RH")
     RH_MINOR=$(version_minor "$RH")
@@ -84,7 +80,7 @@ version_eq() {
     [ "${RH_MAJOR:-0}" -eq "${LH_MAJOR:-0}" ] && [ "${RH_MINOR:-0}" -eq "${LH_MINOR:-0}" ] && [ "${RH_PATCH:-0}" -eq "${LH_PATCH:-0}" ]
 }
 
-# version_gt returns 1 if the left-hand version is greater than the right-handd
+# version_gt returns 0 if the left-hand version is greater than the right-handd
 # version.
 # $1: left-hand version string
 # $2: right-hand version string
@@ -113,7 +109,15 @@ version_gt() {
     fi
 }
 
-# version_lt returns 1 if the left-hand version is less than the right-hand
+# version_re returns 0 if the left-hand version is greater than or equal to the
+# right-hand version.
+# $1: left-hand version string
+# $2: right-hand version string
+version_ge() {
+    version_gt "$1" "$2" || version_eq "$1" "$2"
+}
+
+# version_lt returns 0 if the left-hand version is less than the right-hand
 # version.
 # $1: left-hand version string
 # $2: right-hand version string
@@ -140,6 +144,23 @@ version_lt() {
         # return if RH is greater than LH
         [ "${RH_MAJOR:-0}" -lt "${LH_MAJOR:-0}" ]
     fi
+}
+
+# version_le returns 0 if the left-hand version is less than or equal to the
+# right-hand version.
+# $1: left-hand version string
+# $2: right-hand version string
+version_le() {
+    version_lt "$1" "$2" || version_eq "$1" "$2"
+}
+
+# version_range return 0 if if the version is within a given version range
+# (inclusive).
+# $1: The version to check.
+# $2: The minimum version.
+# $3: The maximum version.
+version_range() {
+    version_ge "$1" "$2" && version_le "$1" "$3"
 }
 
 e2e_create_issue_failure_body() {

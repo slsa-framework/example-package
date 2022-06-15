@@ -127,4 +127,5 @@ echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 
-e2e_run_verifier_all_releases verify_provenance
+# Only run at HEAD before GA of the generic builder.
+e2e_run_verifier_all_releases verify_provenance "HEAD"

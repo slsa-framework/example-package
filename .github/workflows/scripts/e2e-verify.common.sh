@@ -2,6 +2,7 @@
 #
 # This file contains tests for common fields of Github Actions provenance.
 
+# shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
 
 # Runs all generic SLSA checks that shouldn't change on a per-builder basis.
@@ -57,8 +58,10 @@ e2e_verify_common_materials() {
 }
 
 # Runs a verification command for each version of slsa-verifier.
-# $1: command to run. The command should take the verifier binary as an
-#     argument.
+# $1: Command to run. The command should take the verifier binary as its own
+#     argument $1.
+# $2: The minimum verifier version to check. The minimum version can be "HEAD".
+# $3: The maximum verifier version to check.
 e2e_run_verifier_all_releases() {
     VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
     VERIFIER_BINARY="slsa-verifier-linux-amd64"
@@ -77,9 +80,23 @@ e2e_run_verifier_all_releases() {
     echo "$RELEASE_LIST"
     echo
 
+    if [ "$2" != "HEAD" ]; then
+        return 0
+    fi
+
     while read -r line; do
         TAG=$(echo "$line" | cut -f1)
         echo "  *** Starting with verifier at $TAG ****"
+
+        # Check minimum verifier version
+        if [ "$2" != "" ] && version_lt "$TAG" "$2"; then
+            continue
+        fi
+
+        # Check maximum verifier version
+        if [ "$3" != "" ] && version_gt "$TAG" "$3"; then
+            continue
+        fi
 
         # Always remove the binary, because `gh release download` fails if the file already exists.
         if [[ -f "$VERIFIER_BINARY" ]]; then
