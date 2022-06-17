@@ -24,6 +24,7 @@ verify_provenance_authenticity() {
     local verifier="$1"
     local tag="$2"
 
+    local MAJOR
     MAJOR=$(version_major "$tag")
     if [[ "${MAJOR:-0}" == "0" ]] || [[ "$tag" == "v1.0.0" ]]; then
         if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
@@ -60,14 +61,18 @@ verify_provenance_authenticity() {
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         #TODO: try several versioned-tags and tags.
+        local SEMVER MAJOR MINOR PATCH
         SEMVER="$GITHUB_REF_NAME"
         MAJOR=$(version_major "$SEMVER")
         MINOR=$(version_minor "$SEMVER")
         PATCH=$(version_patch "$SEMVER")
 
+        local MAJOR_LESS_ONE MINOR_LESS_ONE PATCH_LESS_ONE
         MAJOR_LESS_ONE=$((${MAJOR:-1} - 1))
         MINOR_LESS_ONE=$((${MINOR:-1} - 1))
         PATCH_LESS_ONE=$((${PATCH:-1} - 1))
+
+        local MAJOR_PLUS_ONE MINOR_PLUS_ONE PATCH_PLUS_ONE
         MAJOR_PLUS_ONE=$((${MAJOR:-0} + 1))
         MINOR_PLUS_ONE=$((${MINOR:-0} + 1))
         PATCH_PLUS_ONE=$((${PATCH:-0} + 1))
@@ -249,18 +254,6 @@ verify_provenance_content() {
     fi
 }
 
-# Function used to verify provenance.
-verify_provenance() {
-    local verifier="$1"
-    local tag="$2"
-
-    verify_provenance_authenticity "$verifier" "$tag"
-
-    verify_provenance_content
-
-    #TODO: read out the provenance information once we print it
-}
-
 # =====================================
 # ===== main execution starts =========
 # =====================================
@@ -274,4 +267,8 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 echo "BINARY: file is $BINARY"
 
-e2e_run_verifier_all_releases verify_provenance
+# Verify provenance authenticity
+e2e_run_verifier_all_releases
+
+# Verify the provenance content.
+verify_provenance_content
