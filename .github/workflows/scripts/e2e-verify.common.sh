@@ -55,6 +55,20 @@ e2e_verify_common_materials() {
     e2e_verify_predicate_materials "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
 }
 
+# e2e_get_payload prints the provenance payload in JSON format.
+# $1: File containing the DSSE envelope.
+e2e_get_payload() {
+    jq -r '.payload' <"$1" | base64 -d
+}
+
+# e2e_set_payload overwrites the provenance payload with other provenance and
+# prints it.
+# $1: File containing the DSSE envelope.
+# $2: The new provenance payload.
+e2e_set_payload() {
+    jq -c ".payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
+}
+
 # verify_provenance_authenticity is a function that verifies the authenticity of
 # the provenance using slsa-verifier.
 # $1: The path to the slsa-verifier binary.
@@ -95,6 +109,13 @@ verify_provenance_authenticity() {
     echo "  **** Wrong tag *****"
     $verifier --tag v1.2.3 --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong tag"
+
+    echo "  **** Wrong payload *****"
+    local BAD_PROV
+    BAD_PROV="$(mktemp -t slsa-e2e.XXXXXXXX)"
+    e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"$BAD_PROV"
+    $verifier --branch "$BRANCH" --artifact-path "$BINARY" --provenance "$BAD_PROV" --source "github.com/$GITHUB_REPOSITORY"
+    e2e_assert_not_eq "$?" "0" "wrong payload"
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         #TODO: try several versioned-tags and tags.
