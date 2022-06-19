@@ -23,7 +23,6 @@ _create_issue_body() {
     cat <<EOF >BODY
 Repo: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME
 Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
-Workflow name: $GITHUB_WORKFLOW
 Workflow file: https://github.com/$GITHUB_REPOSITORY/tree/main/.github/workflows/$THIS_FILE
 Workflow runs: https://github.com/$GITHUB_REPOSITORY/actions/workflows/$THIS_FILE
 Trigger: $GITHUB_EVENT_NAME
