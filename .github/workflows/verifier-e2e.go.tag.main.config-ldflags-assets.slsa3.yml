@@ -18,54 +18,8 @@ env:
   CONFIG_FILE: .github/configs-go/config-ldflags.yml
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      - id: create
-        run: |
-          set -euo pipefail
-
-          THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
-          echo "THIS_FILE: $THIS_FILE"
-
-          TAG=$(echo $GITHUB_REF | cut -d "/" -f3)
-          echo "TAG: $TAG"
-          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
-          BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-          echo "BRANCH: $BRANCH"
-
-
-          cat << EOF > DATA
-          **E2e release creation**:
-          Tag: $TAG
-          Branch: $GITHUB_REF_NAME
-          Commit: $GITHUB_SHA
-          Caller file: $THIS_FILE
-          EOF
-
-          gh release create "$TAG" --notes-file ./DATA --target "$BRANCH"
-
-  shim: 
-    needs: [release]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_type == 'tag'
-    outputs:
-      continue: ${{ steps.verify.outputs.continue }}
-    steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      - id: verify
-        run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-verify-release.sh
-
   args:
-    needs: [shim]
-    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.ldflags.outputs.version }}
@@ -87,8 +41,8 @@ jobs:
           echo "::set-output name=branch::-X main.gitBranch=$BRANCH"
 
   build:
-    needs: [shim,args]
-    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    needs: [args]
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
