@@ -22,14 +22,19 @@ source "./.github/workflows/scripts/e2e-verify.common.sh"
 # Function used to verify the content of the provenance.
 verify_provenance_content() {
 
+    local THIS_FILE ATTESTATION LDFLAGS ASSETS TAG_TRIGGER DIR
+    THIS_FILE=$(e2e_this_file)
     ATTESTATION=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
     #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
     #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
     LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
     #DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
     ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
-    TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag)
-    # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
+
+    # NOTE: TAG_TRIGGER != "" for tag e2e tests.
+    TAG_TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3 | grep tag)
+
+    # NOTE: GO_MAIN and GO_DIR are set in the workflows as env variables.
     DIR="$PWD"
     if [[ -n "$GO_DIR" ]]; then
         DIR="$DIR/$GO_DIR"
@@ -63,7 +68,7 @@ verify_provenance_content() {
 
         if [[ -z "$GO_MAIN" ]]; then
             # Note: Tests with tag don't use the `main:` field in config file.
-            if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG" ]]; then
+            if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG_TRIGGER" ]]; then
                 e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitTag=$GITHUB_REF_NAME\",\"-o\",\"$BINARY\"]"
             else
                 e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"$BINARY\"]"
@@ -83,12 +88,12 @@ verify_provenance_content() {
 
         # Verify the GitTag is set to the dynamic version using {{ .Version }}.
         # and that the name of the binary is set properly.
-        if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG" ]]; then
+        if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG_TRIGGER" ]]; then
             T=$(./"$BINARY" | grep "GitTag: $GITHUB_REF_NAME")
             e2e_assert_not_eq "$T" "" "GitTag should not be empty"
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64-$GITHUB_REF_NAME"
-        elif [[ "$GITHUB_REF_TYPE" != "tag" ]] && [[ -n "$TAG" ]]; then
+        elif [[ "$GITHUB_REF_TYPE" != "tag" ]] && [[ -n "$TAG_TRIGGER" ]]; then
             ./"$BINARY"
             T=$(./"$BINARY" | grep "GitTag: unknown")
             e2e_assert_not_eq "$T" "" "GitTag should contain unknown"
