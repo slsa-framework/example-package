@@ -230,6 +230,11 @@ e2e_run_verifier_all_releases() {
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
     verify_provenance_authenticity "slsa-verifier" "main"
 
+    # If the minimum version is HEAD then we are done.
+    if [ "$1" == "HEAD" ]; then
+        return 0
+    fi
+
     # Second, retrieve all previous versions of the verifier,
     # and verify the provenance. This is essentially regression tests.
     local RELEASE_LIST
@@ -237,10 +242,6 @@ e2e_run_verifier_all_releases() {
     echo "Releases found:"
     echo "$RELEASE_LIST"
     echo
-
-    if [ "$1" != "HEAD" ]; then
-        return 0
-    fi
 
     while read -r line; do
         local TAG
