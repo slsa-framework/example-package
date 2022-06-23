@@ -3,8 +3,10 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch:
 
+permissions: read_all
+
 env:
-  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
 jobs:
