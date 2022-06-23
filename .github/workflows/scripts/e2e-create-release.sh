@@ -62,4 +62,13 @@ Commit: $GITHUB_SHA
 Caller file: $THIS_FILE
 EOF
 
-gh release create "$TAG" --notes-file ./DATA --target "$BRANCH"
+# Use the PAT_TOKEN if one is specified.
+# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
+TOKEN=$PAT_TOKEN
+if [[ -z "$PUSH_TOKEN" ]]; then
+    TOKEN=$GH_TOKEN
+fi
+
+# We must use a PAT here in order to trigger subsequent workflows.
+# See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
+GH_TOKEN=$TOKEN gh release create "$TAG" --notes-file ./DATA --target "$BRANCH"
