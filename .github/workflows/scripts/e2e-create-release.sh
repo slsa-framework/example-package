@@ -65,7 +65,7 @@ EOF
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
 TOKEN=$PAT_TOKEN
-if [[ -z "$PUSH_TOKEN" ]]; then
+if [[ -z "$TOKEN" ]]; then
     TOKEN=$GH_TOKEN
 fi
 
