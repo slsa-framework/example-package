@@ -3,7 +3,7 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch:
 
-permissions: read_all
+permissions: read-all
 
 env:
   GH_TOKEN: ${{ github.token }}

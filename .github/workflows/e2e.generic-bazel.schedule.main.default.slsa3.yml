@@ -1,9 +1,9 @@
-on:
+en:
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
 
-permissions: read_all
+permissions: read-all
 
 env:
   GH_TOKEN: ${{ github.token }}
@@ -59,7 +59,7 @@ jobs:
     needs: [build, provenance]
     steps:
       - name: Checkout code
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - name: Download binary
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
@@ -83,7 +83,7 @@ jobs:
     needs: [build, provenance, verify]
     if: needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #  v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -91,5 +91,5 @@ jobs:
     needs: [build, provenance, verify]
     if: always() && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
