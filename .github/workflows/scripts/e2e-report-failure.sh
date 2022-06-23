@@ -9,10 +9,17 @@ e2e_create_issue_failure_body
 
 ISSUE_ID=$(gh -R "$ISSUE_REPOSITORY" issue list --label "e2e" --label "type:bug" --state open -S "$THIS_FILE" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
 
+# Use the PAT_TOKEN if one is specified.
+# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
+TOKEN=$PAT_TOKEN
+if [[ -z "$TOKEN" ]]; then
+    TOKEN=$GH_TOKEN
+fi
+
 if [[ -z "$ISSUE_ID" ]]; then
     # Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
     TITLE=$(echo "$THIS_FILE" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
-    gh -R "$ISSUE_REPOSITORY" issue create -t "E2E: $TITLE" -F ./BODY --label "e2e" --label "type:bug"
+    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue create -t "E2E: $TITLE" -F ./BODY --label "e2e" --label "type:bug"
 else
-    gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
+    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
 fi
