@@ -19,6 +19,8 @@ gh repo clone "$GITHUB_REPOSITORY" -- -b "$BRANCH"
 REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
 cd ./"$REPOSITORY_NAME"
 
+# Use the PAT_TOKEN if one is specified.
+# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
 PUSH_TOKEN=$PAT_TOKEN
 if [[ -z "$PUSH_TOKEN" ]]; then
     PUSH_TOKEN=$GH_TOKEN
@@ -40,7 +42,9 @@ if [ -f "$FILE" ]; then
 {"branch":"$BRANCH","message":"$COMMIT_MESSAGE","sha":"$SHA","committer":{"name":"github-actions","email":"github-actions@github.com"},"content":"$(echo -n "$DATE" | base64 --wrap=0)"}
 EOF
 
-    # https://docs.github.com/en/rest/repos/contents#create-a-file.
+    # We must use a PAT here in order to trigger subsequent workflows.
+    # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
+    # API ref: https://docs.github.com/en/rest/repos/contents#create-a-file.
     curl -s \
         -X PUT \
         -H "Accept: application/vnd.github.v3+json" \
@@ -52,7 +56,9 @@ else
 
     echo "DEBUG: file $FILE does not exist on branch $BRANCH"
 
-    # https://docs.github.com/en/rest/repos/contents#create-a-file.
+    # We must use a PAT here in order to trigger subsequent workflows.
+    # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
+    # API ref: https://docs.github.com/en/rest/repos/contents#create-a-file.
     curl -s \
         -X PUT \
         -H "Accept: application/vnd.github.v3+json" \
