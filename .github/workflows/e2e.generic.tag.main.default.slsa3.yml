@@ -82,6 +82,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
+      compile-generator: true
 
   verify:
     runs-on: ubuntu-latest
