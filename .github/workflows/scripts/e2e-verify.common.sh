@@ -246,7 +246,6 @@ e2e_run_verifier_all_releases() {
     while read -r line; do
         local TAG
         TAG=$(echo "$line" | cut -f1)
-        echo "  *** Starting with verifier at $TAG ****"
 
         # Check minimum verifier version
         if [ "$1" != "" ] && version_lt "$TAG" "$1"; then
@@ -257,6 +256,8 @@ e2e_run_verifier_all_releases() {
         if [ "$2" != "" ] && version_gt "$TAG" "$2"; then
             continue
         fi
+
+        echo "  *** Starting with verifier at $TAG ****"
 
         # Always remove the binary, because `gh release download` fails if the file already exists.
         if [[ -f "$VERIFIER_BINARY" ]]; then
