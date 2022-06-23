@@ -19,6 +19,11 @@ gh repo clone "$GITHUB_REPOSITORY" -- -b "$BRANCH"
 REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
 cd ./"$REPOSITORY_NAME"
 
+PUSH_TOKEN=$PAT_TOKEN
+if [[ -z "$PUSH_TOKEN" ]]; then
+    PUSH_TOKEN=$GH_TOKEN
+fi
+
 if [ -f "$FILE" ]; then
     echo "DEBUG: file $FILE exists on branch $BRANCH"
 
@@ -39,7 +44,7 @@ EOF
     curl -s \
         -X PUT \
         -H "Accept: application/vnd.github.v3+json" \
-        -H "Authorization: token $GH_TOKEN" \
+        -H "Authorization: token $PUSH_TOKEN" \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE" \
         -d @DATA
 else
@@ -51,7 +56,7 @@ else
     curl -s \
         -X PUT \
         -H "Accept: application/vnd.github.v3+json" \
-        -H "Authorization: token $GH_TOKEN" \
+        -H "Authorization: token $PUSH_TOKEN" \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE" \
         -d "{\"branch\":\"$BRANCH\",\"message\":\"$COMMIT_MESSAGE\",\"committer\":{\"name\":\"github-actions\",\"email\":\"github-actions@github.com\"},\"content\":\"$(echo -n "$DATE" | base64 --wrap=0)\"}"
 fi
