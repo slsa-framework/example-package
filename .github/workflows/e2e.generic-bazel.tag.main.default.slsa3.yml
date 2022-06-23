@@ -6,7 +6,7 @@ on:
     tags:
       - "*" # triggers only if push new tag version, like `0.8.4` or else
 
-permissions: read_all
+permissions: read-all
 
 env:
   GH_TOKEN: ${{ github.token }}

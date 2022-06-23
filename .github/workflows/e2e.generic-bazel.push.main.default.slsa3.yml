@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
 
-permissions: read_all
+permissions: read-all
 
 env:
   GH_TOKEN: ${{ github.token }}
