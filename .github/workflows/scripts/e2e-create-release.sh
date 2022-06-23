@@ -21,6 +21,7 @@ RELEASE_LIST=$(gh release -L 200 list)
 PATCH="0"
 while read -r line; do
     TAG=$(echo "$line" | cut -f1)
+    # NOTE: use the PAT in order to take advantage of a higher rate limit.
     BODY=$(GH_TOKEN=$TOKEN gh release view "$TAG" --json body | jq -r '.body')
     if [[ "$BODY" == *"$THIS_FILE"* ]]; then
         # We only bump the patch, so we need not verify major/minor.
