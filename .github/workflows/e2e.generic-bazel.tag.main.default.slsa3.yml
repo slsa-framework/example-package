@@ -6,8 +6,10 @@ on:
     tags:
       - "*" # triggers only if push new tag version, like `0.8.4` or else
 
+permissions: read_all
+
 env:
-  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
 jobs:
