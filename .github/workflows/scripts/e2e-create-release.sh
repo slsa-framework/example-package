@@ -9,12 +9,19 @@ RELEASE_TAG=""
 THIS_FILE=$(e2e_this_file)
 echo "THIS_FILE: $THIS_FILE"
 
+# Use the PAT_TOKEN if one is specified.
+# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
+TOKEN=$PAT_TOKEN
+if [[ -z "$TOKEN" ]]; then
+    TOKEN=$GH_TOKEN
+fi
+
 # List the releases and find the latest for THIS_FILE.
 RELEASE_LIST=$(gh release -L 200 list)
 PATCH="0"
 while read -r line; do
     TAG=$(echo "$line" | cut -f1)
-    BODY=$(gh release view "$TAG" --json body | jq -r '.body')
+    BODY=$(GH_TOKEN=$TOKEN gh release view "$TAG" --json body | jq -r '.body')
     if [[ "$BODY" == *"$THIS_FILE"* ]]; then
         # We only bump the patch, so we need not verify major/minor.
         P=$(echo "$TAG" | cut -d '.' -f3)
@@ -61,13 +68,6 @@ Branch: $BRANCH
 Commit: $GITHUB_SHA
 Caller file: $THIS_FILE
 EOF
-
-# Use the PAT_TOKEN if one is specified.
-# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-TOKEN=$PAT_TOKEN
-if [[ -z "$TOKEN" ]]; then
-    TOKEN=$GH_TOKEN
-fi
 
 # We must use a PAT here in order to trigger subsequent workflows.
 # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
