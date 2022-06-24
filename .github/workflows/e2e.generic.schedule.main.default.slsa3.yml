@@ -85,7 +85,7 @@ jobs:
     needs: [build, provenance, verify]
     if: needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #  v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
