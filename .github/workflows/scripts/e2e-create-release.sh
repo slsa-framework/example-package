@@ -17,23 +17,24 @@ if [[ -z "$TOKEN" ]]; then
 fi
 
 # List the releases and find the latest for THIS_FILE.
+DEFAULT_MAJOR=$(version_major "$DEFAULT_VERSION")
 RELEASE_LIST=$(gh release -L 200 list)
-PATCH="0"
+HIGHEST_PATCH="0"
 while read -r line; do
     TAG=$(echo "$line" | cut -f1)
-    # NOTE: use the PAT in order to take advantage of a higher rate limit.
-    BODY=$(GH_TOKEN=$TOKEN gh release view "$TAG" --json body | jq -r '.body')
-    if [[ "$BODY" == *"$THIS_FILE"* ]]; then
+    MAJOR=$(version_major "$TAG")
+    if [ "$MAJOR" == "$DEFAULT_MAJOR" ]; then
         # We only bump the patch, so we need not verify major/minor.
-        P=$(echo "$TAG" | cut -d '.' -f3)
-        if ! [[ "$P" =~ ^[0-9]+$ ]]; then
+        PATCH=$(version_patch "$TAG")
+        if [ "$PATCH" == "" ]; then
+            echo "invalid patch version for $TAG"
             continue
         fi
         echo "  Processing $TAG"
-        echo "  P: $P"
         echo "  PATCH: $PATCH"
+        echo "  HIGEST_PATCH: $HIGHEST_PATCH"
         echo "  RELEASE_TAG: $RELEASE_TAG"
-        if [[ "$P" -gt "$PATCH" ]]; then
+        if [[ "$PATCH" -gt "$HIGHEST_PATCH" ]]; then
             echo " INFO: updating to $TAG"
             PATCH="$P"
             RELEASE_TAG="$TAG"
@@ -49,11 +50,11 @@ fi
 
 echo "Latest tag found is $RELEASE_TAG"
 
-PATCH=$(echo "$RELEASE_TAG" | cut -d '.' -f3)
-
-NEW_PATCH=$((PATCH + 1))
-MAJOR_MINOR=$(echo "$RELEASE_TAG" | cut -d '.' -f1,2)
-NEW_RELEASE_TAG="$MAJOR_MINOR.$NEW_PATCH"
+RELEASE_MAJOR=$(version_major "$RELEASE_TAG")
+RELEASE_MINOR=$(version_minor "$RELEASE_TAG")
+RELEASE_PATCH=$(version_patch "$RELEASE_TAG")
+NEW_PATCH=$((${RELEASE_PATCH:-0} + 1))
+NEW_RELEASE_TAG="${RELEASE_MAJOR:-$DEFAULT_MAJOR}.${RELEASE_MINOR:-0}.$NEW_PATCH"
 
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 
