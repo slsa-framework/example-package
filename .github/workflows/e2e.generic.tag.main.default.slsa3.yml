@@ -12,7 +12,6 @@ env:
   PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
-  DEFAULT_VERSION: v18.0.0
 
 jobs:
   release:
@@ -23,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - id: create
-
+        # Note: we use v21.x.y
         run: ./.github/workflows/scripts/e2e-create-release.sh
 
   shim:
@@ -46,15 +45,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Setup Go
-        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
+      - name: Setup Bazelisk
+        uses: bazelbuild/setup-bazelisk@95c9bf48d0c570bb3e28e57108f3450cd67c1a44 # v2.0.0
         with:
-          go-version: "1.18"
+          bazelisk-version: "1.11"
       - name: Build artifact
         id: build
         run: |
-          go mod vendor
-          go build -mod=vendor -o hello .
+          bazelisk build //:hello
+          cp bazel-bin/hello_/hello . # Copy binary from Bazel path to root
           echo "::set-output name=binary-name::hello"
       - name: Upload binary
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # v2.3.1
