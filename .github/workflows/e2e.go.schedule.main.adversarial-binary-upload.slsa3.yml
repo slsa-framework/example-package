@@ -1,6 +1,6 @@
-on: 
+on:
   schedule:
-    - cron: '0 8 * * *'
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions: read-all
@@ -8,11 +8,11 @@ permissions: read-all
 env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
-  #ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
+  # ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
-jobs:            
+jobs:
   binary-upload:
     runs-on: ubuntu-latest
     env:
@@ -21,7 +21,7 @@ jobs:
       FOR: 45
       EVERY: 5
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - uses: ./.github/actions/tamper-artifact
 
   build:
@@ -35,19 +35,19 @@ jobs:
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
       config-file: .github/configs-go/config-noldflags.yml
       compile-builder: true
-  
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - run: |
-#           exit 1
-  
+
+  #   build:
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - run: |
+  #           exit 1
+
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [build]
-    if: needs.build.result == 'success' && needs.verify.result == 'success'
+    if: needs.build.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: |
           set -euo pipefail
 
@@ -57,9 +57,9 @@ jobs:
   if-failed:
     runs-on: ubuntu-latest
     needs: [build]
-    if: always() && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    if: always() && needs.build.result == 'failure'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: |
           set -euo pipefail
 
