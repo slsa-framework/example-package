@@ -31,7 +31,7 @@ while read -r line; do
     if [ "$major" == "$default_major" ]; then
         echo "  Processing $tag"
         echo "  latest_tag: $latest_tag"
-        if version_gt "$TAG" "$latest_tag"; then
+        if version_gt "$tag" "$latest_tag"; then
             echo " INFO: updating to $tag"
             latest_tag="$tag"
         fi
