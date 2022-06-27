@@ -9,7 +9,7 @@ echo "THIS_FILE: $this_file"
 
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-token=$PAT_TOKEN
+token=${PAT_TOKEN+$PAT_TOKEN}
 if [[ -z "$token" ]]; then
     token=$GH_TOKEN
 fi
