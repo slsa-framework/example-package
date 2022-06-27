@@ -11,7 +11,7 @@ ISSUE_ID=$(gh -R "$ISSUE_REPOSITORY" issue list --label "e2e" --label "type:bug"
 
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-TOKEN=$PAT_TOKEN
+TOKEN=${PAT_TOKEN+$PAT_TOKEN}
 if [[ -z "$TOKEN" ]]; then
     TOKEN=$GH_TOKEN
 fi
