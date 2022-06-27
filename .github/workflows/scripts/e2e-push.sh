@@ -21,9 +21,9 @@ cd ./"$REPOSITORY_NAME"
 
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-PUSH_TOKEN=$PAT_TOKEN
-if [[ -z "$PUSH_TOKEN" ]]; then
-    PUSH_TOKEN=$GH_TOKEN
+push_token=${PAT_TOKEN+$PAT_TOKEN}
+if [[ -z "$push_token" ]]; then
+    push_token=$GH_TOKEN
 fi
 
 if [ -f "$FILE" ]; then
@@ -48,7 +48,7 @@ EOF
     curl -s \
         -X PUT \
         -H "Accept: application/vnd.github.v3+json" \
-        -H "Authorization: token $PUSH_TOKEN" \
+        -H "Authorization: token $push_token" \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE" \
         -d @DATA
 else
@@ -62,7 +62,7 @@ else
     curl -s \
         -X PUT \
         -H "Accept: application/vnd.github.v3+json" \
-        -H "Authorization: token $PUSH_TOKEN" \
+        -H "Authorization: token $push_token" \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE" \
         -d "{\"branch\":\"$BRANCH\",\"message\":\"$COMMIT_MESSAGE\",\"committer\":{\"name\":\"github-actions\",\"email\":\"github-actions@github.com\"},\"content\":\"$(echo -n "$DATE" | base64 --wrap=0)\"}"
 fi
