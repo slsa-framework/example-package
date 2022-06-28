@@ -44,7 +44,7 @@ release_major=$(version_major "$latest_tag")
 release_minor=$(version_minor "$latest_tag")
 release_patch=$(version_patch "$latest_tag")
 new_patch=$((${release_patch:-0} + 1))
-tag="${release_major:-$default_major}.${release_minor:-0}.$new_patch"
+tag="v${release_major:-$default_major}.${release_minor:-0}.$new_patch"
 
 branch=$(echo "$this_file" | cut -d '.' -f4)
 
