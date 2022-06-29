@@ -96,7 +96,8 @@ verify_provenance_content() {
             e2e_assert_eq "$BINARY" "binary-linux-amd64-unknown"
         else
             ./"$BINARY"
-            T=$(./"$BINARY" | grep -oP "GitTag: \n")
+            # NOTE: grep -z option is used in order to match newline.
+            T=$(./"$BINARY" | grep -zoP "GitTag: \n")
             e2e_assert_not_eq "$T" "" "GitTag should be empty"
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64"
