@@ -82,6 +82,7 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       compile-generator: true
+      upload-to-release: false
 
   verify:
     runs-on: ubuntu-latest
