@@ -48,9 +48,9 @@ jobs:
   provenance:
     needs: [build]
     permissions:
-      id-token: write
-      contents: read
-      actions: read
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
