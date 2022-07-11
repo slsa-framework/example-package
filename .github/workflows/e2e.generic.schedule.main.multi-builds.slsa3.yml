@@ -1,0 +1,139 @@
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions: read-all
+
+env:
+  PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+jobs:
+  build:
+    outputs:
+      hashes: ${{ steps.hash.outputs.hashes }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build artifacts
+        run: |
+          # These are some amazing artifacts.
+          echo "artifact1" > artifact1
+          echo "artifact2" > artifact2
+          echo "artifact3" > artifact3
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
+        with:
+          name: artifacts
+          if-no-files-found: error
+          retention-days: 5
+          path: |
+            artifact1
+            artifact2
+            artifact3
+
+      - name: Generate hashes
+        shell: bash
+        id: hash
+        run: |
+          # sha256sum generates sha256 hash for all artifacts.
+          # base64 -w0 encodes to base64 and outputs on a single line.
+          # sha256sum artifact1 artifact2 ... | base64 -w0
+          echo "::set-output name=hashes::$(sha256sum artifact1 artifact2 artifact3 | base64 -w0)"
+
+
+  provenance:
+    needs: [build]
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
+    with:
+      base64-subjects: "${{ needs.build.outputs.digest }}"
+      compile-generator: true
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: [build, provenance]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - name: Download binary
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: artifacts
+      - name: Download provenance
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: ${{ needs.provenance.outputs.attestation-name }}
+      # Note: the 3 artifacts share the same provenance file.
+      - name: Verify provenance artifact1
+        env:
+          BINARY: artifact1
+          PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
+        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
+      - name: Verify provenance artifact2
+        env:
+          BINARY: artifact2
+          PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
+        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
+      - name: Verify provenance artifact3
+        env:
+          BINARY: artifact3
+          PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
+        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
+        
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, verify]
+    if: needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, verify]
+    if: always() && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  no-verify:
+    runs-on: ubuntu-latest
+    needs: [build, provenance]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - name: Download provenance
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: ${{ needs.provenance.outputs.attestation-name }}
+      - name: Alter artifacts
+        run: |
+          # Altered artifact.
+          echo "artifact4" > artifact2
+      - name: Verify provenance artifact2
+        env:
+          BINARY: artifact2
+          PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
+        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
+
+  if-succeeded-no:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, no-verify]
+    if: needs.build.result == 'success' && needs.provenance.result == 'success' && needs.no-verify.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  if-failed-no:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, no-verify]
+    if: always() && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
