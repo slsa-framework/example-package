@@ -13,7 +13,7 @@ env:
 jobs:
   build:
     outputs:
-      hashes: ${{ steps.hash.outputs.hashes }}
+      digests: ${{ steps.hash.outputs.hashes }}
     runs-on: ubuntu-latest
     steps:
       - name: Build artifacts
@@ -52,7 +52,7 @@ jobs:
       actions: read # For the entrypoint.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
     with:
-      base64-subjects: "${{ needs.build.outputs.digest }}"
+      base64-subjects: "${{ needs.build.outputs.digests }}"
       compile-generator: true
 
   verify:
