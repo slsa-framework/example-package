@@ -282,6 +282,11 @@ e2e_run_verifier_all_releases() {
             --tag "$TAG" \
             --artifact-path "$VERIFIER_BINARY" \
             --provenance "$VERIFIER_BINARY.intoto.jsonl" \
+            --source "github.com/$VERIFIER_REPOSITORY" ||
+        slsa-verifier --branch "release/v$MAJOR.$MINOR" \
+            --tag "$TAG" \
+            --artifact-path "$VERIFIER_BINARY" \
+            --provenance "$VERIFIER_BINARY.intoto.jsonl" \
             --source "github.com/$VERIFIER_REPOSITORY" || exit 6
 
         echo "**** Verifying provenance authenticity with verifier at $TAG ****"
