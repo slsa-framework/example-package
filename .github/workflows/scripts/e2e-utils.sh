@@ -176,7 +176,8 @@ e2e_create_issue_success_body() {
 }
 
 e2e_verify_predicate_subject_name() {
-    _e2e_verify_query "$1" "$2" '.subject[0].name'
+    query=".subject[] | select (.name==\"$2\") | .name"
+    _e2e_verify_query "$1" "$2" "${query}"
 }
 
 e2e_verify_predicate_builder_id() {
