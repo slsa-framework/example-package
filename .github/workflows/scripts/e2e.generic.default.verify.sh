@@ -28,8 +28,9 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 
 # Verify provenance authenticity.
-# Verification should work with v1.1.0 and later.
-e2e_run_verifier_all_releases "v1.1.0"
+# Verification should work with HEAD.
+#TODO(https://github.com/slsa-framework/slsa-verifier/issues/145): use a version after release.
+e2e_run_verifier_all_releases "HEAD"
 
 # Verify the provenance content.
 verify_provenance_content
