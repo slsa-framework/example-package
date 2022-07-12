@@ -257,6 +257,15 @@ e2e_run_verifier_all_releases() {
             continue
         fi
 
+        # Check if a greater patch version exists
+        MAJOR=$(version_major "$TAG")
+        MINOR=$(version_minor "$TAG")
+        PATCH=$(version_patch "$TAG")
+        PATCH_PLUS_ONE=$((${PATCH:-0} + 1))
+        if grep -q "v$MAJOR.$MINOR.$PATCH_PLUS_ONE" <<< "$RELEASE_LIST"; then
+            continue
+        fi
+
         echo "  *** Starting with verifier at $TAG ****"
 
         # Always remove the binary, because `gh release download` fails if the file already exists.
