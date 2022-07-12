@@ -128,8 +128,8 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 echo "BINARY: file is $BINARY"
 
-# Verify provenance authenticity
-e2e_run_verifier_all_releases
+# Verify provenance authenticity with min version at release v1.0.0
+e2e_run_verifier_all_releases v1.0.0
 
 # Verify the provenance content.
 verify_provenance_content
