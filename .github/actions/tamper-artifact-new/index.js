@@ -6,6 +6,7 @@ const octokit = new Octokit();
 
 const fs = require('fs');
 const varToString = varObj => Object.keys(varObj)[0]
+//const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/")
 
 // https://github.com/actions/toolkit
 // https://docs.github.com/en/actions/creating-actions/creating-a-javascript-action
@@ -18,7 +19,7 @@ async function main() {
     const after = core.getInput("after")
     const duration = core.getInput("duration")
     const every = core.getInput("every")
-    const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/")
+    
     const now = new Date().toUTCString()
     
     // Wait for after seconds.
@@ -39,7 +40,7 @@ async function main() {
           throw new Error(`${artifactPrefix} is not set`);
         }
 
-        resolveArtifactName(owner, repo, artifactPrefix).then(name => {
+        resolveArtifactName(artifactPrefix).then(name => {
           artifactName = name
         }).catch(err => {
             console.log(err);
@@ -79,9 +80,9 @@ async function sleep(ms) {
   });
 }
 
-async function resolveArtifactName(owner, repo, prefix) {
+async function resolveArtifactName(prefix) {
   // List artifacts.
-  listArtifacts(owner, repo).then(artifacts => {
+  listArtifacts().then(artifacts => {
     console.log(`artifacts: ${artifacts}`);
 
     if (artifacts == undefined) {
@@ -130,6 +131,39 @@ async function uploadArtifact(filename) {
   return artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
 }
 
+// Code from https://github.com/mozilla/DeepSpeech/blob/a6bdf0ae3c190cbaf39dc4598cc87a55047e38fa/.github/actions/update-cache-index/main.js#L8-L37
+// as suggested workaround in https://github.com/actions/upload-artifact/issues/53. 
+function createHttpClient(userAgent) {
+  return new HttpClient(userAgent, [
+    // From https://github.com/actions/toolkit/blob/main/packages/artifact/src/internal/config-variables.ts
+    new BearerCredentialHandler(process.env.ACTIONS_RUNTIME_TOKEN)
+  ]);
+}
+
+async function listArtifacts() {
+    // From https://github.com/actions/toolkit/blob/main/packages/artifact/src/internal/config-variables.ts
+    const runtimeUrl = process.env.ACTIONS_RUNTIME_URL;
+    const runId = process.env.GITHUB_RUN_ID;
+    // From https://github.com/actions/toolkit/blob/main/packages/artifact/src/internal/utils.ts
+    const apiVersion = "6.0-preview";
+    let url = `${runtimeUrl}_apis/pipelines/workflows/${runId}/artifacts?api-version=${apiVersion}`
+
+    const client = createHttpClient("@actions/artifact-download");
+    const response = await client.get(url, {
+        "Content-Type": "application/json",
+        "Accept": `application/json;api-version=${apiVersion}`,
+    });
+
+    const allArtifacts = JSON.parse(await response.readBody()).value;
+    console.log(`==> Got ${allArtifacts.length} artifacts in response`);
+    return allArtifacts;
+}
+
+
+/* 
+  WARNING: the API below does not work unless the run is complete.
+  See https://github.com/actions/upload-artifact/issues/53.
+
 async function listArtifacts(owner, repo) {
 
   try {
@@ -153,5 +187,6 @@ async function listArtifacts(owner, repo) {
     core.setFailed(error);
   }
 }
+*/
 
 main()
