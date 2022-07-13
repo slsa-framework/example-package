@@ -12,7 +12,7 @@ const octokit = new Octokit();
 async function main() {
   try {
     // get_variable(process.env.ARTIFACT, "ARTIFACT")
-    const artifactName = core.getInput("artifact-name")
+    artifactName = core.getInput("artifact-name")
     const artifactPrefix = core.getInput("artifact-prefix")
     const after = core.getInput("after")
     const duration = core.getInput("duration")
@@ -86,7 +86,7 @@ async function resolveArtifactName(owner, repo, prefix) {
     if (artifacts == undefined) {
       return undefined
     }
-    
+
     // If an artifact is found, record its name.
     for (let element of artifacts) {
       console.log(`element: ${element}`);
