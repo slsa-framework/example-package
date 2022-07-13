@@ -21,7 +21,7 @@ async function main() {
     const now = new Date().toUTCString()
     
     // Wait for after seconds.
-    await sleep(after);
+    //await sleep(after);
 
     // Loop for duration.
     var startTime = Date.now();
@@ -132,16 +132,16 @@ async function uploadArtifact(filename) {
 async function listArtifacts(owner, repo) {
 
   try {
-    const runid = validateVariable(process.env.GITHUB_RUN_ID)
+    const runid = process.env.GITHUB_RUN_ID
     console.log(`runid: ${runid}`);
+    console.log(`owner: ${owner}`);
+    console.log(`repo: ${repo}`);
     
     // See https://docs.github.com/en/rest/reference/actions#artifacts
     const { data } = await octokit.request(
       "GET /repos/{owner}/{repo}/actions/runs/{runid}/artifacts",
       {
-        owner,
-        repo,
-        runid
+        owner, repo, runid
       }
     );
     return data.artifacts;
