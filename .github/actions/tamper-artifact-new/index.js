@@ -145,7 +145,7 @@ async function listArtifacts(owner, repo) {
         owner, repo, runid
       }
     );
-    let myString = JSON.stringify(obj, null, 4);
+    let myString = JSON.stringify(data, null, 4);
     console.log(`data: ${myString}`);
     return data.artifacts;
 
