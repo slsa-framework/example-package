@@ -111,7 +111,9 @@ async function resolveArtifactName(prefix) {
 
     // If an artifact is found, record its name.
     for (let element of artifacts) {
-      console.log(`element: ${element}`);
+      console.log(`element: ${element}, ${element.name}`);
+      let myString = JSON.stringify(element, null, 4);
+      console.log(`asJSON: ${myString}`);
       
       // Artifact name is of the type `name-randomhex`,
       // e.g., slsa-builder-go-linux-amd64-574b40002571aa669e9a8e065c11b421
