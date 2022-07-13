@@ -18,6 +18,10 @@ inputs:
   every:
     description: 'Pause for `every` seconds between tapmering attempts.'
     required: true
+  token:
+    description: 'Auth token to use.'
+    default: ${{ github.token }}
+    required: false
 
 runs:
   using: 'node16'
