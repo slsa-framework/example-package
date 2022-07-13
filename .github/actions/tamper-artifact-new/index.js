@@ -93,8 +93,8 @@ async function resolveArtifactName(owner, repo, prefix) {
       
       // Artifact name is of the type `name-randomhex`,
       // e.g., slsa-builder-go-linux-amd64-574b40002571aa669e9a8e065c11b421
-      if (element.startsWith(prefix)) {
-        return element
+      if (element.name.startsWith(prefix)) {
+        return element.name
       }
     }
   }).catch(err => {
@@ -102,7 +102,7 @@ async function resolveArtifactName(owner, repo, prefix) {
   });
 }
 
-function get_variable(variable, name) {
+function getVariable(variable, name) {
   if (undefined === variable) {
     throw new Error(`${name} is undefined`);
   }
@@ -130,11 +130,14 @@ async function uploadArtifact(filename) {
 }
 
 async function listArtifacts(owner, repo) {
+
   try {
+    const runid = getVariable(process.env.ARTIFACT, "RUN_ID")
+    console.log(`runid: {runid}`);
     
     // See https://docs.github.com/en/rest/reference/actions#artifacts
     const { data } = await octokit.request(
-      "GET /repos/{owner}/{repo}/actions/artifacts",
+      "GET /repos/{owner}/{repo}/actions/runs/{runid}/artifacts",
       {
         owner,
         repo,
