@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const artifact = require('@actions/artifact');
+const {HttpClient} = require("@actions/http-client");
 const { Octokit } = require("@octokit/action");
 const octokit = new Octokit();
 
