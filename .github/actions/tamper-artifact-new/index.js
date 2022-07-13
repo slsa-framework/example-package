@@ -2,9 +2,10 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const artifact = require('@actions/artifact');
 const { Octokit } = require("@octokit/action");
+const octokit = new Octokit();
+
 const fs = require('fs');
 const varToString = varObj => Object.keys(varObj)[0]
-const octokit = new Octokit();
 
 // https://github.com/actions/toolkit
 // https://docs.github.com/en/actions/creating-actions/creating-a-javascript-action
@@ -17,7 +18,7 @@ async function main() {
     const after = core.getInput("after")
     const duration = core.getInput("duration")
     const every = core.getInput("every")
-    const [owner, repo] = core.getInput("GITHUB_REPOSITORY").split("/");
+    const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/")
     const now = new Date().toUTCString()
     
     // Wait for after seconds.
