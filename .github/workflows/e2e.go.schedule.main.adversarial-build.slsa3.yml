@@ -23,7 +23,8 @@ jobs:
         with:
           artifact-prefix: slsa-builder-go-linux-amd64-
           after: 135
-          duration: 45
+          duration: 120
+          #duration: 45
           every: 5
 
   build:
