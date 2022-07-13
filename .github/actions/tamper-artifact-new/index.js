@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const artifact = require('@actions/artifact');
 const {HttpClient} = require("@actions/http-client");
-const {BearerCredentialHandler} = require("@actions/http-client/auth");
+//const {BearerCredentialHandler} = require("@actions/http-client/auth");
 const { Octokit } = require("@octokit/action");
 const octokit = new Octokit();
 
@@ -73,6 +73,24 @@ async function main() {
 
   } catch (error) {
     core.setFailed(error.message);
+  }
+}
+
+class BearerCredentialHandler {
+  constructor(token) {
+      this.token = token;
+  }
+  // currently implements pre-authorization
+  // TODO: support preAuth = false where it hooks on 401
+  prepareRequest(options) {
+      options.headers['Authorization'] = 'Bearer ' + this.token;
+  }
+  // This handler cannot handle 401
+  canHandleAuthentication(response) {
+      return false;
+  }
+  handleAuthentication(httpClient, requestInfo, objs) {
+      return null;
   }
 }
 
