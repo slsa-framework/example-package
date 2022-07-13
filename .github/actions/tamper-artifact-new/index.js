@@ -102,13 +102,13 @@ async function resolveArtifactName(owner, repo, prefix) {
   });
 }
 
-function getVariable(variable, name) {
+function validateVariable(variable) {
   if (undefined === variable) {
-    throw new Error(`${name} is undefined`);
+    throw new Error(`${variable} is undefined`);
   }
 
   if ("" === variable) {
-    throw new Error(`${name} is empty`);
+    throw new Error(`${variable} is empty`);
   }
 
   return variable
@@ -132,7 +132,7 @@ async function uploadArtifact(filename) {
 async function listArtifacts(owner, repo) {
 
   try {
-    const runid = getVariable(process.env.ARTIFACT, "GITHUB_RUN_ID")
+    const runid = validateVariable(process.env.GITHUB_RUN_ID)
     console.log(`runid: {runid}`);
     
     // See https://docs.github.com/en/rest/reference/actions#artifacts
