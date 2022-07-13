@@ -132,7 +132,7 @@ async function uploadArtifact(filename) {
 async function listArtifacts(owner, repo) {
 
   try {
-    const runid = getVariable(process.env.ARTIFACT, "RUN_ID")
+    const runid = getVariable(process.env.ARTIFACT, "GITHUB_RUN_ID")
     console.log(`runid: {runid}`);
     
     // See https://docs.github.com/en/rest/reference/actions#artifacts
