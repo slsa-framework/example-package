@@ -133,7 +133,7 @@ async function listArtifacts(owner, repo) {
 
   try {
     const runid = validateVariable(process.env.GITHUB_RUN_ID)
-    console.log(`runid: {runid}`);
+    console.log(`runid: ${runid}`);
     
     // See https://docs.github.com/en/rest/reference/actions#artifacts
     const { data } = await octokit.request(
@@ -141,6 +141,7 @@ async function listArtifacts(owner, repo) {
       {
         owner,
         repo,
+        runid
       }
     );
     return data.artifacts;
