@@ -83,6 +83,10 @@ async function resolveArtifactName(owner, repo, prefix) {
   listArtifacts(owner, repo).then(artifacts => {
     console.log(`artifacts: ${artifacts}`);
 
+    if (artifacts == undefined) {
+      return undefined
+    }
+    
     // If an artifact is found, record its name.
     for (let element of artifacts) {
       console.log(`element: ${element}`);
