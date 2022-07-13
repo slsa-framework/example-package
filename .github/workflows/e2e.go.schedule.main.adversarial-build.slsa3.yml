@@ -7,24 +7,24 @@ permissions: read-all
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
-  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
-  # ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
+  #ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
 jobs:
-  build-builder:
+  build-tamper:
     runs-on: ubuntu-latest
-    env:
-      ARTIFACT: builder
-      AFTER: 135
-      FOR: 45
-      EVERY: 5
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       # Note: build-dry and build should fail. It's hard to tell which failed,
       # but they both should. It's good enough to verify that the re-usable workflow always fails.
-      - uses: ./.github/actions/tamper-artifact
+      - uses: ./.github/actions/tamper-artifact-new
+        with:
+          artifact-prefix: slsa-builder-go-linux-amd64-
+          after: 135
+          for: 45
+          every: 5
 
   build:
     permissions:

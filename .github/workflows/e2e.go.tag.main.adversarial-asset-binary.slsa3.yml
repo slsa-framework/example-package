@@ -44,7 +44,7 @@ jobs:
 
           ./.github/workflows/scripts/e2e-verify-release.sh
 
-  asset-binary:
+  asset-tamper:
     needs: [shim]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest

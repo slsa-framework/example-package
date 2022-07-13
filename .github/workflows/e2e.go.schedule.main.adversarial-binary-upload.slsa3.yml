@@ -13,10 +13,10 @@ env:
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
 jobs:
-  binary-upload:
+  binary-upload-tamper:
     runs-on: ubuntu-latest
     env:
-      ARTIFACT: compiled-binary
+      ARTIFACT: binary-linux-amd64
       AFTER: 135
       FOR: 45
       EVERY: 5

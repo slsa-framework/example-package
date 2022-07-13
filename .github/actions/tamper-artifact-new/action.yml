@@ -1,0 +1,24 @@
+name: 'Hello World'
+description: 'Greet someone and record the time'
+inputs:
+  artifact-name: 
+    description: 'Artifact name'
+    required: false
+    default: ""
+  artifact-prefix: 
+    description: 'Artifact prefix the artifact name shoudl match'
+    required: false
+    default: ""
+  after:
+    description: 'Start tampering after `after` seconds'
+    required: true
+  duration:
+    description: 'Continue tamepring for `duration` seconds'
+    required: true
+  every:
+    description: 'Pause for `every` seconds between tapmering attempts.'
+    required: true
+
+runs:
+  using: 'node16'
+  main: 'index.js'
