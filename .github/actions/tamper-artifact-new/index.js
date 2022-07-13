@@ -42,13 +42,10 @@ async function main() {
           throw new Error(`${artifactPrefix} is not set`);
         }
 
-        resolveArtifactName(artifactPrefix).then(name => {
-          artifactName = name
-        }).catch(err => {
-            console.log(err);
-        });
+        artifactName = await resolveArtifactName(artifactPrefix)
+        console.log(`resolved name: ${artifactName}`)
       }
-      
+
       // Check if the name was successfully resolved.
       if (artifactName == undefined || artifactName == ""){
         console.log("no artifact name resolved");
@@ -114,7 +111,8 @@ async function resolveArtifactName(prefix) {
       console.log(`element: ${element}, ${element.name}`);
       let myString = JSON.stringify(element, null, 4);
       console.log(`asJSON: ${myString}`);
-      
+      console.log(`prefix: ${prefix}`);
+      console.log(element.name.startsWith(prefix));
       // Artifact name is of the type `name-randomhex`,
       // e.g., slsa-builder-go-linux-amd64-574b40002571aa669e9a8e065c11b421
       if (element.name.startsWith(prefix)) {
