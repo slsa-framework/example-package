@@ -22,7 +22,7 @@ async function main() {
     const now = new Date().toUTCString()
     
     // Wait for after seconds.
-    //await sleep(after);
+    await sleep(after);
 
     // Loop for duration.
     var startTime = Date.now();
