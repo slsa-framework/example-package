@@ -145,6 +145,7 @@ async function listArtifacts(owner, repo) {
         owner, repo, runid
       }
     );
+    console.log(`data: ${data}`);
     return data.artifacts;
 
   } catch (error) {
