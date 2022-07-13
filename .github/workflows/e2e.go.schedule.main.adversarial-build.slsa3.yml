@@ -22,8 +22,9 @@ jobs:
       - uses: ./.github/actions/tamper-artifact-new
         with:
           artifact-prefix: slsa-builder-go-linux-amd64-
-          after: 135
-          duration: 120
+          #after: 135
+          after: 100
+          duration: 180
           #duration: 45
           every: 5
 
