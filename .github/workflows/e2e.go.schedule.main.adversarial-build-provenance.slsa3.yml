@@ -13,7 +13,7 @@ env:
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
 jobs:
-  provenance-tamper:
+  build-provenance-tamper:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
