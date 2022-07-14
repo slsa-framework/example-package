@@ -39,7 +39,7 @@ jobs:
           # sha256sum generates sha256 hash for all artifacts.
           # base64 -w0 encodes to base64 and outputs on a single line.
           # sha256sum artifact1 artifact2 ... | base64 -w0
-          echo "::set-output name=hashes::$(sha256sum artifact1 artifact2 | base64 -w0)"
+          echo "::set-output name=hashes::something invalid | base64 -w0)"
 
 
   provenance:
@@ -51,7 +51,6 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
     with:
       base64-subjects: "${{ needs.build.outputs.digests }}"
-      attestation-name: ../some/file
       compile-generator: true
 
   if-failed-build:
@@ -77,3 +76,5 @@ jobs:
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  
