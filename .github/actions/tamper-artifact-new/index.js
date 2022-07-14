@@ -59,16 +59,9 @@ async function main() {
         // upload a file that has a different path than the artifact name itself.
         fs.writeFile(artifactName, `some content with date ${now}`, function (err) {
           if (err) throw err;
-          console.log(`File ${artifactName} is created successfully.`)
+          console.log(`Artifacts ${artifactName} created successfully.`)
         });
 
-        if (artifactPrefix != undefined && artifactPrefix != "") {
-          fs.writeFile(artifactPrefix, `some content with date ${now}`, function (err) {
-            if (err) throw err;
-            console.log(`File ${artifactPrefix} is created successfully.`)
-          });
-        }
-        
         artifactCreated = true
       }
 
