@@ -29,7 +29,7 @@ async function main() {
 
     // Loop for duration.
     var startTime = Date.now();
-    artifactedCreated = false
+    artifactCreated = false
     while ((Date.now() - startTime) < (duration*1000)) {
       
       await sleep(every);
