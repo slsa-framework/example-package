@@ -99,30 +99,30 @@ async function sleep(ms) {
 
 async function resolveArtifactName(prefix) {
   // List artifacts.
-  listArtifacts().then(artifacts => {
-    console.log(`artifacts: ${artifacts}`);
+  artifacts = await listArtifacts()
 
-    if (artifacts == undefined) {
-      return undefined
-    }
+  console.log(`artifacts: ${artifacts}`)
 
-    // If an artifact is found, record its name.
-    for (let element of artifacts) {
-      console.log(`element: ${element}, ${element.name}`);
-      let myString = JSON.stringify(element, null, 4);
-      console.log(`asJSON: ${myString}`);
-      console.log(`prefix: ${prefix}`);
-      console.log(element.name.startsWith(prefix));
-      // Artifact name is of the type `name-randomhex`,
-      // e.g., slsa-builder-go-linux-amd64-574b40002571aa669e9a8e065c11b421
-      if (element.name.startsWith(prefix)) {
-        console.log(`returning: ${element.name}`);
-        return element.name
-      }
+  if (artifacts == undefined) {
+    return undefined
+  }
+
+  // If an artifact is found, record its name.
+  for (let element of artifacts) {
+    console.log(`element: ${element}, ${element.name}`);
+    let myString = JSON.stringify(element, null, 4);
+    console.log(`asJSON: ${myString}`);
+    console.log(`prefix: ${prefix}`);
+    console.log(element.name.startsWith(prefix));
+    // Artifact name is of the type `name-randomhex`,
+    // e.g., slsa-builder-go-linux-amd64-574b40002571aa669e9a8e065c11b421
+    if (element.name.startsWith(prefix)) {
+      console.log(`returning: ${element.name}`);
+      return element.name
     }
-  }).catch(err => {
-      console.log(err);
-  });
+  }
+
+  return undefined
 }
 
 function validateVariable(variable) {
