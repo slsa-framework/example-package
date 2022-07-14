@@ -21,7 +21,7 @@ jobs:
       # but they both should. It's good enough to verify that the re-usable workflow always fails.
       - uses: ./.github/actions/tamper-artifact-new
         with:
-          artifact-prefix: slsa-builder-go-linux-amd64-
+          artifact-prefix: slsa-builder-go-linux-amd64
           after: 135
           #after: 100
           duration: 150

@@ -25,6 +25,7 @@ async function main() {
     const now = new Date().toUTCString()
     
     // Wait for after seconds.
+    console.log(`Waiting for ${after}s`)
     await sleep(after);
 
     // Loop for duration.
@@ -54,16 +55,31 @@ async function main() {
       
       // Create the file if not already created.
       if (!artifactCreated){
-        // Create file.
+        // Create 2 files: we do this because the generator sometimes
+        // upload a file that has a different path than the artifact name itself.
         fs.writeFile(artifactName, `some content with date ${now}`, function (err) {
           if (err) throw err;
-          console.log('File is created successfully.');
+          console.log(`File ${artifactName} is created successfully.`)
         });
+
+        if (artifactPrefix != undefined && artifactPrefix != "") {
+          fs.writeFile(artifactPrefix, `some content with date ${now}`, function (err) {
+            if (err) throw err;
+            console.log(`File ${artifactPrefix} is created successfully.`)
+          });
+        }
+        
         artifactCreated = true
       }
 
-      // Upload the artifact.
-      await uploadArtifact(artifactName)
+      // Upload the artifacts.
+      files = [artifactName]
+      if (artifactPrefix != undefined && artifactPrefix != "") {
+        files.push(artifactPrefix)
+      }
+      // The generator always set the name of the artifact to the random name, 
+      // which is artifactName is the name is random.
+      await uploadArtifacts(artifactName, files)
     }
 
     console.log("Exiting")
@@ -116,7 +132,7 @@ async function resolveArtifactName(prefix) {
     console.log(element.name.startsWith(prefix));
     // Artifact name is of the type `name-randomhex`,
     // e.g., slsa-builder-go-linux-amd64-574b40002571aa669e9a8e065c11b421
-    if (element.name.startsWith(prefix)) {
+    if (element.name.startsWith(prefix + "-")) {
       console.log(`returning: ${element.name}`);
       return element.name
     }
@@ -139,17 +155,16 @@ function validateVariable(variable) {
 
 // https://github.com/actions/toolkit/tree/main/packages/artifact
 // Note: we could also do it entirely in the workflows, as in https://github.com/actions/toolkit/blob/37f5a852195044ba36b22b05242b57bd41e84370/.github/workflows/artifact-tests.yml
-async function uploadArtifact(filename) {
+async function uploadArtifacts(name, files) {
   const artifactClient = artifact.create()
   const artifactName = filename;
-  const files = [filename]
 
   const rootDirectory = '.' // Also possible to use __dirname
   const options = {
     continueOnError: false
   }
 
-  return artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+  return artifactClient.uploadArtifact(name, files, rootDirectory, options)
 }
 
 // Code from https://github.com/mozilla/DeepSpeech/blob/a6bdf0ae3c190cbaf39dc4598cc87a55047e38fa/.github/actions/update-cache-index/main.js#L8-L37
