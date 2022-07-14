@@ -30,7 +30,7 @@ async function main() {
 
     // Loop for duration.
     var startTime = Date.now();
-    artifactCreated = false
+    filesToUpload = []
     while ((Date.now() - startTime) < (duration*1000)) {
       
       await sleep(every);
@@ -53,9 +53,9 @@ async function main() {
         }
       }
       
-      filesToUpload = []
+      
       // Create the file if not already created.
-      if (!artifactCreated){
+      if (filesToUpload.length == 0){
         // Create 2 files: we do this because the generator sometimes
         // upload a file that has a different path than the artifact name itself.
         fs.writeFile(artifactName, `some content with date ${now}`, function (err) {
@@ -71,13 +71,11 @@ async function main() {
           });
           filesToUpload.push(artifactPrefix)
         }
-        
-        artifactCreated = true
       }
 
       // Upload the artifacts.
-      // The generator always set the name of the artifact to the random name, 
-      // which is artifactName is the name is random.
+      // The generator always sets the name of the artifact to the random name, 
+      // which is artifactName.
       await uploadArtifacts(artifactName, filesToUpload)
     }
 
