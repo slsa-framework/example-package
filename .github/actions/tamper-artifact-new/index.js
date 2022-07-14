@@ -53,26 +53,32 @@ async function main() {
         }
       }
       
+      filesToUpload = []
       // Create the file if not already created.
       if (!artifactCreated){
         // Create 2 files: we do this because the generator sometimes
         // upload a file that has a different path than the artifact name itself.
         fs.writeFile(artifactName, `some content with date ${now}`, function (err) {
           if (err) throw err;
-          console.log(`Artifacts ${artifactName} created successfully.`)
+          console.log(`File ${artifactName} is created successfully.`)
+          filesToUpload.push(artifactName)
         });
 
+        if (artifactPrefix != undefined && artifactPrefix != "") {
+          fs.writeFile(artifactPrefix, `some content with date ${now}`, function (err) {
+            if (err) throw err;
+            console.log(`File ${artifactPrefix} is created successfully.`)
+          });
+          filesToUpload.push(artifactPrefix)
+        }
+        
         artifactCreated = true
       }
 
       // Upload the artifacts.
-      files = [artifactName]
-      if (artifactPrefix != undefined && artifactPrefix != "") {
-        files.push(artifactPrefix)
-      }
       // The generator always set the name of the artifact to the random name, 
       // which is artifactName is the name is random.
-      await uploadArtifacts(artifactName, files)
+      await uploadArtifacts(artifactName, filesToUpload)
     }
 
     console.log("Exiting")
