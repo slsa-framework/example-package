@@ -155,16 +155,15 @@ function validateVariable(variable) {
 
 // https://github.com/actions/toolkit/tree/main/packages/artifact
 // Note: we could also do it entirely in the workflows, as in https://github.com/actions/toolkit/blob/37f5a852195044ba36b22b05242b57bd41e84370/.github/workflows/artifact-tests.yml
-async function uploadArtifacts(name, files) {
+async function uploadArtifacts(artifactName, files) {
   const artifactClient = artifact.create()
-  const artifactName = filename;
 
   const rootDirectory = '.' // Also possible to use __dirname
   const options = {
     continueOnError: false
   }
 
-  return artifactClient.uploadArtifact(name, files, rootDirectory, options)
+  return artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
 }
 
 // Code from https://github.com/mozilla/DeepSpeech/blob/a6bdf0ae3c190cbaf39dc4598cc87a55047e38fa/.github/actions/update-cache-index/main.js#L8-L37
