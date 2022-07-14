@@ -22,7 +22,13 @@ jobs:
       EVERY: 5
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
-      - uses: ./.github/actions/tamper-artifact
+      - uses: ./.github/actions/tamper-artifact-new
+        with:
+          artifact-prefix: slsa-builder-go-linux-amd64
+          after: 155
+          duration: 30
+          every: 2
+
 
   build:
     permissions:

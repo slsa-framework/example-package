@@ -7,8 +7,8 @@ permissions: read-all
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
-  #ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
-  ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  # ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
