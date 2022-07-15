@@ -38,6 +38,58 @@ jobs:
           # base64 -w0 encodes to base64 and outputs on a single line.
           # sha256sum artifact1 artifact2 ... | base64 -w0
           echo "::set-output name=hashes::$(sha256sum artifact1 | base64 -w0)"
+  
+  provenance-one:
+    needs: [build-one]
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
+    with:
+      base64-subjects: "${{ needs.build-one.outputs.digests }}"
+      compile-generator: true
+      attestation-name: "attestation1.intoto.jsonl"
+
+  verify-one:
+    runs-on: ubuntu-latest
+    needs: [build-one, provenance-one]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - name: Download binary
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: artifacts1
+      - name: Download provenance
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        with:
+          name: ${{ needs.provenance-one.outputs.attestation-name }}
+      - name: Setup Go
+        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
+        with:
+          go-version: "1.18"
+      - name: Verify provenance artifact1
+        env:
+          BINARY: artifact1
+          PROVENANCE: ${{ needs.provenance-one.outputs.attestation-name }}
+        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
+
+  if-succeeded-one:
+    runs-on: ubuntu-latest
+    needs: [build-one, provenance-one, verify-one]
+    if: needs.build-one.result == 'success' && needs.provenance-one.result == 'success' && needs.verify-one.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed-one:
+    runs-on: ubuntu-latest
+    needs: [build-one, provenance-one, verify-one]
+    if: always() && (needs.build-one.result == 'failure' || needs.provenance-one.result == 'failure' || needs.verify-one.result == 'failure')
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   build-two:
     outputs:
@@ -69,18 +121,6 @@ jobs:
           # base64 -w0 encodes to base64 and outputs on a single line.
           # sha256sum artifact1 artifact2 ... | base64 -w0
           echo "::set-output name=hashes::$(sha256sum artifact1 | base64 -w0)"
-  
-  provenance-one:
-    needs: [build-one]
-    permissions:
-      id-token: write # For signing.
-      contents: write # For asset uploads.
-      actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
-    with:
-      base64-subjects: "${{ needs.build-one.outputs.digests }}"
-      compile-generator: true
-      attestation-name: "attestation1.intoto.jsonl"
 
   provenance-two:
     needs: [build-two]
@@ -93,46 +133,6 @@ jobs:
       base64-subjects: "${{ needs.build-two.outputs.digests }}"
       compile-generator: true
       attestation-name: "attestation2.intoto.jsonl"
-
-  verify-one:
-    runs-on: ubuntu-latest
-    needs: [build-one, provenance-one]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
-      - name: Download binary
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
-        with:
-          name: artifacts1
-      - name: Download provenance
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
-        with:
-          name: ${{ needs.provenance-one.outputs.attestation-name }}
-      - name: Setup Go
-        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
-        with:
-          go-version: "1.18"
-      - name: Verify provenance artifact1
-        env:
-          BINARY: artifact1
-          PROVENANCE: ${{ needs.provenance-one.outputs.attestation-name }}
-        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
-        
-  if-succeeded-one:
-    runs-on: ubuntu-latest
-    needs: [build-one, provenance-one, verify-one]
-    if: needs.build-one.result == 'success' && needs.provenance-one.result == 'success' && needs.verify-one.result == 'success'
-    steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
-      - run: ./.github/workflows/scripts/e2e-report-success.sh
-
-  if-failed-one:
-    runs-on: ubuntu-latest
-    needs: [build-one, provenance-one, verify-one]
-    if: always() && (needs.build-one.result == 'failure' || needs.provenance-one.result == 'failure' || needs.verify-one.result == 'failure')
-    steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
-      - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   verify-two:
     runs-on: ubuntu-latest
