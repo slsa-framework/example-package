@@ -1,0 +1,16 @@
+# Used for e2e tests.
+#TODO: update with various config parameters.
+version: 1
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=0
+
+flags:
+  - -trimpath
+  - -tags=netgo
+
+goos: linux
+goarch: amd64
+# Same as configi-noldflags.yml, but change the name for
+# multi-uses tests: e2e.go.schedule.main.multi-uses.slsa3.yml
+binary: binary-{{ .Os }}-{{ .Arch }}-2
