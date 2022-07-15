@@ -15,18 +15,13 @@ env:
 jobs:
   binary-upload-tamper:
     runs-on: ubuntu-latest
-    env:
-      ARTIFACT: binary-linux-amd64
-      AFTER: 135
-      FOR: 45
-      EVERY: 5
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - uses: ./.github/actions/tamper-artifact-new
         with:
           artifact-prefix: slsa-builder-go-linux-amd64
-          after: 155
-          duration: 30
+          after: 120
+          duration: 80
           every: 2
 
 
