@@ -25,18 +25,6 @@ jobs:
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
       config-file: .github/configs-go/config-noldflags.yml
       compile-builder: true
-  
-  build-two:
-    permissions:
-      id-token: write # For signing.
-      contents: write # For asset uploads.
-      actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@main
-    with:
-      go-version: 1.18
-      # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
-      config-file: .github/configs-go/config-noldflags-2.yml
-      compile-builder: true
 
   verify-one:
     runs-on: ubuntu-latest
@@ -55,11 +43,36 @@ jobs:
       - env:
           BINARY: ${{ needs.build-one.outputs.go-binary-name }}
           PROVENANCE: ${{ needs.build-one.outputs.go-binary-name }}.intoto.jsonl
-        run: |
-          set -euo pipefail
-        
-          ./.github/workflows/scripts/e2e.go.default.verify.sh
-  
+        run: ./.github/workflows/scripts/e2e.go.default.verify.sh
+
+  if-succeeded-one:
+    runs-on: ubuntu-latest
+    needs: [build-one,verify-one]
+    if: needs.build-one.result == 'success' && needs.verify-one.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed-one:
+    runs-on: ubuntu-latest
+    needs: [build-one,verify-one]
+    if: always() && (needs.build-one.result == 'failure' || needs.verify-one.result == 'failure')
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  build-two:
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@main
+    with:
+      go-version: 1.18
+      # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
+      config-file: .github/configs-go/config-noldflags-2.yml
+      compile-builder: true
+
   verify-two:
     runs-on: ubuntu-latest
     needs: build-two
@@ -77,21 +90,7 @@ jobs:
       - env:
           BINARY: ${{ needs.build-two.outputs.go-binary-name }}
           PROVENANCE: ${{ needs.build-two.outputs.go-binary-name }}.intoto.jsonl
-        run: |
-          set -euo pipefail
-        
-          ./.github/workflows/scripts/e2e.go.default.verify.sh
-
-  if-succeeded-one:
-    runs-on: ubuntu-latest
-    needs: [build-one,verify-one]
-    if: needs.build-one.result == 'success' && needs.verify-one.result == 'success'
-    steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      - run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-report-success.sh
+        run: ./.github/workflows/scripts/e2e.go.default.verify.sh
 
   if-succeeded-two:
     runs-on: ubuntu-latest
@@ -99,21 +98,7 @@ jobs:
     if: needs.build-two.result == 'success' && needs.verify-two.result == 'success'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      - run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-report-success.sh
-
-  if-failed-one:
-    runs-on: ubuntu-latest
-    needs: [build-one,verify-one]
-    if: always() && (needs.build-one.result == 'failure' || needs.verify-one.result == 'failure')
-    steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      - run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-report-failure.sh
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed-two:
     runs-on: ubuntu-latest
@@ -121,7 +106,6 @@ jobs:
     if: always() && (needs.build-two.result == 'failure' || needs.verify-two.result == 'failure')
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      - run: |
-          set -euo pipefail
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
-          ./.github/workflows/scripts/e2e-report-failure.sh
+          
