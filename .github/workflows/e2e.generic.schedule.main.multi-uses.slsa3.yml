@@ -24,7 +24,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
         with:
-          name: artifacts
+          name: artifacts1
           if-no-files-found: error
           retention-days: 5
           path: |
@@ -52,9 +52,12 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3.1.0
         with:
-          name: artifacts
+          name: artifacts2
           if-no-files-found: error
           retention-days: 5
+          # Note: we use artifact as a binary name to verify it does not intefere with the
+          # other build1 which also uses the same binary name.
+          # We use a different artifact name to differentiate the two (name: artifacts2).
           path: |
             artifact1
 
@@ -100,7 +103,7 @@ jobs:
       - name: Download binary
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
-          name: artifacts
+          name: artifacts1
       - name: Download provenance
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
@@ -109,8 +112,6 @@ jobs:
         uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
         with:
           go-version: "1.18"
-      - run: |
-          echo "attestation-name 1:${{ needs.provenance-one.outputs.attestation-name }}"
       - name: Verify provenance artifact1
         env:
           BINARY: artifact1
@@ -142,7 +143,7 @@ jobs:
       - name: Download binary
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
-          name: artifacts
+          name: artifacts2
       - name: Download provenance
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
@@ -153,9 +154,9 @@ jobs:
           go-version: "1.18"
       - run: |
           echo "attestation-name 2:${{ needs.provenance-two.outputs.attestation-name }}"
-      - name: Verify provenance artifact1
+      - name: Verify provenance artifact2
         env:
-          BINARY: artifact1
+          BINARY: artifact2
           PROVENANCE: ${{ needs.provenance-two.outputs.attestation-name }}
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
         
