@@ -7,7 +7,7 @@ permissions: read-all
 jobs:
   build:
     outputs:
-      digests: ${{ steps.hash.outputs.hashes }}
+      digests: ${{ steps.hash.outputs.digests }}
     runs-on: ubuntu-latest
     steps:
       - name: Build artifacts
@@ -23,7 +23,7 @@ jobs:
           # sha256sum generates sha256 hash for all artifacts.
           # base64 -w0 encodes to base64 and outputs on a single line.
           # sha256sum artifact1 artifact2 ... | base64 -w0
-          echo "::set-output name=digest::$(sha256sum artifact1 artifact2 | base64 -w0)"
+          echo "::set-output name=digests::$(sha256sum artifact1 artifact2 | base64 -w0)"
 
   provenance:
     needs: [build]
