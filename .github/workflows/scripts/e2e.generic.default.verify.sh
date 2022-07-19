@@ -26,7 +26,7 @@ verify_provenance_content() {
         if [[ -z "$has_assets" ]]; then
             e2e_assert_eq "$assets" "[\"null\",\"null\"]" "there should be no assets"
         else
-            e2e_assert_eq "$assets" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
+            e2e_assert_eq "$assets" "[\"$BINARY.intoto.jsonl\",\"null\"]" "there should be assets"
         fi
     fi
 }
