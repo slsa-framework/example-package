@@ -19,6 +19,8 @@ verify_provenance_content() {
     e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator@v1"
 }
 
+ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep assets)
+
 THIS_FILE=$(e2e_this_file)
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
 echo "branch is $BRANCH"
@@ -34,3 +36,6 @@ e2e_run_verifier_all_releases "HEAD"
 
 # Verify the provenance content.
 verify_provenance_content
+
+# Verify assets
+e2e_verify_release_assets "$ASSETS"

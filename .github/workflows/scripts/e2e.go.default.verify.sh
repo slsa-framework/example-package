@@ -104,15 +104,6 @@ verify_provenance_content() {
         fi
 
     fi
-
-    if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-        A=$(gh release view --json assets "$GITHUB_REF_NAME" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
-        if [[ -z "$ASSETS" ]]; then
-            e2e_assert_eq "$A" "[\"null\",\"null\"]" "there should be no assets"
-        else
-            e2e_assert_eq "$A" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
-        fi
-    fi
 }
 
 # =====================================
@@ -133,3 +124,6 @@ e2e_run_verifier_all_releases v1.0.0
 
 # Verify the provenance content.
 verify_provenance_content
+
+# Verify assets
+e2e_verify_release_assets "$ASSETS"
