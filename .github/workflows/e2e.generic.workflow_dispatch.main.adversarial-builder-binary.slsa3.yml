@@ -1,0 +1,51 @@
+on:
+  # Only triggered manually for pre-release.
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  build:
+    outputs:
+      digests: ${{ steps.hash.outputs.hashes }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build artifacts
+        run: |
+          # These are some amazing artifacts.
+          echo "artifact1" > artifact1
+          echo "artifact2" > artifact2
+
+      - name: Generate hashes
+        shell: bash
+        id: hash
+        run: |
+          # sha256sum generates sha256 hash for all artifacts.
+          # base64 -w0 encodes to base64 and outputs on a single line.
+          # sha256sum artifact1 artifact2 ... | base64 -w0
+          echo "::set-output name=digest::$(sha256sum artifact1 artifact2 | base64 -w0)"
+
+
+  provenance:
+    needs: [build]           
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
+    # Update the reference in this line with the builder's version to test.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.2.0
+    with:
+      base64-subjects: "${{ needs.build.outputs.digest }}"
+  
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [provenance]
+    if: needs.provenance.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - run: |
+          set -euo pipefail
+
+          echo "This test should fail"
+          exit 1
+
