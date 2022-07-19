@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - "*" # triggers only if push new tag version, like `0.8.4` or else
+      - "v[0-9]+.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
 
 permissions: read-all
 
