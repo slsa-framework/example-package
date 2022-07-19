@@ -22,8 +22,8 @@ jobs:
           # Note: pretty hard to time correctly in practice. Often times the build part will fail instead.
           # It worked well in https://github.com/slsa-framework/example-package/runs/6379434930?check_suite_focus=true.
           artifact-prefix: slsa-builder-go-linux-amd64
-          after: 190
-          duration: 40
+          after: 210
+          duration: 50
           every: 2
 
   build:
