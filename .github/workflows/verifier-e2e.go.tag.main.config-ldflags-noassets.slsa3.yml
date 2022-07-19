@@ -5,6 +5,7 @@ on:
     tags:
       - "v[0-9]+" # Matches major versions like v10
       - "v[0-9]+.[0-9]+" # Matches versions like v10.0
+      - "v[0-9]+.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
 
 permissions: read-all
 
@@ -51,4 +52,5 @@ jobs:
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
       config-file: .github/configs-go/config-ldflags.yml
       evaluated-envs: "VERSION:${{needs.args.outputs.version}},COMMIT:${{needs.args.outputs.commit}},BRANCH:${{needs.args.outputs.branch}}"
-  
+      upload-assets: false
+
