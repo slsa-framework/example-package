@@ -79,7 +79,8 @@ jobs:
       id-token: write # For signing.
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
+    #uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
+    uses: laurentsimon/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@bug/generic-assets
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       compile-generator: true
