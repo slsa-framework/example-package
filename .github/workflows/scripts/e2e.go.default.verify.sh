@@ -27,7 +27,7 @@ verify_provenance_content() {
     #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
     LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
     #DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
-    ASSETS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
+    has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
     TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
     DIR="$PWD"
@@ -102,7 +102,15 @@ verify_provenance_content() {
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64"
         fi
+    fi
 
+    if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+        assets=$(e2e_get_release_assets "$GITHUB_REF_NAME")
+        if [[ -z "$has_assets" ]]; then
+            e2e_assert_eq "$assets" "[\"null\",\"null\"]" "there should be no assets"
+        else
+            e2e_assert_eq "$assets" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
+        fi
     fi
 }
 
@@ -125,5 +133,3 @@ e2e_run_verifier_all_releases v1.0.0
 # Verify the provenance content.
 verify_provenance_content
 
-# Verify assets
-e2e_verify_release_assets "$ASSETS"

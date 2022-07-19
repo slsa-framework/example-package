@@ -243,3 +243,10 @@ _e2e_verify_query() {
     name=$(echo -n "${attestation}" | jq -c -r "${query}")
     e2e_assert_eq "${name}" "${expected}" "${query} should be ${expected}"
 }
+
+# Returns the first 2 asset in a release.
+e2e_get_release_assets(){
+    local tag="$1"
+    assets=$(gh release view --json assets "$tag" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+    echo "$assets"
+}
