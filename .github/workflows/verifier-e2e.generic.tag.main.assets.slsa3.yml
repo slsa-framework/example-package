@@ -2,7 +2,8 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - "*" # triggers only if push new tag version, like `0.8.4` or else
+      - "v[0-9]+" # Matches major versions like v10
+      - "v[0-9]+.[0-9]+" # Matches versions like v10.0
 
 permissions: read-all
 
@@ -13,7 +14,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_type == 'tag' && github.event.head_commit.message == github.workflow
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     outputs:
       binary-name: ${{ steps.build.outputs.binary-name }}
       digest: ${{ steps.hash.outputs.digest }}
