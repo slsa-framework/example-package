@@ -22,7 +22,7 @@ verify_provenance_content() {
     
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-        assets=$(e2e_get_release_assets "$GITHUB_REF_NAME")
+        assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
         if [[ -z "$has_assets" ]]; then
             e2e_assert_eq "$assets" "[\"null\",\"null\"]" "there should be no assets"
         else
