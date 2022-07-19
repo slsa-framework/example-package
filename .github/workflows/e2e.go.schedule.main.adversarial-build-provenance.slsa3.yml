@@ -23,7 +23,7 @@ jobs:
           # It worked well in https://github.com/slsa-framework/example-package/runs/6379434930?check_suite_focus=true.
           artifact-prefix: slsa-builder-go-linux-amd64
           after: 190
-          duration: 30
+          duration: 40
           every: 2
 
   build:
