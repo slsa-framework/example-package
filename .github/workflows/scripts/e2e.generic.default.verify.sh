@@ -17,9 +17,7 @@ verify_provenance_content() {
 
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/heads/main"
-    e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator@v1"
-
-    
+    e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/generic@v1"
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
@@ -30,7 +28,6 @@ verify_provenance_content() {
         fi
     fi
 }
-
 
 THIS_FILE=$(e2e_this_file)
 BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
