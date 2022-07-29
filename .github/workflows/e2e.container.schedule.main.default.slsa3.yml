@@ -13,7 +13,7 @@ on:
 permissions: {}
 
 env:
-  # TODO: Create E2E_CONTAINER_TOKEN
+  # TODO(github.com/slsa-framework/example-package/issues/52): Create E2E_CONTAINER_TOKEN
   PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
@@ -21,8 +21,8 @@ env:
   IMAGE_REGISTRY: ghcr.io
   # NOTE: This pushes a container image to a "package" under the
   # slsa-framework GitHub org.
-  # TODO: rename image
-  IMAGE_NAME: ${{ github.repository }}-pre-submit
+  # The image name should be of the form: slsa-framework/example-package.<test name>
+  IMAGE_NAME: slsa-framework/example-package.e2e.container.schedule.main.default.slsa3
 
 jobs:
   # Build the Go application into a Docker image
