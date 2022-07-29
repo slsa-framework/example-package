@@ -106,7 +106,7 @@ jobs:
       - env:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          IMAGE_NAME: ${{needs.build.outputs.image-name}}
+          IMAGE_NAME: ${{ needs.build.outputs.image }}
           IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
         run: |
           cosign login "${IMAGE_REGISTRY}" -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}"
