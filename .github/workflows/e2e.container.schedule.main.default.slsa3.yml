@@ -107,11 +107,12 @@ jobs:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{needs.build.outputs.image-name}}
+          IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
         run: |
           cosign login "${IMAGE_REGISTRY}" -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}"
           # TODO: use --enforce-sct
           # TODO: add cue policy for further validation.
-          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}"
+          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}"
       # TODO(github.com/slsa-framework/slsa-verifier/issues/92): Add step to verify using slsa-verifier
 
   if-succeeded:
