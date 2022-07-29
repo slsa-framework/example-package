@@ -113,3 +113,19 @@ jobs:
           # TODO: add cue policy for further validation.
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}"
       # TODO(github.com/slsa-framework/slsa-verifier/issues/92): Add step to verify using slsa-verifier
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, verify]
+    if: needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, verify]
+    if: always() && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
