@@ -81,7 +81,7 @@ jobs:
       id-token: write # For signing.
       actions: read # For reading workflow info.
       packages: write # For uploading attestations.
-    uses: ./.github/workflows/generator_container_slsa3.yml
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
       image: ${{ needs.build.outputs.image }}
       digest: ${{ needs.build.outputs.digest }}
