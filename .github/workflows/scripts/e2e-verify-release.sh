@@ -18,7 +18,7 @@ ENV_BRANCH=$(jq -r '.base_ref' <"$GITHUB_EVENT_PATH")
 
 # On release events, the base_ref above is empty.
 if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
-    ENV_BRANCH="refs/heads/$(cat $GITHUB_EVENT_PATH | jq -r '.release.target_commitish')"
+    ENV_BRANCH="refs/heads/$(jq -r '.release.target_commitish' <"$GITHUB_EVENT_PATH")"
 fi
 
 if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]]; then
