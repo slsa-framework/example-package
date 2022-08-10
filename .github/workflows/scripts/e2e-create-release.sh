@@ -6,6 +6,7 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 
 this_file=$(e2e_this_file)
 echo "THIS_FILE: $this_file"
+annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
 
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
@@ -23,20 +24,39 @@ fi
 
 # Here we find the latest version with the major version equal to that of
 # DEFAULT_VERSION.
-release_list=$(gh release -L 200 list)
 latest_tag=$DEFAULT_VERSION
-while read -r line; do
-    tag=$(echo "$line" | cut -f1)
-    major=$(version_major "$tag")
-    if [ "$major" == "$default_major" ]; then
-        echo "  Processing $tag"
-        echo "  latest_tag: $latest_tag"
-        if version_gt "$tag" "$latest_tag"; then
-            echo " INFO: updating to $tag"
-            latest_tag="$tag"
+
+if [[ -n "$annotated_tags" ]]; then
+    # Check the annotated tags.
+    tag_list=$(git tag -l "v$default_major*")
+    while read -r line; do
+        tag="$line"
+        major=$(version_major "$tag")
+        if [ "$major" == "$default_major" ]; then
+            echo "  Processing $tag"
+            echo "  latest_tag: $latest_tag"
+            if version_gt "$tag" "$latest_tag"; then
+                echo " INFO: updating to $tag"
+                latest_tag="$tag"
+            fi
         fi
-    fi
-done <<<"$release_list"
+    done <<<"$tag_list"
+else
+    # Check the releases.
+    release_list=$(gh release -L 200 list)
+    while read -r line; do
+        tag=$(echo "$line" | cut -f1)
+        major=$(version_major "$tag")
+        if [ "$major" == "$default_major" ]; then
+            echo "  Processing $tag"
+            echo "  latest_tag: $latest_tag"
+            if version_gt "$tag" "$latest_tag"; then
+                echo " INFO: updating to $tag"
+                latest_tag="$tag"
+            fi
+        fi
+    done <<<"$release_list"
+fi
 
 echo "Latest tag found is $latest_tag"
 
@@ -51,7 +71,6 @@ branch=$(echo "$this_file" | cut -d '.' -f4)
 echo "New release tag used: $tag"
 echo "Target branch: $branch"
 
-annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
 is_annotated_tag=$([ -n "$annotated_tags" ] && echo "yes" || echo "no")
 
 cat <<EOF >DATA
