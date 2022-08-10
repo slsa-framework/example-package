@@ -86,6 +86,7 @@ if [[ -n "$annotated_tags" ]]; then
    git config --global user.email "github-actions@github.com"
    git config --global user.name "github-actions[bot]"
    git tag -a "$tag" -F ./DATA
+   git push "https://$PAT_TOKEN@github.com/$GITHUB_REPOSITORY.git"
    git push origin "$tag"
 else
     # We must use a PAT here in order to trigger subsequent workflows.
