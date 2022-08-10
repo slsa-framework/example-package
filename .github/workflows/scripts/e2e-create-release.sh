@@ -29,8 +29,9 @@ latest_tag=$DEFAULT_VERSION
 if [[ -n "$annotated_tags" ]]; then
     # Check the annotated tags.
     echo "Listing annotated tags"
+    repository_name=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f2)
     git clone "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-    cd "${GITHUB_REPOSITORY}"
+    cd "${repository_name}"
     tag_list=$(git tag -l "v$default_major*")
     echo git tag -l "v$default_major*"
     echo git tag
