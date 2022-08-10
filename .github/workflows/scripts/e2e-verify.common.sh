@@ -84,16 +84,33 @@ verify_provenance_authenticity() {
         fi
     fi
 
+    multi_subjects=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep multi-subjects)
+    if [[ -n "$multi_subjects" ]] && version_lt "$tag" "v1.2.0"; then
+        echo "  INFO: multiple subject verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/pull/112)"
+        return 0
+    fi
+
     # Default parameters.
-    if [[ "$BRANCH" == "main" ]]; then
-        echo "  **** Default parameters (main) *****"
-        $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-        e2e_assert_eq "$?" "0" "main default parameters"
-    else
+    if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.2.0"; then
+        # After v1.2.0, branch verification is optional.
+        # https://github.com/slsa-framework/slsa-verifier/pull/192
         echo "  **** Default parameters *****"
         $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-        e2e_assert_not_eq "$?" "0" "not main default parameters"
+        e2e_assert_eq "$?" "0" "not main default parameters"
+    else
+        # Until v1.2.0, we verified the default branch as "main".
+        if [[ "$BRANCH" == "main" ]]; then
+            echo "  **** Default parameters (main) *****"
+            $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+            e2e_assert_eq "$?" "0" "main default parameters"
+        else
+            echo "  **** Default parameters *****"
+            $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+            e2e_assert_not_eq "$?" "0" "not main default parameters"
+        fi
     fi
+    
+    
 
     # Correct branch
     echo "  **** Correct branch *****"
@@ -228,7 +245,7 @@ e2e_run_verifier_all_releases() {
     go env -w GOFLAGS=-mod=mod
     go install "github.com/$VERIFIER_REPOSITORY/cli/slsa-verifier@main"
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
-    verify_provenance_authenticity "slsa-verifier" "main"
+    verify_provenance_authenticity "slsa-verifier" "HEAD"
 
     # If the minimum version is HEAD then we are done.
     if [ "$1" == "HEAD" ]; then
