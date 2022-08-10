@@ -2,19 +2,18 @@
 set -euo pipefail
 
 # shellcheck source=/dev/null
-#source "./.github/workflows/scripts/e2e-utils.sh"
+source "./.github/workflows/scripts/e2e-utils.sh"
 
-#this_file=$(e2e_this_file)
-this_file="e2e.generic.tag.main.annotated.slsa3.yml"
+this_file=$(e2e_this_file)
 echo "THIS_FILE: $this_file"
 echo "blo"
 which grep
 ls -l "$(which grep)"
 echo "done"
 #annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
-echo hello
 echo "hello"
-echo "$this_file" | grep hello
+echo "hello"
+echo "$this_file" | grep "hello"
 echo "hi"
 
 #echo "$this_file" | cut -d '.' -f5 | grep annotated
