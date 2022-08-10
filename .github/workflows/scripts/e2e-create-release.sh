@@ -25,7 +25,7 @@ fi
 # Here we find the latest version with the major version equal to that of
 # DEFAULT_VERSION.
 latest_tag=$DEFAULT_VERSION
-
+echo "tags: $annotated_tags"
 if [[ -n "$annotated_tags" ]]; then
     # Check the annotated tags.
     echo "Listing annotated tags"
