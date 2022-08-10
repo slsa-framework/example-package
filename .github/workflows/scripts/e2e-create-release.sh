@@ -30,6 +30,8 @@ if [[ -n "$annotated_tags" ]]; then
     # Check the annotated tags.
     echo "Listing annotated tags"
     tag_list=$(git tag -l "v$default_major*")
+    echo git tag -l "v$default_major*"
+    echo "tags:, tag_list"
     while read -r line; do
         tag="$line"
         major=$(version_major "$tag")
