@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # shellcheck source=/dev/null
-source "./.github/workflows/scripts/e2e-utils.sh"
+#source "./.github/workflows/scripts/e2e-utils.sh"
 
 this_file=$(e2e_this_file)
 echo "THIS_FILE: $this_file"
