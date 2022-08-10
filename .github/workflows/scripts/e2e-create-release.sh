@@ -29,7 +29,7 @@ latest_tag=$DEFAULT_VERSION
 if [[ -n "$annotated_tags" ]]; then
     # Check the annotated tags.
     echo "Listing annotated tags"
-    git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+    git pull
     tag_list=$(git tag -l "v$default_major*")
     echo git tag -l "v$default_major*"
     echo git tag
