@@ -28,6 +28,7 @@ latest_tag=$DEFAULT_VERSION
 
 if [[ -n "$annotated_tags" ]]; then
     # Check the annotated tags.
+    echo "Listing annotated tags"
     tag_list=$(git tag -l "v$default_major*")
     while read -r line; do
         tag="$line"
@@ -43,6 +44,7 @@ if [[ -n "$annotated_tags" ]]; then
     done <<<"$tag_list"
 else
     # Check the releases.
+    echo "Listing releases"
     release_list=$(gh release -L 200 list)
     while read -r line; do
         tag=$(echo "$line" | cut -f1)
