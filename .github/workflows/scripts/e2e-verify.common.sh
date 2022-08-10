@@ -93,33 +93,29 @@ verify_provenance_authenticity() {
 
     # Annotated tags don't have a branch to verify.
     # See https://github.com/slsa-framework/slsa-verifier/issues/193.
-    if [[ -z "$annotated_tags" ]]; then
-        # Default parameters.
-        if version_gt "$tag" "v1.2.0"; then
-            # After v1.2.0, branch verification is optional.
-            # https://github.com/slsa-framework/slsa-verifier/pull/192
+    if [[ -n "$annotated_tags" ]]; then
+        echo "  INFO: annotated tag verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/pull/192)"
+        return 0
+    fi
+
+    # Default parameters.
+    if version_gt "$tag" "v1.2.0"; then
+        # After v1.2.0, branch verification is optional.
+        # https://github.com/slsa-framework/slsa-verifier/pull/192
+        echo "  **** Default parameters *****"
+        $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+        e2e_assert_eq "$?" "0" "not main default parameters"
+    else
+        # Until v1.2.0, we verified the default branch as "main".
+        if [[ "$BRANCH" == "main" ]]; then
+            echo "  **** Default parameters (main) *****"
+            $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+            e2e_assert_eq "$?" "0" "main default parameters"
+        else
             echo "  **** Default parameters *****"
             $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-            e2e_assert_eq "$?" "0" "not main default parameters"
-        else
-            # Until v1.2.0, we verified the default branch as "main".
-            if [[ "$BRANCH" == "main" ]]; then
-                echo "  **** Default parameters (main) *****"
-                $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-                e2e_assert_eq "$?" "0" "main default parameters"
-            else
-                echo "  **** Default parameters *****"
-                $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-                e2e_assert_not_eq "$?" "0" "not main default parameters"
-            fi
+            e2e_assert_not_eq "$?" "0" "not main default parameters"
         fi
-    fi
-    
-    # Annotated tags don't have a branch to verify.
-    # See https://github.com/slsa-framework/slsa-verifier/issues/193.
-    branch_opts=""
-    if [[ -z "$annotated_tags" ]]; then
-        branch_opts="--branch $BRANCH"
     fi
 
     # Correct branch.
