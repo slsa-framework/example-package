@@ -95,7 +95,6 @@ verify_provenance_authenticity() {
         # After v1.2.0, branch verification is optional.
         # https://github.com/slsa-framework/slsa-verifier/pull/192
         echo "  **** Default parameters *****"
-        echo $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "not main default parameters"
     else
