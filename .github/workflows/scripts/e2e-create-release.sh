@@ -31,6 +31,8 @@ if [[ -n "$annotated_tags" ]]; then
     echo "Listing annotated tags"
     tag_list=$(git tag -l "v$default_major*")
     echo git tag -l "v$default_major*"
+    echo git tag
+    git tag
     git branch
     echo "tags: $tag_list"
     while read -r line; do
