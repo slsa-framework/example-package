@@ -64,7 +64,7 @@ jobs:
         run: |
           # sha256sum generates sha256 hash for all artifacts.
           # base64 -w0 encodes to base64 and outputs on a single line.
-          # sha256sum artifact1 artifact2 ... | base64 -w0
+          # sha256sum artifact1 ... | base64 -w0
           echo "::set-output name=digest::$(sha256sum artifact1 | base64 -w0)"
 
   provenance:
@@ -88,7 +88,7 @@ jobs:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
-          name: ${{ needs.build.outputs.binary-name }}
+          name: artifact1
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
