@@ -7,25 +7,25 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 this_file=$(e2e_this_file)
 echo "THIS_FILE: $this_file"
 annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
-
+echo "annotated_tags: $annotated_tags"
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
 token=${PAT_TOKEN+$PAT_TOKEN}
 if [[ -z "$token" ]]; then
     token=$GH_TOKEN
 fi
-
+echo "major: "
 # List the releases and find the latest for THIS_FILE.
 default_major=$(version_major "$DEFAULT_VERSION")
 if [[ -z "$default_major" ]]; then
     echo "Invalid DEFAULT_VERSION: $DEFAULT_VERSION"
     exit 1
 fi
-
+echo "tags: "
 # Here we find the latest version with the major version equal to that of
 # DEFAULT_VERSION.
 latest_tag=$DEFAULT_VERSION
-echo "tags: $annotated_tags"
+
 if [[ -n "$annotated_tags" ]]; then
     # Check the annotated tags.
     echo "Listing annotated tags"
