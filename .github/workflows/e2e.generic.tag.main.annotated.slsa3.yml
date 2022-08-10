@@ -2,7 +2,7 @@ on:
   schedule:
     - cron: "0 2 * * *"
   workflow_dispatch:
-  push:
+  create:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
 

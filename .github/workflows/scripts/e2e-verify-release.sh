@@ -33,8 +33,15 @@ echo "ENV_BRANCH: $ENV_BRANCH"
 # 2- Verify that the release is intended for this e2e workflow
 #, ie that the notes contains the string $THIS_FILE
 TAG="$GITHUB_REF_NAME"
-BODY=$(gh release view "$TAG" --json body | jq -r '.body')
-if [[ "$BODY" == *"$THIS_FILE"* ]]; then
+annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated)
+body=""
+if [[ -n "$annotated_tags" ]]; then
+   body=$(git show "$TAG")
+else
+   body=$(gh release view "$TAG" --json body | jq -r '.body')
+fi
+
+if [[ "$body" == *"$THIS_FILE"* ]]; then
     echo "match: continue"
     echo "::set-output name=continue::yes"
     exit 0
