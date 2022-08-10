@@ -91,6 +91,8 @@ verify_provenance_authenticity() {
         return 0
     fi
 
+    # Annotated tags don't have a branch to verify.
+    # See https://github.com/slsa-framework/slsa-verifier/issues/193.
     if [[ -z "$annotated_tags" ]]; then
         # Default parameters.
         if version_gt "$tag" "v1.2.0"; then
@@ -113,9 +115,9 @@ verify_provenance_authenticity() {
         fi
     fi
     
-    branch_opts=""
-    # Only for non-annotated tags.
+    # Annotated tags don't have a branch to verify.
     # See https://github.com/slsa-framework/slsa-verifier/issues/193.
+    branch_opts=""
     if [[ -z "$annotated_tags" ]]; then
         branch_opts="--branch $BRANCH"
     fi
