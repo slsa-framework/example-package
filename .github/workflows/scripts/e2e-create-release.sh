@@ -64,6 +64,8 @@ Annotated tag: $is_annotated_tag
 EOF
 
 if [[ -n "$annotated_tags" ]]; then
+   git config --global user.email "github-actions@github.com"
+   git config --global user.name "github-actions[bot]"
    git tag -a "$tag" -F ./DATA
    git push origin "$tag"
 else
