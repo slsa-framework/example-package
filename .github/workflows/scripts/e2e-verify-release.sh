@@ -5,6 +5,7 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 
 THIS_FILE=$(e2e_this_file)
 echo "THIS_FILE: $THIS_FILE"
+annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated)
 
 if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
     echo "unexpected ref type $GITHUB_REF_TYPE"
@@ -21,7 +22,8 @@ if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
     ENV_BRANCH="refs/heads/$(jq -r '.release.target_commitish' <"$GITHUB_EVENT_PATH")"
 fi
 
-if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]]; then
+# We allow no branch for annotated tags. We only run them on main branch.
+if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]] && [[ -z "$annotated_tags" ]]; then
     echo "mismatch branch: file contains refs/heads/$BRANCH; GitHub env contains $ENV_BRANCH"
     echo "GITHUB_EVENT_PATH:"
     cat "$GITHUB_EVENT_PATH"
@@ -33,7 +35,6 @@ echo "ENV_BRANCH: $ENV_BRANCH"
 # 2- Verify that the release is intended for this e2e workflow
 #, ie that the notes contains the string $THIS_FILE
 TAG="$GITHUB_REF_NAME"
-annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated)
 body=""
 if [[ -n "$annotated_tags" ]]; then
    echo "Verifying annotatated tags"
