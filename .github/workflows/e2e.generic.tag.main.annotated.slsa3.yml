@@ -79,7 +79,6 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       compile-generator: true
-      upload-assets: true
 
   verify:
     runs-on: ubuntu-latest
