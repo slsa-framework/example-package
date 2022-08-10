@@ -33,11 +33,6 @@ if [[ -n "$annotated_tags" ]]; then
     git clone "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
     cd "${repository_name}"
     tag_list=$(git tag -l "v$default_major*")
-    echo git tag -l "v$default_major*"
-    echo git tag
-    git tag
-    git branch
-    echo "tags: $tag_list"
     while read -r line; do
         tag="$line"
         major=$(version_major "$tag")
