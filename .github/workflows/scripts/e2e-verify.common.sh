@@ -92,7 +92,7 @@ verify_provenance_authenticity() {
     fi
 
     # Default parameters.
-    if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.2.0"; then
+    if [[ "$tag" == "HEAD" ]] || [[ -n "$annotated_tags" ]] || version_gt "$tag" "v1.2.0"; then
         # After v1.2.0, branch verification is optional.
         # https://github.com/slsa-framework/slsa-verifier/pull/192
         echo "  **** Default parameters *****"
