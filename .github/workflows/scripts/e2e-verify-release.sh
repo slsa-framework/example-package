@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# set -euo pipefail
+set -euo pipefail
 
 source "./.github/workflows/scripts/e2e-utils.sh"
 
 THIS_FILE=$(e2e_this_file)
 echo "THIS_FILE: $THIS_FILE"
-annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated)
+annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated || true)
 
 if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
     echo "unexpected ref type $GITHUB_REF_TYPE"
