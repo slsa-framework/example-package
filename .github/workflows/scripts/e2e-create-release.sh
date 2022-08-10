@@ -11,7 +11,11 @@ which grep
 ls -l "$(which grep)"
 echo "done"
 #annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
-echo hello | grep bla
+echo hello
+echo "hello"
+echo hello | grep hi
+echo "hi"
+
 #echo "$this_file" | cut -d '.' -f5 | grep annotated
 annotated_tags=""
 echo "annotated_tags: $annotated_tags"
