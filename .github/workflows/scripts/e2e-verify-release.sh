@@ -41,6 +41,7 @@ else
    body=$(gh release view "$TAG" --json body | jq -r '.body')
 fi
 
+echo "body: $body"
 if [[ "$body" == *"$THIS_FILE"* ]]; then
     echo "match: continue"
     echo "::set-output name=continue::yes"
