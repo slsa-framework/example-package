@@ -36,8 +36,10 @@ TAG="$GITHUB_REF_NAME"
 annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated)
 body=""
 if [[ -n "$annotated_tags" ]]; then
+   echo "Verifying annotatated tags"
    body=$(git show "$TAG")
 else
+   echo "Verifying releases"
    body=$(gh release view "$TAG" --json body | jq -r '.body')
 fi
 
