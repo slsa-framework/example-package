@@ -51,14 +51,24 @@ branch=$(echo "$this_file" | cut -d '.' -f4)
 echo "New release tag used: $tag"
 echo "Target branch: $branch"
 
+annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
+is_annotated_tag=$([ -n "$annotated_tags" ] && echo "yes" || echo "no")
+
 cat <<EOF >DATA
 **E2E release creation**:
 Tag: $tag
 Branch: $branch
 Commit: $GITHUB_SHA
 Caller file: $this_file
+Annotated tag: $is_annotated_tag
 EOF
 
-# We must use a PAT here in order to trigger subsequent workflows.
-# See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
-GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
+if [[ -n "$annotated_tags" ]]; then
+   git tag -a "$tag" -F ./DATA
+   git push origin "$tag"
+else
+    # We must use a PAT here in order to trigger subsequent workflows.
+    # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
+    GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
+fi
+
