@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-#set -euo pipefail
+set -euo pipefail
 
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
 
 this_file=$(e2e_this_file)
-annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
+annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated || true)
 echo "annotated_tags: $annotated_tags"
 
 # Use the PAT_TOKEN if one is specified.
