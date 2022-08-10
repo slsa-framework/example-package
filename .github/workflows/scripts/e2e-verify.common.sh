@@ -117,7 +117,6 @@ verify_provenance_authenticity() {
     branchOpts=""
     if [[ -z "$annotated_tags" ]]; then
         branchOpts="--branch $BRANCH"
-        return 0
     fi
 
     # Correct branch.
