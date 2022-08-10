@@ -82,12 +82,14 @@ Caller file: $this_file
 Annotated tag: $is_annotated_tag
 EOF
 
+# See 
 if [[ -n "$annotated_tags" ]]; then
-   git config --global user.email "github-actions@github.com"
-   git config --global user.name "github-actions[bot]"
+   git config user.name "${GITHUB_ACTOR}"
+   git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
    git tag -a "$tag" -F ./DATA
-   git push "https://$PAT_TOKEN@github.com/$GITHUB_REPOSITORY.git" "$tag"
-   #git push origin "$tag"
+   git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+   #git push "https://$PAT_TOKEN@github.com/$GITHUB_REPOSITORY.git" "$tag"
+   git push origin "$tag"
 else
     # We must use a PAT here in order to trigger subsequent workflows.
     # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
