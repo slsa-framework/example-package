@@ -7,7 +7,7 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 this_file=$(e2e_this_file)
 echo "THIS_FILE: $this_file"
 #annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
-echo hello | grep anno
+echo hello | grep bla
 #echo "$this_file" | cut -d '.' -f5 | grep annotated
 #annotated_tags=""
 echo "annotated_tags: $annotated_tags"
