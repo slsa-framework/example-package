@@ -13,7 +13,7 @@ echo "done"
 #annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
 echo hello
 echo "hello"
-echo hello | grep hi
+echo hello | grep hello
 echo "hi"
 
 #echo "$this_file" | cut -d '.' -f5 | grep annotated
