@@ -92,22 +92,24 @@ verify_provenance_authenticity() {
     fi
 
     # Default parameters.
-    if [[ "$tag" == "HEAD" ]] || [[ -n "$annotated_tags" ]] || version_gt "$tag" "v1.2.0"; then
-        # After v1.2.0, branch verification is optional.
-        # https://github.com/slsa-framework/slsa-verifier/pull/192
-        echo "  **** Default parameters *****"
-        $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-        e2e_assert_eq "$?" "0" "not main default parameters"
-    else
-        # Until v1.2.0, we verified the default branch as "main".
-        if [[ "$BRANCH" == "main" ]]; then
-            echo "  **** Default parameters (main) *****"
-            $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-            e2e_assert_eq "$?" "0" "main default parameters"
-        else
+    if [[ -z "$annotated_tags" ]]; then
+        if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.2.0"; then
+            # After v1.2.0, branch verification is optional.
+            # https://github.com/slsa-framework/slsa-verifier/pull/192
             echo "  **** Default parameters *****"
             $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
-            e2e_assert_not_eq "$?" "0" "not main default parameters"
+            e2e_assert_eq "$?" "0" "not main default parameters"
+        else
+            # Until v1.2.0, we verified the default branch as "main".
+            if [[ "$BRANCH" == "main" ]]; then
+                echo "  **** Default parameters (main) *****"
+                $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+                e2e_assert_eq "$?" "0" "main default parameters"
+            else
+                echo "  **** Default parameters *****"
+                $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
+                e2e_assert_not_eq "$?" "0" "not main default parameters"
+            fi
         fi
     fi
 
