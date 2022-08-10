@@ -4,7 +4,8 @@ set -euo pipefail
 # shellcheck source=/dev/null
 #source "./.github/workflows/scripts/e2e-utils.sh"
 
-this_file=$(e2e_this_file)
+#this_file=$(e2e_this_file)
+this_file="e2e.generic.tag.main.annotated.slsa3.yml"
 echo "THIS_FILE: $this_file"
 echo "blo"
 which grep
