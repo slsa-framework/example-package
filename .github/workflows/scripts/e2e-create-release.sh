@@ -1,38 +1,27 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
 
 this_file=$(e2e_this_file)
-echo "THIS_FILE: $this_file"
-echo "blo"
-which grep
-ls -l "$(which grep)"
-echo "done"
-#annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
-echo "hello"
-echo "hello"
-echo "$this_file" | grep "hello"
-echo "hi"
-
-#echo "$this_file" | cut -d '.' -f5 | grep annotated
-annotated_tags=""
+annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated)
 echo "annotated_tags: $annotated_tags"
+
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
 token=${PAT_TOKEN+$PAT_TOKEN}
 if [[ -z "$token" ]]; then
     token=$GH_TOKEN
 fi
-echo "major: "
+
 # List the releases and find the latest for THIS_FILE.
 default_major=$(version_major "$DEFAULT_VERSION")
 if [[ -z "$default_major" ]]; then
     echo "Invalid DEFAULT_VERSION: $DEFAULT_VERSION"
     exit 1
 fi
-echo "tags: "
+
 # Here we find the latest version with the major version equal to that of
 # DEFAULT_VERSION.
 latest_tag=$DEFAULT_VERSION
@@ -42,7 +31,7 @@ if [[ -n "$annotated_tags" ]]; then
     echo "Listing annotated tags"
     repository_name=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f2)
     git clone "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-    cd "${repository_name}"
+    cd "${repository_name}" || exit 2
     tag_list=$(git tag -l "v$default_major*")
     while read -r line; do
         tag="$line"
