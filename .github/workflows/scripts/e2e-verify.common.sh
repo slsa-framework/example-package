@@ -112,11 +112,11 @@ verify_provenance_authenticity() {
         fi
     fi
 
-    # Annotated tags don't have a branch to verify, so we bail early for versions that always verify the branch.
-    # See https://github.com/slsa-framework/slsa-verifier/issues/193.
     branchOpts="--branch $BRANCH"
     if [[ -n "$annotated_tags" ]]; then
         branchOpts=""
+        # Annotated tags don't have a branch to verify, so we bail early for versions that always verify the branch.
+        # See https://github.com/slsa-framework/slsa-verifier/issues/193.
         if version_le "$tag" "v1.2.0"; then
             echo "  INFO: annotated tag verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/issues/193)"
             return 0
@@ -306,6 +306,7 @@ e2e_run_verifier_all_releases() {
         fi
 
         gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
+        chmod a+x "./$VERIFIER_BINARY"
         cp $VERIFIER_BINARY slsa-verifier
         # Use the compiled verifier to verify the provenance (Optional)
         ./slsa-verifier --branch "main" \
