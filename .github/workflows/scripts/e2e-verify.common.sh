@@ -125,7 +125,6 @@ verify_provenance_authenticity() {
 
     # Correct branch.
     echo "  **** Correct branch *****"
-    echo $annotated_tags, $verifier $branchOpts --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     $verifier $branchOpts --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "should be branch $BRANCH"
     
@@ -253,12 +252,11 @@ e2e_run_verifier_all_releases() {
     local VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
     local VERIFIER_BINARY="slsa-verifier-linux-amd64"
 
-    #TODO: uncomment and remove line 309
     # First, verify provenance with the verifier at HEAD.
-    # go env -w GOFLAGS=-mod=mod
-    # go install "github.com/$VERIFIER_REPOSITORY/cli/slsa-verifier@main"
-    # echo "**** Verifying provenance authenticity with verifier at HEAD *****"
-    # verify_provenance_authenticity "slsa-verifier" "HEAD"
+    go env -w GOFLAGS=-mod=mod
+    go install "github.com/$VERIFIER_REPOSITORY/cli/slsa-verifier@main"
+    echo "**** Verifying provenance authenticity with verifier at HEAD *****"
+    verify_provenance_authenticity "slsa-verifier" "HEAD"
 
     # If the minimum version is HEAD then we are done.
     if [ "$1" == "HEAD" ]; then
@@ -306,8 +304,7 @@ e2e_run_verifier_all_releases() {
         fi
 
         gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
-        chmod a+x "./$VERIFIER_BINARY"
-        cp $VERIFIER_BINARY slsa-verifier
+        
         # Use the compiled verifier to verify the provenance (Optional)
         ./slsa-verifier --branch "main" \
             --tag "$TAG" \
