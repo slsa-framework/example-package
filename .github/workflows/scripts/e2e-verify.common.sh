@@ -121,6 +121,7 @@ verify_provenance_authenticity() {
 
     # Correct branch.
     echo "  **** Correct branch *****"
+    echo annotated_tags, $verifier $branchOpts --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     $verifier $branchOpts --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "should be branch $BRANCH"
     
