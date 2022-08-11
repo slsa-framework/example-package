@@ -253,6 +253,7 @@ e2e_run_verifier_all_releases() {
     local VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
     local VERIFIER_BINARY="slsa-verifier-linux-amd64"
 
+    #TODO: uncomment and remove line 309
     # First, verify provenance with the verifier at HEAD.
     # go env -w GOFLAGS=-mod=mod
     # go install "github.com/$VERIFIER_REPOSITORY/cli/slsa-verifier@main"
@@ -307,12 +308,12 @@ e2e_run_verifier_all_releases() {
         gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
         cp $VERIFIER_BINARY slsa-verifier
         # Use the compiled verifier to verify the provenance (Optional)
-        slsa-verifier --branch "main" \
+        ./slsa-verifier --branch "main" \
             --tag "$TAG" \
             --artifact-path "$VERIFIER_BINARY" \
             --provenance "$VERIFIER_BINARY.intoto.jsonl" \
             --source "github.com/$VERIFIER_REPOSITORY" ||
-        slsa-verifier --branch "release/v$MAJOR.$MINOR" \
+        ./slsa-verifier --branch "release/v$MAJOR.$MINOR" \
             --tag "$TAG" \
             --artifact-path "$VERIFIER_BINARY" \
             --provenance "$VERIFIER_BINARY.intoto.jsonl" \
