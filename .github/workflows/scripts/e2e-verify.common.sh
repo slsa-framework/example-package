@@ -305,7 +305,7 @@ e2e_run_verifier_all_releases() {
         fi
 
         gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
-
+        cp $VERIFIER_BINARY slsa-verifier
         # Use the compiled verifier to verify the provenance (Optional)
         slsa-verifier --branch "main" \
             --tag "$TAG" \
