@@ -91,6 +91,17 @@ verify_provenance_authenticity() {
         return 0
     fi
 
+    workflow_inputs=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep workflow_inputs)
+    if [[ -n "$workflow_inputs" ]] && version_gt "$tag" "v1.2.0"; then
+        echo "  **** Correct Workflow Inputs *****"
+        $verifier $branchOpts --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY" --workflow_inputs test=true
+        e2e_assert_eq "$?" "0" "should be workflow inputs"
+        
+        echo "  **** Wrong Workflow Inputs *****"
+        $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY" --workflow_inputs test=false
+        e2e_assert_not_eq "$?" "0" "wrong workflow inputs"
+    fi
+
     # Default parameters.
     # After v1.2.0, branch verification is optional, so we can always verify, 
     # regardless of the branch value.
