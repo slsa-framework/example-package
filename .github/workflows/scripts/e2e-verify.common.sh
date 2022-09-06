@@ -94,11 +94,11 @@ verify_provenance_authenticity() {
     workflow_inputs=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep workflow_inputs)
     if [[ -n "$workflow_inputs" ]] && version_gt "$tag" "v1.2.0"; then
         echo "  **** Correct Workflow Inputs *****"
-        $verifier $branchOpts --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY" --workflow_inputs test=true
+        $verifier $branchOpts --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY" --workflow-input test=true
         e2e_assert_eq "$?" "0" "should be workflow inputs"
         
         echo "  **** Wrong Workflow Inputs *****"
-        $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY" --workflow_inputs test=false
+        $verifier --artifact-path "$BINARY" --provenance "$PROVENANCE" --source "github.com/$GITHUB_REPOSITORY" --workflow-input test=false
         e2e_assert_not_eq "$?" "0" "wrong workflow inputs"
     fi
 
@@ -333,4 +333,3 @@ e2e_run_verifier_all_releases() {
         verify_provenance_authenticity "./$VERIFIER_BINARY" "$TAG"
     done <<<"$RELEASE_LIST"
 }
-
