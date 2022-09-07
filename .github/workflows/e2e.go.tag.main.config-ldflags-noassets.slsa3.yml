@@ -34,7 +34,6 @@ jobs:
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - id: verify
-        # NOTE: we use v14.x.y
         run: ./.github/workflows/scripts/e2e-verify-release.sh
 
   args:
