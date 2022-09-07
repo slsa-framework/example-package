@@ -23,13 +23,9 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - id: create
-        run: |
-          set -euo pipefail
-
-          # Note: we use v12.x.y
-          ./.github/workflows/scripts/e2e-create-release.sh
+        run: ./.github/workflows/scripts/e2e-create-release.sh
 
   shim:
     runs-on: ubuntu-latest
@@ -37,19 +33,16 @@ jobs:
     outputs:
       continue: ${{ steps.verify.outputs.continue }}
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - id: verify
-        run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-verify-release.sh
+        run: ./.github/workflows/scripts/e2e-verify-release.sh
 
   asset-tamper:
     needs: [shim]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - uses: ./.github/actions/tamper-artifact-new
         with:
           artifact: binary-linux-amd64
@@ -67,7 +60,7 @@ jobs:
       branch: ${{ steps.ldflags.outputs.branch }}
     steps:
       - id: checkout
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.3.4
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.3.4
         with:
           fetch-depth: 0
       - id: ldflags
@@ -95,31 +88,18 @@ jobs:
       evaluated-envs: "VERSION:${{needs.args.outputs.version}},COMMIT:${{needs.args.outputs.commit}},BRANCH:${{needs.args.outputs.branch}}"
       compile-builder: true
 
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: |
-  #         echo hello
-  #         #exit 1
-
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [shim, build]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
-      - run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-report-failure.sh
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   if-failed:
     runs-on: ubuntu-latest
     needs: [shim, build]
     if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'failure'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
-      - run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-report-success.sh
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
