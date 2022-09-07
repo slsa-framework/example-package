@@ -26,7 +26,12 @@ verify_provenance_content() {
         if [[ -z "$has_assets" ]]; then
             e2e_assert_eq "$assets" "[\"null\",\"null\"]" "there should be no assets"
         else
-            e2e_assert_eq "$assets" "[\"attestation.intoto.jsonl\",\"null\"]" "there should be assets"
+            multi_subjects=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep multi-subjects)
+            if [[ -n "$multi_subjects" ]]; then
+                e2e_assert_eq "$assets" "[\"multiple.intoto.jsonl\",\"null\"]" "there should be assets"
+            else
+                e2e_assert_eq "$assets" "[\"hello.intoto.jsonl\",\"null\"]" "there should be assets"
+            fi
         fi
     fi
 }
