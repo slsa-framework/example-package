@@ -18,10 +18,7 @@ jobs:
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref_name == 'main')
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
-      - run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-dispatch.sh
+      - run: ./.github/workflows/scripts/e2e-dispatch.sh
 
   shim:
     runs-on: ubuntu-latest
@@ -78,22 +75,16 @@ jobs:
       evaluated-envs: "VERSION:${{needs.args.outputs.version}},COMMIT:${{needs.args.outputs.commit}},BRANCH:${{needs.args.outputs.branch}}"
       compile-builder: true
 
-  #   build:
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - run: |
-  #           exit 1
-
   verify:
     runs-on: ubuntu-latest
     needs: [shim, build]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
-      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3.0.0
         with:
           name: ${{ needs.build.outputs.go-binary-name }}
-      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3.0.0
         with:
           name: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # tag=v2.2.0
@@ -102,10 +93,7 @@ jobs:
       - env:
           BINARY: ${{ needs.build.outputs.go-binary-name }}
           PROVENANCE: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
-        run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e.go.default.verify.sh
+        run: ./.github/workflows/scripts/e2e.go.default.verify.sh
 
   if-succeeded:
     runs-on: ubuntu-latest
@@ -113,10 +101,7 @@ jobs:
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'workflow_dispatch' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
-      - run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-report-success.sh
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
     runs-on: ubuntu-latest
@@ -124,7 +109,4 @@ jobs:
     if: always() && github.event_name == 'workflow_dispatch' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
-      - run: |
-          set -euo pipefail
-
-          ./.github/workflows/scripts/e2e-report-failure.sh
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
