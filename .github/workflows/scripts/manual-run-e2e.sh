@@ -7,7 +7,7 @@ exit_with_msg() {
 }
 
 if [ "$#" -ne 1 ]; then
-    echo "Usage: $(basename $0) workflow-name"
+    echo "Usage: $(basename "$0") workflow-name"
     exit 1
 fi
 
