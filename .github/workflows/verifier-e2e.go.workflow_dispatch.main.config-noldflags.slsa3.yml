@@ -1,7 +1,7 @@
 # Creates workflow dispatch provenance with a pinned builder for verifier testdata.
-on: 
+on:
   schedule:
-    - cron: '0 1 * * *'
+    - cron: "0 1 * * *"
   workflow_dispatch:
 
 permissions: read-all
@@ -9,7 +9,6 @@ permissions: read-all
 env:
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
-  #ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-noldflags.yml
 
@@ -18,13 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
-      - run: |
-          set -euo pipefail
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - run: ./.github/workflows/scripts/e2e-dispatch.sh
 
-          ./.github/workflows/scripts/e2e-dispatch.sh
-  
-  #TODO: support multiple config files.
+  # TODO: support multiple config files.
   build:
     if: github.event_name == 'workflow_dispatch'
     permissions:

@@ -4,7 +4,7 @@ on:
 
 permissions: read-all
 
-jobs:            
+jobs:
   build:
     permissions:
       id-token: write # For signing.
@@ -15,16 +15,15 @@ jobs:
     with:
       go-version: 1.18
       config-file: .github/configs-go/config-noldflags.yml
-  
+
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [build]
     if: needs.build.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: |
           set -euo pipefail
 
           echo "This test should fail"
           exit 1
-

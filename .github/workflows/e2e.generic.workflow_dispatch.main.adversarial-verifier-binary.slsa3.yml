@@ -25,9 +25,8 @@ jobs:
           # sha256sum artifact1 artifact2 ... | base64 -w0
           echo "::set-output name=digests::$(sha256sum artifact1 artifact2 | base64 -w0)"
 
-
   provenance:
-    needs: [build]           
+    needs: [build]
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
@@ -36,16 +35,15 @@ jobs:
     uses: laurentsimon/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.2.0
     with:
       base64-subjects: "${{ needs.build.outputs.digests }}"
-  
+
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [provenance]
     if: needs.provenance.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: |
           set -euo pipefail
 
           echo "This test should fail"
           exit 1
-
