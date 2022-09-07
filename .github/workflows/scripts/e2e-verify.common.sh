@@ -79,20 +79,29 @@ verify_provenance_authenticity() {
     local annotated_tags
     annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated || true)
 
-    # TODO: Currently we only support $BINARY artifacts, not containers.
     verifierCmd="$verifier"
+    # After version 1.3.0, we split into subcommands for artifacts and images
     if [[ "$tag" == HEAD ]] || version_gt "$tag" "v1.3.0"; then
-        verifierCmd="$verifier verify-artifact"
+        if [[ -n $BINARY ]]; then
+            verifierCmd="$verifier verify-artifact"
+        elif [[ -n $CONTAINER ]]
+            verifierCmd="$verifier verify-image"
+        fi
     fi
     # This transforms the argument name depending on the verifier tag.
     read -ra argr <<<"$(e2e_verifier_arg_transformer "$tag")"
-    read -ra artifactArg <<<"$($argr "artifact-path")"
     read -ra provenanceArg <<<"$($argr "provenance")"
     read -ra sourceArg <<<"$($argr "source")"
     read -ra tagArg <<<"$($argr "tag")"
     read -ra branchArg <<<"$($argr "branch")"
     read -ra vTagArg <<<"$($argr "versioned-tag")"
     read -ra workflowInputArg <<<"$($argr "workflow-input")"
+
+    # Only versions 1.3.0+ of the verifier can verify containers.
+    if [[ -n $CONTAINER ]] && version_lt "$tag" "v1.3.0"; then
+        echo "  INFO: container verification at $tag: skipping due to lack of support"
+        return 0
+    fi
 
     if version_le "$tag" "v1.0.0"; then
         if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
@@ -107,23 +116,30 @@ verify_provenance_authenticity() {
         return 0
     fi
 
+    # Assemble artifact args: if $BINARY is defined, then this is an artifact, otherwise an image.
+    if [[ -n $BINARY ]]; then
+        read -ra artifactArg <<<"$($argr "artifact-path") "$BINARY""
+    else
+        read -ra artifactArg <<<"$CONTAINER"
+    fi
+
     # Default parameters.
     # After v1.2.0, branch verification is optional, so we can always verify,
     # regardless of the branch value.
     # https://github.com/slsa-framework/slsa-verifier/pull/192
     if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.2.0"; then
         echo "  **** Default parameters (annotated tags) *****"
-        $verifierCmd "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "not main default parameters"
     elif [[ -z "$annotated_tags" ]]; then
         # Until v1.2.0, we verified the default branch as "main".
         if [[ "$BRANCH" == "main" ]]; then
             echo "  **** Default parameters (main) *****"
-            $verifierCmd "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+            $verifierCmd "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
             e2e_assert_eq "$?" "0" "main default parameters"
         else
             echo "  **** Default parameters *****"
-            $verifierCmd "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+            $verifierCmd "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
             e2e_assert_not_eq "$?" "0" "not main default parameters"
         fi
     fi
@@ -144,34 +160,34 @@ verify_provenance_authenticity() {
     workflow_inputs=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep workflow_inputs)
     if [[ -n "$workflow_inputs" ]] && version_gt "$tag" "v1.2.0"; then
         echo "  **** Correct Workflow Inputs *****"
-        $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${workflowInputArg[@]}" test=true
+        $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${workflowInputArg[@]}" test=true
         e2e_assert_eq "$?" "0" "should be workflow inputs"
 
         echo "  **** Wrong Workflow Inputs *****"
-        $verifierCmd "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${workflowInputArg[@]}" test=false
+        $verifierCmd "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${workflowInputArg[@]}" test=false
         e2e_assert_not_eq "$?" "0" "wrong workflow inputs"
     fi
 
     # Correct branch.
     echo "  **** Correct branch *****"
-    $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "should be branch $BRANCH"
 
     # Wrong branch
     echo "  **** Wrong branch *****"
-    $verifierCmd "${branchArg[@]}" "not-$GITHUB_REF_NAME" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    $verifierCmd "${branchArg[@]}" "not-$GITHUB_REF_NAME" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong branch"
 
     # Wrong tag
     echo "  **** Wrong tag *****"
-    $verifierCmd "${tagArg[@]}" v1.2.3 "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    $verifierCmd "${tagArg[@]}" v1.2.3 "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong tag"
 
     echo "  **** Wrong payload *****"
     local BAD_PROV
     BAD_PROV="$(mktemp -t slsa-e2e.XXXXXXXX)"
     e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"$BAD_PROV"
-    $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$BAD_PROV" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "${provenanceArg[@]}" "$BAD_PROV" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong payload"
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
@@ -194,82 +210,82 @@ verify_provenance_authenticity() {
 
         # Correct vM.N.P
         echo "  **** Correct vM.N.P *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR.$PATCH" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR.$PATCH" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "$MAJOR.$MINOR.$PATCH versioned-tag vM.N.P ($MAJOR.$MINOR.$PATCH) should be correct"
 
         # Correct vM.N
         echo "  **** Correct vM.N *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "$MAJOR.$MINOR versioned-tag vM.N ($MAJOR.$MINOR) should be correct"
 
         # Correct vM
         echo "  **** Correct vM *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "$MAJOR versioned-tag vm ($MAJOR) should be correct"
 
         # Incorrect v(M-1)
         echo "  **** Incorrect v(M-1) *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_LESS_ONE" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_LESS_ONE" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE versioned-tag should be incorrect"
 
         # Incorrect v(M-1).N
         echo "  **** Incorrect v(M-1).N *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_LESS_ONE.$MINOR" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_LESS_ONE.$MINOR" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE.$MINOR versioned-tag should be incorrect"
 
         # Incorrect v(M-1).N.P
         echo "  **** Incorrect v(M-1).N.P *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_LESS_ONE.$MINOR.$PATCH" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_LESS_ONE.$MINOR.$PATCH" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_LESS_ONE.$MINOR.$PATCH versioned-tag should be incorrect"
 
         # Incorrect vM.(N-1)
         echo "  **** Incorrect vM.(N-1) *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR_LESS_ONE" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR_LESS_ONE" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_LESS_ONE versioned-tag should be incorrect"
 
         # Incorrect vM.(N-1).P
         echo "  **** Incorrect vM.(N-1).P *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR_LESS_ONE.$PATCH" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR_LESS_ONE.$PATCH" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_LESS_ONE.$PATCH versioned-tag should be incorrect"
 
         # Incorrect vM.N.(P-1)
         echo "  **** Incorrect vM.N.(P-1) *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR.$PATCH_LESS_ONE" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR.$PATCH_LESS_ONE" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR.$PATCH_LESS_ONE versioned-tag should be incorrect"
 
         # Incorrect v(M+1)
         echo "  **** Incorrect v(M+1) *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_PLUS_ONE" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_PLUS_ONE" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_PLUS_ONE versioned-tag should be incorrect"
 
         # Incorrect v(M+1).N
         echo "  **** Incorrect v(M+1).N *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_PLUS_ONE.$MINOR" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_PLUS_ONE.$MINOR" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_PLUS_ONE.$MINOR versioned-tag should be incorrect"
 
         # Incorrect v(M+1).N.P
         echo "  **** Incorrect v(M+1).N.P *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_PLUS_ONE.$MINOR.$PATCH" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR_PLUS_ONE.$MINOR.$PATCH" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR_PLUS_ONE.$MINOR.$PATCH versioned-tag should be incorrect"
 
         # Incorrect vM.(N+1)
         echo "  **** Incorrect vM.(N+1) *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR_PLUS_ONE" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR_PLUS_ONE" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_PLUS_ONE versioned-tag should be incorrect"
 
         # Incorrect vM.(N+1).P
         echo "  **** Incorrect vM.(N+1).P *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR_PLUS_ONE.$PATCH" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR_PLUS_ONE.$PATCH" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR_PLUS_ONE.$PATCH versioned-tag should be incorrect"
 
         # Incorrect vM.N.(P+1)
         echo "  **** Incorrect vM.N.(P+1) *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR.$PATCH_PLUS_ONE" "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR.$PATCH_PLUS_ONE" "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "$MAJOR.$MINOR.$PATCH_PLUS_ONE versioned-tag should be incorrect"
     else
         # Wrong versioned-tag
         echo "  **** Wrong versioned-tag *****"
-        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" v1.2.3 "${artifactArg[@]}" "$BINARY" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" v1.2.3 "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "wrong versioned-tag"
     fi
 }
@@ -384,7 +400,7 @@ _new_verifier_args() {
     source) echo '--source-uri' ;;
     tag) echo '--source-tag' ;;
     versioned-tag) echo '--source-versioned-tag' ;;
-    workflow-input) echo '--build-orkflow-input' ;;
+    workflow-input) echo '--build-workflow-input' ;;
     branch) echo '--source-branch' ;;
     esac
 }

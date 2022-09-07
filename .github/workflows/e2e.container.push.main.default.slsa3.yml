@@ -124,7 +124,12 @@ jobs:
           # TODO: use --enforce-sct
           # TODO: add cue policy for further validation.
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}"
-      # TODO(github.com/slsa-framework/slsa-verifier/issues/92): Add step to verify using slsa-verifier
+      - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
+        with:
+          go-version: "1.18"
+      - env:
+          CONTAINER: "${IMAGE_NAME}@${IMAGE_DIGEST}"
+        run: ./.github/workflows/scripts/e2e.container.default.verify.sh
 
   if-succeeded:
     runs-on: ubuntu-latest
