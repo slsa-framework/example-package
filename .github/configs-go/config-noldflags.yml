@@ -1,5 +1,5 @@
 # Used for e2e tests.
-#TODO: update with various config parameters.
+# TODO: update with various config parameters.
 version: 1
 env:
   - GO111MODULE=on

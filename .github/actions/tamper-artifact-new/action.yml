@@ -1,28 +1,28 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: "Hello World"
+description: "Greet someone and record the time"
 inputs:
-  artifact-name: 
-    description: 'Artifact name'
+  artifact-name:
+    description: "Artifact name"
     required: false
     default: ""
-  artifact-prefix: 
-    description: 'Artifact prefix the artifact name shoudl match'
+  artifact-prefix:
+    description: "Artifact prefix the artifact name shoudl match"
     required: false
     default: ""
   after:
-    description: 'Start tampering after `after` seconds'
+    description: "Start tampering after `after` seconds"
     required: true
   duration:
-    description: 'Continue tamepring for `duration` seconds'
+    description: "Continue tamepring for `duration` seconds"
     required: true
   every:
-    description: 'Pause for `every` seconds between tapmering attempts.'
+    description: "Pause for `every` seconds between tapmering attempts."
     required: true
   token:
-    description: 'Auth token to use.'
+    description: "Auth token to use."
     default: ${{ github.token }}
     required: false
 
 runs:
-  using: 'node16'
-  main: 'index.js'
+  using: "node16"
+  main: "index.js"

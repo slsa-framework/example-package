@@ -16,11 +16,11 @@ var (
 
 func main() {
 	uuidWithHyphen := uuid.NewRandom()
-	uuid := strings.Replace(uuidWithHyphen.String(), "-", "", -1)
+	uuidWithoutHyphen := strings.ReplaceAll(uuidWithHyphen.String(), "-", "")
 
 	fmt.Println("GitBranch:", gitBranch)
 	fmt.Println("GitTag:", gitTag)
 	fmt.Println("GitVersion:", gitVersion)
 	fmt.Println("GitCommit:", gitCommit)
-	fmt.Println("Hello world:", uuid)
+	fmt.Println("Hello world:", uuidWithoutHyphen)
 }

@@ -1,5 +1,5 @@
 # Used for e2e tests.
-#TODO: update with various config parameters.
+# TODO: update with various config parameters.
 version: 1
 env:
   - GO111MODULE=on
@@ -13,7 +13,7 @@ goos: linux
 goarch: amd64
 binary: binary-{{ .Os }}-{{ .Arch }}-{{ .Tag }}
 ldflags:
-  - '{{ .Env.VERSION }}'  
-  - '{{ .Env.COMMIT }}'
-  - '{{ .Env.BRANCH }}'
+  - "{{ .Env.VERSION }}"
+  - "{{ .Env.COMMIT }}"
+  - "{{ .Env.BRANCH }}"
   - -X main.gitTag={{ .Tag }}

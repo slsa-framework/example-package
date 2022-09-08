@@ -1,5 +1,5 @@
 # Used for e2e tests.
-#TODO: update with various config parameters.
+# TODO: update with various config parameters.
 version: 1
 env:
   - GO111MODULE=on
@@ -15,7 +15,7 @@ main: main.go
 dir: ./e2e/go/
 binary: binary-{{ .Os }}-{{ .Arch }}
 ldflags:
-  - '{{ .Env.VERSION }}'  
-  - '{{ .Env.COMMIT }}'
-  - '{{ .Env.BRANCH }}'  
-  - '{{ .Env.MAIN }}'  
+  - "{{ .Env.VERSION }}"
+  - "{{ .Env.COMMIT }}"
+  - "{{ .Env.BRANCH }}"
+  - "{{ .Env.MAIN }}"

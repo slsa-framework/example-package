@@ -41,7 +41,6 @@ jobs:
           # sha256sum artifact1 artifact2 ... | base64 -w0
           echo "::set-output name=hashes::something invalid | base64 -w0)"
 
-
   provenance:
     needs: [build]
     permissions:
@@ -76,5 +75,3 @@ jobs:
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
-
-  
