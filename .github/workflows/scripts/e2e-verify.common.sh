@@ -85,7 +85,7 @@ verify_provenance_authenticity() {
         verifierCmd="$verifier verify-artifact"
     fi
     # This transforms the argument name depending on the verifier tag.
-    argr=$(e2e_verifier_arg_transformer "$tag")
+    read -ra argr <<<"$(e2e_verifier_arg_transformer "$tag")"
     read -ra artifactArg <<<"$($argr "artifact-path")"
     read -ra provenanceArg <<<"$($argr "provenance")"
     read -ra sourceArg <<<"$($argr "source")"
@@ -128,7 +128,7 @@ verify_provenance_authenticity() {
         fi
     fi
 
-    branchOpts=("${branchArgs[@]}")
+    branchOpts=("${branchArg[@]}")
     branchOpts+=("$BRANCH")
     if [[ -n "$annotated_tags" ]]; then
         branchOpts=()
