@@ -54,7 +54,7 @@ jobs:
       - name: Trigger build via manual invocation
         id: build
         run: |
-          gcloud builds submit--region=us-west2 --config cloudbuild.yaml --project slsa-tooling
+          gcloud builds submit --region=us-west2 --config cloudbuild.yaml --project slsa-tooling
           
           # Retrieve the latest build ID
           # TODO: How do we avoid races? Can we get the output of builds submit
