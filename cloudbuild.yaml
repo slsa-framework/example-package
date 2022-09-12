@@ -1,0 +1,9 @@
+# TODO: Use substitution variables in order to differ images
+# based on triggers
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'us-west2-docker.pkg.dev/slsa-tooling/example-package-repo/example-package-image', '.' ]
+images: ['us-west2-docker.pkg.dev/slsa-tooling/example-package-repo/example-package-image']
+options:
+  requestedVerifyOption: 'VERIFIED'
+  sourceProvenanceHash: [ 'SHA256' ]
