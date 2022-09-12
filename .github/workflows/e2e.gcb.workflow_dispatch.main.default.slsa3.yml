@@ -33,6 +33,7 @@ jobs:
   build:
     if: github.event_name == 'workflow_dispatch'
     permissions:
+      id-token: write # For auth.
       contents: read # For reading repository contents.
       packages: write # For writing container images.
     outputs:
