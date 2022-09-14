@@ -47,7 +47,7 @@ jobs:
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'
         with:
-          workload_identity_provider: 'projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider' 
+          workload_identity_provider: 'projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider'
           service_account: 'example-package-user@slsa-tooling.iam.gserviceaccount.com'
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@877d4953d2c70a0ba7ef3290ae968eb24af233bb' # v0.6.0
@@ -55,11 +55,10 @@ jobs:
         id: build
         run: |
           gcloud builds submit --region=us-west2 --config cloudbuild.yaml --project slsa-tooling
-          
+
           # Retrieve the latest build ID
           # TODO: How do we avoid races? Can we get the output of builds submit
           export BUILD_ID=$(gcloud builds list --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
           export IMAGE_DIGEST=$(gcloud builds describe f9bf0c3b-961d-42aa-85f5-3cd2d9401c44 --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
 
           gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${IMAGE_NAME}"@"${IMAGE_DIGEST}" --show-provenance
-
