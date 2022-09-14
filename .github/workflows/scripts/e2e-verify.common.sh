@@ -84,13 +84,12 @@ verify_provenance_authenticity() {
     if [[ "$tag" == HEAD ]] || version_gt "$tag" "v1.3.0"; then
         if [[ -n $BINARY ]]; then
             verifierCmd="$verifier verify-artifact"
-        elif [[ -n $CONTAINER ]]
+        elif [[ -n $CONTAINER ]]; then
             verifierCmd="$verifier verify-image"
         fi
     fi
     # This transforms the argument name depending on the verifier tag.
     read -ra argr <<<"$(e2e_verifier_arg_transformer "$tag")"
-    read -ra provenanceArg <<<"$($argr "provenance")"
     read -ra sourceArg <<<"$($argr "source")"
     read -ra tagArg <<<"$($argr "tag")"
     read -ra branchArg <<<"$($argr "branch")"
@@ -121,6 +120,14 @@ verify_provenance_authenticity() {
         read -ra artifactArg <<<"$($argr "artifact-path") "$BINARY""
     else
         read -ra artifactArg <<<"$CONTAINER"
+    fi
+
+    # Assemble the provenance args: for some containers it is attached.
+    # In that case, provenanceArg and $PROVENANCE are empty.
+    if [[ -n $PROVENANCE ]]; then
+        read -ra provenanceArg <<<"$($argr "provenance")"
+    else
+        read -ra provenanceArg <<<""
     fi
 
     # Default parameters.
@@ -183,12 +190,16 @@ verify_provenance_authenticity() {
     $verifierCmd "${tagArg[@]}" v1.2.3 "${artifactArg[@]}" "${provenanceArg[@]}" "$PROVENANCE" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong tag"
 
-    echo "  **** Wrong payload *****"
-    local BAD_PROV
-    BAD_PROV="$(mktemp -t slsa-e2e.XXXXXXXX)"
-    e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"$BAD_PROV"
-    $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "${provenanceArg[@]}" "$BAD_PROV" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_not_eq "$?" "0" "wrong payload"
+    # Not that for containers with attached provenance, we will skip this test.
+    # TODO: Add a malicious container test that attaches bad provenance.
+    if [[ -n $PROVENANCE ]]; then
+        echo "  **** Wrong payload *****"
+        local BAD_PROV
+        BAD_PROV="$(mktemp -t slsa-e2e.XXXXXXXX)"
+        e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"$BAD_PROV"
+        $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "${provenanceArg[@]}" "$BAD_PROV" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        e2e_assert_not_eq "$?" "0" "wrong payload"
+    fi
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         #TODO: try several versioned-tags and tags.
