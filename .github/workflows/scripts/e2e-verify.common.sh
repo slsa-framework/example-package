@@ -117,9 +117,9 @@ verify_provenance_authenticity() {
 
     # Assemble artifact args: if $BINARY is defined, then this is an artifact, otherwise an image.
     if [[ -n $BINARY ]]; then
-        read -ra artifactArg <<<"$($argr "artifact-path") "$BINARY""
+        read -ra artifactArg <<<"$($argr "artifact-path") ${BINARY}"
     else
-        read -ra artifactArg <<<"$CONTAINER"
+        read -ra artifactArg <<<"${CONTAINER}"
     fi
 
     # Assemble the provenance args: for some containers it is attached.
