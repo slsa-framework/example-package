@@ -7,3 +7,4 @@ images: ['us-west2-docker.pkg.dev/slsa-tooling/example-package-repo/example-pack
 options:
   requestedVerifyOption: 'VERIFIED'
   sourceProvenanceHash: ['SHA256']
+  logging: CLOUD_LOGGING_ONLY
