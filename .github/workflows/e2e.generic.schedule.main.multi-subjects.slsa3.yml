@@ -59,7 +59,7 @@ jobs:
     needs: [build, provenance]
     steps:
       - name: Checkout code
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - name: Download binary
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
@@ -69,7 +69,7 @@ jobs:
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
       - name: Setup Go
-        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
+        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # tag=v2.2.0
         with:
           go-version: "1.18"
       # Note: the 3 artifacts share the same provenance file.
@@ -94,7 +94,7 @@ jobs:
     needs: [build, provenance, verify]
     if: needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -102,7 +102,7 @@ jobs:
     needs: [build, provenance, verify]
     if: always() && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   no-verify:
@@ -110,13 +110,13 @@ jobs:
     needs: [build, provenance]
     steps:
       - name: Checkout code
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - name: Download provenance
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
       - name: Setup Go
-        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # v2.2.0
+        uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # tag=v2.2.0
         with:
           go-version: "1.18"
       - name: Alter artifacts
@@ -134,7 +134,7 @@ jobs:
     needs: [build, provenance, no-verify]
     if: always() && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.no-verify.result == 'success')
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   if-failed-no:
@@ -142,5 +142,5 @@ jobs:
     needs: [build, provenance, no-verify]
     if: always() && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'failure'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh

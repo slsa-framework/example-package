@@ -30,9 +30,7 @@ echo "DEBUG: file is $THIS_FILE"
 # Verify provenance authenticity.
 e2e_run_verifier_all_releases "HEAD"
 
-# TODO: Add provenance content verification for containers with 
-# with provenance attached on the OCI registry.
-if [[ -n $PROVENANCE ]]; then
-    verify_provenance_content
-fi
+# Verify provenance content.
+verify_provenance_content
+
 

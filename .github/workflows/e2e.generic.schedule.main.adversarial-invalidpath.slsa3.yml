@@ -59,7 +59,7 @@ jobs:
     needs: [build]
     if: always() && needs.build.result == 'failure'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   if-failed-provenance:
@@ -67,7 +67,7 @@ jobs:
     needs: [build, provenance]
     if: always() && needs.build.result == 'success' && needs.provenance.result == 'failure'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-succeeded-provenance:
@@ -75,5 +75,5 @@ jobs:
     needs: [build, provenance]
     if: always() && needs.build.result == 'success' && needs.provenance.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
