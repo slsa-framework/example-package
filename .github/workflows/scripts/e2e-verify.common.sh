@@ -192,7 +192,8 @@ verify_provenance_authenticity() {
     e2e_assert_not_eq "$?" "0" "wrong tag"
 
     # Note that for containers with attached provenance, we will skip this test.
-    # TODO: Add a malicious container test that attaches bad provenance.
+    # TODO(github.com/slsa-framework/example-package/issues/108):
+    # Add a malicious container test that attaches bad provenance.
     if [[ "$build_type" != "container" ]]; then
         echo "  **** Wrong payload *****"
         local BAD_PROV

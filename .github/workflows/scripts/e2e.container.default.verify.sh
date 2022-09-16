@@ -32,5 +32,3 @@ e2e_run_verifier_all_releases "HEAD"
 
 # Verify provenance content.
 verify_provenance_content
-
-
