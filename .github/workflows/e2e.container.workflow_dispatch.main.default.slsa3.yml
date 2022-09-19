@@ -121,7 +121,7 @@ jobs:
           cosign login "${IMAGE_REGISTRY}" -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}"
           # TODO: use --enforce-sct
           # TODO: add cue policy for further validation.
-          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}" > provenance.json
+          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}" > ${GITHUB_WORKSPACE}/provenance.json
           echo "provenance_file=${GITHUB_WORKSPACE}/provenance.json" >> $GITHUB_ENV
           echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> $GITHUB_ENV
           # TODO: Remove debugging
