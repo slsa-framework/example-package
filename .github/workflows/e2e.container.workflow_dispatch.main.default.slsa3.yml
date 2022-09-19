@@ -122,7 +122,7 @@ jobs:
           # TODO: use --enforce-sct
           # TODO: add cue policy for further validation.
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}" > provenance.json
-          echo "provenance_file=provenance.json" >> $GITHUB_ENV
+          echo "provenance_file=${GITHUB_WORKSPACE}/provenance.json" >> $GITHUB_ENV
           echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> $GITHUB_ENV
           # TODO: Remove debugging
           cat provenance.json
