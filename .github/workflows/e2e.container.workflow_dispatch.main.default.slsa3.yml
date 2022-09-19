@@ -125,8 +125,6 @@ jobs:
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}" > ${GITHUB_WORKSPACE}/provenance.json
           echo "provenance_file=${GITHUB_WORKSPACE}/provenance.json" >> $GITHUB_ENV
           echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> $GITHUB_ENV
-          # TODO: Remove debugging
-          cat provenance.json
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # tag=v2.2.0
         with:
           go-version: "1.18"
