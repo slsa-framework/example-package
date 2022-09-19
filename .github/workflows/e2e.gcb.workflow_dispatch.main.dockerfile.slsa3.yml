@@ -17,8 +17,7 @@ env:
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
   IMAGE_REGISTRY: us-west2-docker.pkg.dev
-  # TODO: use variable substitution in cloudbuild.yaml here.
-  IMAGE_NAME: slsa-tooling/example-package-repo/e2e.gcb.workflow_dispatch.main.dockerfile.slsa3.yml
+  IMAGE_NAME: slsa-tooling/example-package-repo/e2e-gcb-workflow_dispatch-main-dockerfile-slsa3
 
 jobs:
   dispatch:
@@ -55,7 +54,7 @@ jobs:
       - name: Trigger build via manual invocation
         id: build
         run: |
-          gcloud builds submit --region=us-west2 --project slsa-tooling --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}
+          gcloud builds submit --region=us-west2 --project slsa-tooling --suppress-logs --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}
 
           # Retrieve the latest build ID
           # TODO: How do we avoid races? Can we directly get the output of builds submit? 

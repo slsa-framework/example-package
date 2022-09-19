@@ -17,7 +17,7 @@ env:
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
   IMAGE_REGISTRY: us-west2-docker.pkg.dev
-  IMAGE_NAME: slsa-tooling/example-package-repo/example-package-image
+  IMAGE_NAME: slsa-tooling/example-package-repo/e2e-gcb-workflow_dispatch-main-cloudbuild-slsa3
 
 jobs:
   dispatch:
