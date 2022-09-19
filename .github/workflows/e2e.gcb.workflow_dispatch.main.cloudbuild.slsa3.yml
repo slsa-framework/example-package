@@ -63,5 +63,4 @@ jobs:
           export IMAGE_DIGEST=$(gcloud builds --verbosity debug describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
           echo "Retrieved image digest ${IMAGE_DIGEST}..."
 
-          export ESCAPED_IMAGE_NAME=$(echo $IMAGE_NAME | sed "s/\//%2F/g")
-          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${ESCAPED_IMAGE_NAME}@${IMAGE_DIGEST}" --verbosity debug --show-provenance
+          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}" --verbosity debug --show-provenance
