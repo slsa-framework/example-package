@@ -1,7 +1,7 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-west2-docker.pkg.dev/slsa-tooling/example-package-repo/${_IMAGE_NAME}', '.']
-images: ['us-west2-docker.pkg.dev/slsa-tooling/example-package-repo/${_IMAGE_NAME}']
+    args: ['build', '-t', 'us-west2-docker.pkg.dev/${_IMAGE_NAME}', '.']
+images: ['us-west2-docker.pkg.dev/${_IMAGE_NAME}']
 options:
   requestedVerifyOption: 'VERIFIED'
   sourceProvenanceHash: ['SHA256']
