@@ -17,7 +17,8 @@ env:
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
   IMAGE_REGISTRY: us-west2-docker.pkg.dev
-  IMAGE_NAME: slsa-tooling/example-package-repo/e2e-gcb-workflow_dispatch-main-cloudbuild-slsa3
+  IMAGE_PROJECT: slsa-tooling
+  IMAGE_NAME: example-package-repo/e2e-gcb-workflow_dispatch-main-cloudbuild-slsa3
 
 jobs:
   dispatch:
@@ -63,4 +64,5 @@ jobs:
           export IMAGE_DIGEST=$(gcloud builds --verbosity debug describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
           echo "Retrieved image digest ${IMAGE_DIGEST}..."
 
-          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}" --verbosity debug --show-provenance
+          export ESCAPED_IMAGE_NAME=$(echo $IMAGE_NAME | sed "s/\//%2F/g")
+          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/${IMAGE_PROJECT}/"${ESCAPED_IMAGE_NAME}@${IMAGE_DIGEST}" --verbosity debug --show-provenance
