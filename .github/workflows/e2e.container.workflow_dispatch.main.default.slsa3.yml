@@ -111,6 +111,7 @@ jobs:
       packages: read # For reading attestations.
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - uses: sigstore/cosign-installer@48866aa521d8bf870604709cd43ec2f602d03ff2 # tag=v2.4.1
       - env:
           REGISTRY_USERNAME: ${{ github.actor }}
@@ -126,7 +127,6 @@ jobs:
           echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> $GITHUB_ENV
           # TODO: Remove debugging
           cat provenance.json
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # tag=v2.2.0
         with:
           go-version: "1.18"
