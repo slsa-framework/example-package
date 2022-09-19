@@ -125,6 +125,7 @@ jobs:
           # TODO: add cue policy for further validation.
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}" > provenance_file
           echo "provenance_file=provenance" >> $GITHUB_ENV
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # tag=v2.2.0
         with:
           go-version: "1.18"
