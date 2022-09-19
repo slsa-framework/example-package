@@ -134,7 +134,7 @@ jobs:
           go-version: "1.18"
       - env:
           CONTAINER: "${IMAGE_NAME}@${IMAGE_DIGEST}"
-          PROVENANCE: "{{ env.provenance_file }}"
+          PROVENANCE: "${{ env.provenance_file }}"
         run: ./.github/workflows/scripts/e2e.container.default.verify.sh
 
   if-succeeded:
