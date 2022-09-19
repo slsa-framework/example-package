@@ -83,7 +83,7 @@ verify_provenance_authenticity() {
 
     verifierCmd="$verifier"
     # After version 1.3.0, we split into subcommands for artifacts and images
-    if [[ "$tag" == HEAD ]] || version_gt "$tag" "v1.3.0"; then
+    if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.3.0"; then
         if [[ "$build_type" == "container" || "$build_type" == "gcb" ]]; then
             verifierCmd="$verifier verify-image"
         else
@@ -99,7 +99,7 @@ verify_provenance_authenticity() {
     read -ra workflowInputArg <<<"$($argr "workflow-input")"
 
     # Only versions 1.3.0+ of the verifier can verify containers.
-    if [[ "$build_type" == "container" || "$build_type" == "gcb" ]] && version_lt "$tag" "v1.3.0" && "$tag" != HEAD; then
+    if [[ "$build_type" == "container" || "$build_type" == "gcb" ]] && version_lt "$tag" "v1.3.0" && "$tag" != "HEAD"; then
         echo "  INFO: image verification at $tag: skipping due to lack of support"
         return 0
     fi
@@ -112,7 +112,7 @@ verify_provenance_authenticity() {
     fi
 
     multi_subjects=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep multi-subjects)
-    if [[ -n "$multi_subjects" ]] && version_lt "$tag" "v1.2.0" && "$tag" != HEAD; then
+    if [[ -n "$multi_subjects" ]] && version_lt "$tag" "v1.2.0" && "$tag" != "HEAD"; then
         echo "  INFO: multiple subject verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/pull/112)"
         return 0
     fi
@@ -385,7 +385,7 @@ e2e_run_verifier_all_releases() {
 # $1
 e2e_verifier_arg_transformer() {
     local tag="$1"
-    if [[ "$tag" == HEAD ]] || version_gt "$tag" "v1.3.0"; then
+    if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.3.0"; then
         echo "_new_verifier_args"
     else
         echo "_old_verifier_args"

@@ -121,7 +121,7 @@ jobs:
           cosign login "${IMAGE_REGISTRY}" -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}"
           # TODO: use --enforce-sct
           # TODO: add cue policy for further validation.
-          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}" > provenance.json
+          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}"@"${IMAGE_DIGEST}" > provenance.json
           echo "provenance_file=provenance.json" >> $GITHUB_ENV
           # TODO: Remove debugging
           cat provenance.json
@@ -130,7 +130,7 @@ jobs:
         with:
           go-version: "1.18"
       - env:
-          CONTAINER: "${IMAGE_NAME}@${IMAGE_DIGEST}"
+          CONTAINER: "${IMAGE_NAME}"@"${IMAGE_DIGEST}"
           PROVENANCE: "${{ env.provenance_file }}"
         run: ./.github/workflows/scripts/e2e.container.default.verify.sh
 
