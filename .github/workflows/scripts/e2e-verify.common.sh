@@ -99,7 +99,7 @@ verify_provenance_authenticity() {
     read -ra workflowInputArg <<<"$($argr "workflow-input")"
 
     # Only versions 1.3.0+ of the verifier can verify containers.
-    if [[ "$build_type" == "container" || "$build_type" == "gcb" ]] && version_lt "$tag" "v1.3.0"; then
+    if [[ "$build_type" == "container" || "$build_type" == "gcb" ]] && version_lt "$tag" "v1.3.0" && "$tag" != HEAD; then
         echo "  INFO: image verification at $tag: skipping due to lack of support"
         return 0
     fi
@@ -112,7 +112,7 @@ verify_provenance_authenticity() {
     fi
 
     multi_subjects=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep multi-subjects)
-    if [[ -n "$multi_subjects" ]] && version_lt "$tag" "v1.2.0"; then
+    if [[ -n "$multi_subjects" ]] && version_lt "$tag" "v1.2.0" && "$tag" != HEAD; then
         echo "  INFO: multiple subject verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/pull/112)"
         return 0
     fi
