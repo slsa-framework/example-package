@@ -54,7 +54,7 @@ jobs:
       - name: Trigger build via manual invocation
         id: build
         run: |
-          gcloud builds submit --region=us-west2 --config cloudbuild.yaml --project slsa-tooling --substitutions=IMAGE_NAME="${IMAGE_NAME}"
+          gcloud builds submit --region=us-west2 --config cloudbuild.yaml --project slsa-tooling --substitutions=_IMAGE_NAME="${IMAGE_NAME}"
 
           # Retrieve the latest build ID
           export BUILD_ID=$(gcloud builds --verbosity debug list --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
