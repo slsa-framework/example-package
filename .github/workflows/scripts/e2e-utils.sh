@@ -104,8 +104,7 @@ version_gt() {
     if [ "${LH_MAJOR:-0}" == "${RH_MAJOR:-0}" ]; then
         version_gt "${LH_MINOR:-0}.${LH_PATCH:-0}" "${RH_MINOR:-0}.${RH_PATCH:-0}"
     else
-        # return if RH is greater than LH
-        echo "${LH_MAJOR:-0} > ${RH_MAJOR:-0}"
+        # exit 0 if LH is greater than RH
         [ "${LH_MAJOR:-0}" -gt "${RH_MAJOR:-0}" ]
     fi
 }
@@ -142,7 +141,7 @@ version_lt() {
     if [ "${LH_MAJOR:-0}" == "${RH_MAJOR:-0}" ]; then
         version_lt "${LH_MINOR:-0}.${LH_PATCH:-0}" "${RH_MINOR:-0}.${RH_PATCH:-0}"
     else
-        # return if RH is greater than LH
+        # exit 0 if LH is less than RH
         [ "${LH_MAJOR:-0}" -lt "${RH_MAJOR:-0}" ]
     fi
 }
