@@ -131,13 +131,13 @@ version_lt() {
         return 1
     fi
 
-    RH_MAJOR=$(version_major "$RH")
-    RH_MINOR=$(version_minor "$RH")
-    RH_PATCH=$(version_patch "$RH")
-
     LH_MAJOR=$(version_major "$LH")
     LH_MINOR=$(version_minor "$LH")
     LH_PATCH=$(version_patch "$LH")
+
+    RH_MAJOR=$(version_major "$RH")
+    RH_MINOR=$(version_minor "$RH")
+    RH_PATCH=$(version_patch "$RH")
 
     if [ "${LH_MAJOR:-0}" == "${RH_MAJOR:-0}" ]; then
         version_lt "${LH_MINOR:-0}.${LH_PATCH:-0}" "${RH_MINOR:-0}.${RH_PATCH:-0}"
