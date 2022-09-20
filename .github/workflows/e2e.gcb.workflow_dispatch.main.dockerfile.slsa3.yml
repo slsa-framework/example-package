@@ -43,14 +43,14 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v2.3.4
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v0'
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v0"
         with:
-          workload_identity_provider: 'projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider'
-          service_account: 'example-package-user@slsa-tooling.iam.gserviceaccount.com'
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@877d4953d2c70a0ba7ef3290ae968eb24af233bb' # v0.6.0
+          workload_identity_provider: "projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider"
+          service_account: "example-package-user@slsa-tooling.iam.gserviceaccount.com"
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@877d4953d2c70a0ba7ef3290ae968eb24af233bb" # v0.6.0
       - name: Trigger build via manual invocation
         id: build
         run: |
