@@ -34,7 +34,7 @@ EOF
 # strip_zeros strips leading zeros.
 strip_zeros() {
     # shellcheck disable=SC2001
-    echo "$1" | sed -e 's/0*\([0-9]\)/\1/g'
+    echo "$1" | sed -e 's/0*\([1-9][0-9]*\)/\1/g'
 }
 
 # version_major prints the major version number if numeric.
@@ -86,26 +86,27 @@ version_eq() {
 # $2: right-hand version string
 version_gt() {
     # strip 'v' prefix from versions
-    RH=${1#+"v"}
-    LH=${2#+"v"}
+    LH=${1#+"v"}
+    RH=${2#+"v"}
 
-    if [ "$RH" == "$LH" ]; then
+    if [ "$LH" == "$RH" ]; then
         return 1
     fi
-
-    RH_MAJOR=$(version_major "$RH")
-    RH_MINOR=$(version_minor "$RH")
-    RH_PATCH=$(version_patch "$RH")
 
     LH_MAJOR=$(version_major "$LH")
     LH_MINOR=$(version_minor "$LH")
     LH_PATCH=$(version_patch "$LH")
 
-    if [ "${RH_MAJOR:-0}" == "${LH_MAJOR:-0}" ]; then
-        version_gt "${RH_MINOR:-0}.${RH_PATCH:-0}" "${LH_MINOR:-0}.${LH_PATCH:-0}"
+    RH_MAJOR=$(version_major "$RH")
+    RH_MINOR=$(version_minor "$RH")
+    RH_PATCH=$(version_patch "$RH")
+
+    if [ "${LH_MAJOR:-0}" == "${RH_MAJOR:-0}" ]; then
+        version_gt "${LH_MINOR:-0}.${LH_PATCH:-0}" "${RH_MINOR:-0}.${RH_PATCH:-0}"
     else
         # return if RH is greater than LH
-        [ "${RH_MAJOR:-0}" -gt "${LH_MAJOR:-0}" ]
+        echo "${LH_MAJOR:-0} > ${RH_MAJOR:-0}"
+        [ "${LH_MAJOR:-0}" -gt "${RH_MAJOR:-0}" ]
     fi
 }
 
@@ -123,10 +124,10 @@ version_ge() {
 # $2: right-hand version string
 version_lt() {
     # strip 'v' prefix from versions
-    RH=${1#+"v"}
-    LH=${2#+"v"}
+    LH=${1#+"v"}
+    RH=${2#+"v"}
 
-    if [ "$RH" == "$LH" ]; then
+    if [ "$LH" == "$RH" ]; then
         return 1
     fi
 
@@ -138,11 +139,11 @@ version_lt() {
     LH_MINOR=$(version_minor "$LH")
     LH_PATCH=$(version_patch "$LH")
 
-    if [ "${RH_MAJOR:-0}" == "${LH_MAJOR:-0}" ]; then
-        version_lt "${RH_MINOR:-0}.${RH_PATCH:-0}" "${LH_MINOR:-0}.${LH_PATCH:-0}"
+    if [ "${LH_MAJOR:-0}" == "${RH_MAJOR:-0}" ]; then
+        version_lt "${LH_MINOR:-0}.${LH_PATCH:-0}" "${RH_MINOR:-0}.${RH_PATCH:-0}"
     else
         # return if RH is greater than LH
-        [ "${RH_MAJOR:-0}" -lt "${LH_MAJOR:-0}" ]
+        [ "${LH_MAJOR:-0}" -lt "${RH_MAJOR:-0}" ]
     fi
 }
 
@@ -245,7 +246,7 @@ _e2e_verify_query() {
 }
 
 # Returns the first 2 asset in a release.
-e2e_get_release_assets_filenames(){
+e2e_get_release_assets_filenames() {
     local tag="$1"
     assets=$(gh release view --json assets "$tag" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
     echo "$assets"
