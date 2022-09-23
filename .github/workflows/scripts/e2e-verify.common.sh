@@ -120,8 +120,8 @@ verify_provenance_authenticity() {
     # Assemble artifact args depending on whether this is a container or binary artifact.
     if [[ "$build_type" == "container" ]]; then
         read -ra artifactArg <<<"${CONTAINER}"
-    else if [[ "$build_type" == "gcb" ]]; then
-        read -ra artifactArg <<<"${CONTAINER} ----builder-id=https://cloudbuild.googleapis.com/GoogleHostedWorker"
+    elif [[ "$build_type" == "gcb" ]]; then
+        read -ra artifactArg <<<"${CONTAINER} --builder-id=https://cloudbuild.googleapis.com/GoogleHostedWorker"
     else
         read -ra artifactArg <<<"$($argr "artifact-path") ${BINARY}"
     fi
