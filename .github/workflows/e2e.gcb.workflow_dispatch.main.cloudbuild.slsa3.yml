@@ -87,7 +87,7 @@ jobs:
           echo "Retrieved image digest ${IMAGE_DIGEST}..."
 
           # Get latest builds provenance
-          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}" --show-provenance > provenance.json
+          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}" --show-provenance --format json > provenance.json
           echo "::set-output name=provenance-name::provenance.json"
       - name: Upload provenance
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v2.3.1
