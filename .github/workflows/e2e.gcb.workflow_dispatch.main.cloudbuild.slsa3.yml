@@ -34,7 +34,7 @@ jobs:
   # Trigger the GCB build: this will only trigger from the biweekly dispatch trigger.
   build:
     # Temporarily disbable the build for testing
-    if: github.event_name == 'workflow_dispatch' && false
+    if: github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write # For auth.
       contents: read # For reading repository contents.
