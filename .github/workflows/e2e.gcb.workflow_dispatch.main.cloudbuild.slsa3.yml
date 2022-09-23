@@ -79,7 +79,7 @@ jobs:
         id: describe
         run: |
           # Retrieve the build ID filtering by image name
-          export BUILD_ID=$(gcloud builds list --filter "results.images.name=${IMAGE_NAME}" --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
+          export BUILD_ID=$(gcloud builds list --filter "results.images.name=${IMAGE_REGISTRY}"/${IMAGE_NAME} --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
           echo "Found build with build id ${BUILD_ID}..."
 
           export IMAGE_DIGEST=$(gcloud builds describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
