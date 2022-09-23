@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *'
     permissions:
+      actions: write
       contents: write
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
