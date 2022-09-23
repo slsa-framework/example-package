@@ -58,7 +58,7 @@ jobs:
           gcloud builds submit --region=us-west2 --project slsa-tooling --suppress-logs --tag ${IMAGE_REGISTRY}/${IMAGE_PROJECT}/${IMAGE_NAME} --gcs-log-dir:gs://slsa-tooling_coudbuild/
 
           # Retrieve the latest build ID
-          # TODO: How do we avoid races? Can we directly get the output of builds submit? 
+          # TODO: How do we avoid races? Can we directly get the output of builds submit?
           export BUILD_ID=$(gcloud builds --verbosity debug list --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
           echo "Created build with build id ${BUILD_ID}..."
 
