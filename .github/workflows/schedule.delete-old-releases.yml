@@ -1,0 +1,20 @@
+# This workflow deletes old releases created by e2e tests to keep the number
+# managable.
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions: read-all
+
+env:
+  PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old releases
+        id: build
+        run: ./.github/workflows/scripts/e2e-delete-old-releases.sh

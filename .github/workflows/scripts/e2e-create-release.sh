@@ -48,7 +48,6 @@ if [[ -n "$annotated_tags" ]]; then
 else
     # Check the releases.
     echo "Listing releases"
-    release_list=$(gh release -L 200 list)
     while read -r line; do
         tag=$(echo "$line" | cut -f1)
         major=$(version_major "$tag")
@@ -60,7 +59,7 @@ else
                 latest_tag="$tag"
             fi
         fi
-    done <<<"$release_list"
+    done <<<"$(GH_TOKEN=$token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/$GITHUB_REPOSITORY/releases" --paginate | jq -r '.[].tag_name')"
 fi
 
 echo "Latest tag found is $latest_tag"
@@ -87,17 +86,14 @@ Caller file: $this_file
 Annotated tag: $is_annotated_tag
 EOF
 
-# See 
 if [[ -n "$annotated_tags" ]]; then
-   git config user.name "${GITHUB_ACTOR}"
-   git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-   git tag -a "$tag" -F ./DATA
-   git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-   #git push "https://$PAT_TOKEN@github.com/$GITHUB_REPOSITORY.git" "$tag"
-   git push origin "$tag"
+    git config user.name "${GITHUB_ACTOR}"
+    git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+    git tag -a "$tag" -F ./DATA
+    git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+    git push origin "$tag"
 else
     # We must use a PAT here in order to trigger subsequent workflows.
     # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
     GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
 fi
-
