@@ -16,6 +16,6 @@ while read -r line; do
     days="$((($(date --date="$today" +%s) - $(date --date="$created_at" +%s)) / (60 * 60 * 24)))"
     if [ "$days" -gt 7 ]; then
         echo "Deleting tag $tag..."
-        gh release delete "$tag" -y
+        GH_TOKEN=$token gh release delete "$tag" -y
     fi
 done <<<"$(GH_TOKEN=$token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/${GITHUB_REPOSITORY}/releases" --paginate | jq -r '.[] | "\(.tag_name) \(.created_at)"')"
