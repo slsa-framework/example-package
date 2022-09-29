@@ -15,6 +15,9 @@ jobs:
   dispatch:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule'
+    permissions:
+      actions: write
+      content: write
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-dispatch.sh

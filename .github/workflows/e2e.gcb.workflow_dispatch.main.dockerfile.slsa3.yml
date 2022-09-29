@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *'
     permissions:
+      actions: write
       contents: write
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
@@ -57,7 +58,7 @@ jobs:
           gcloud builds submit --region=us-west2 --project slsa-tooling --suppress-logs --tag ${IMAGE_REGISTRY}/${IMAGE_PROJECT}/${IMAGE_NAME} --gcs-log-dir:gs://slsa-tooling_coudbuild/
 
           # Retrieve the latest build ID
-          # TODO: How do we avoid races? Can we directly get the output of builds submit? 
+          # TODO: How do we avoid races? Can we directly get the output of builds submit?
           export BUILD_ID=$(gcloud builds --verbosity debug list --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
           echo "Created build with build id ${BUILD_ID}..."
 
