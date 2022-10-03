@@ -160,7 +160,7 @@ verify_provenance_authenticity() {
         branchOpts=()
         # Annotated tags don't have a branch to verify, so we bail early for versions that always verify the branch.
         # See https://github.com/slsa-framework/slsa-verifier/issues/193.
-        if version_le "$tag" "v1.2.0"; then
+        if version_lt "$tag" "v1.3"; then
             echo "  INFO: annotated tag verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/issues/193)"
             return 0
         fi
@@ -168,7 +168,7 @@ verify_provenance_authenticity() {
 
     # Workflow inputs
     workflow_inputs=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep workflow_inputs)
-    if [[ -n "$workflow_inputs" ]] && version_gt "$tag" "v1.2.0"; then
+    if [[ -n "$workflow_inputs" ]] && version_ge "$tag" "v1.3"; then
         echo "  **** Correct Workflow Inputs *****"
         $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${workflowInputArg[@]}" test=true
         e2e_assert_eq "$?" "0" "should be workflow inputs"
