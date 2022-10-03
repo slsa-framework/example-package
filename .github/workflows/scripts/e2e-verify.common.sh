@@ -82,8 +82,8 @@ verify_provenance_authenticity() {
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
 
     verifierCmd="$verifier"
-    # After version 1.3.0, we split into subcommands for artifacts and images
-    if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.3.0"; then
+    # AFter version v1.3.X, we split into subcommands for artifacts and images
+    if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.4"; then
         if [[ "$build_type" == "container" || "$build_type" == "gcb" ]]; then
             verifierCmd="$verifier verify-image"
         else
@@ -98,8 +98,8 @@ verify_provenance_authenticity() {
     read -ra vTagArg <<<"$($argr "versioned-tag")"
     read -ra workflowInputArg <<<"$($argr "workflow-input")"
 
-    # Only versions 1.3.0+ of the verifier can verify containers.
-    if [[ "$build_type" == "container" || "$build_type" == "gcb" ]] && version_lt "$tag" "v1.3.0" && "$tag" != "HEAD"; then
+    # Only versions v1.4+ of the verifier can verify containers.
+    if [[ "$build_type" == "container" || "$build_type" == "gcb" ]] && version_lt "$tag" "v1.4" && "$tag" != "HEAD"; then
         echo "  INFO: image verification at $tag: skipping due to lack of support"
         return 0
     fi
@@ -387,7 +387,7 @@ e2e_run_verifier_all_releases() {
 # $1
 e2e_verifier_arg_transformer() {
     local tag="$1"
-    if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.3.0"; then
+    if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.4"; then
         echo "_new_verifier_args"
     else
         echo "_old_verifier_args"
