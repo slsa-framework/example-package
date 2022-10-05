@@ -10,6 +10,10 @@ if [[ -z "$token" ]]; then
     token=$GH_TOKEN
 fi
 
+# NOTE: use published_at because while GitHub deletes releases it retains them
+# internally. Scripts that re-create the release with the same tag name re-publish
+# rather than re-create the release so the old creation date is used. Only the
+# published_at date is updated.
 while read -r line; do
     tag=$(echo "$line" | awk '{ print $1 }')
     created_at=$(echo "$line" | awk '{ print $2 }')
@@ -18,4 +22,4 @@ while read -r line; do
         echo "Deleting tag $tag..."
         GH_TOKEN=$token gh release delete "$tag" -y
     fi
-done <<<"$(GH_TOKEN=$token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/${GITHUB_REPOSITORY}/releases" --paginate | jq -r '.[] | "\(.tag_name) \(.created_at)"')"
+done <<<"$(GH_TOKEN=$token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/${GITHUB_REPOSITORY}/releases" --paginate | jq -r '.[] | "\(.tag_name) \(.published_at)"')"
