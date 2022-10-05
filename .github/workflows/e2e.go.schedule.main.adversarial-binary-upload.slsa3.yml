@@ -1,7 +1,8 @@
 on:
-  schedule:
-    - cron: "0 8 * * *"
   workflow_dispatch:
+  # TODO(github.com/slsa-framework/slsa-github-generator/issues/960): Fix tests
+  # schedule:
+  #   - cron: "0 8 * * *"
 
 permissions: read-all
 
@@ -23,7 +24,6 @@ jobs:
           after: 120
           duration: 80
           every: 2
-
 
   build:
     permissions:
