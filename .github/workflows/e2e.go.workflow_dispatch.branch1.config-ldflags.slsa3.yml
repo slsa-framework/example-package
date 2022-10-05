@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: write
-      content: write
+      contents: write
     # WARNING: need `github.ref_name == 'main'` to avoid infinite loop when triggering manually.
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.ref_name == 'main')
     steps:
