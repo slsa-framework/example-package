@@ -10,10 +10,11 @@ if [[ -z "$token" ]]; then
     token=$GH_TOKEN
 fi
 
-# NOTE: use published_at because while GitHub deletes releases it retains them
-# internally. Scripts that re-create the release with the same tag name re-publish
-# rather than re-create the release so the old creation date is used. Only the
-# published_at date is updated.
+# TODO(github.com/slsa-framework/example-package/issues/113): Delete tags for releases.
+#
+# NOTE: use published_at for now because created_at comes from the commit date
+# of the tag for the release. If the release is re-created for an existing old
+# tag it will get deleted immediately.
 while read -r line; do
     tag=$(echo "$line" | awk '{ print $1 }')
     created_at=$(echo "$line" | awk '{ print $2 }')
