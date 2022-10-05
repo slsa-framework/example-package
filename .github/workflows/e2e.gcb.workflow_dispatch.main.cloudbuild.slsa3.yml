@@ -62,8 +62,8 @@ jobs:
     permissions:
       id-token: write # For auth.
     outputs:
-      image: ${{ steps.describe.image }}
-      provenance-name: ${{ steps.describe.provenance-name }}
+      image: ${{ steps.describe.outputs.image }}
+      provenance-name: ${{ steps.describe.outputs.provenance-name }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
