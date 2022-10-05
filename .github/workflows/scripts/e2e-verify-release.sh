@@ -33,19 +33,15 @@ fi
 echo "ENV_BRANCH: $ENV_BRANCH"
 
 # 2- Verify that the release is intended for this e2e workflow
-#, ie that the notes contains the string $THIS_FILE
-TAG="$GITHUB_REF_NAME"
-body=""
-if [[ -n "$annotated_tags" ]]; then
-   echo "Verifying annotatated tags"
-   body=$(git show "$TAG")
-else
-   echo "Verifying releases"
-   body=$(gh release view "$TAG" --json body | jq -r '.body')
+tag="$GITHUB_REF_NAME"
+default_major=$(version_major "$DEFAULT_VERSION")
+if [[ -z "$default_major" ]]; then
+    echo "Invalid DEFAULT_VERSION: $DEFAULT_VERSION"
+    exit 1
 fi
 
-echo "body: $body"
-if [[ "$body" == *"$THIS_FILE"* ]]; then
+major=$(version_major "$tag")
+if [ "$major" == "$default_major" ]; then
     echo "match: continue"
     echo "::set-output name=continue::yes"
     exit 0
