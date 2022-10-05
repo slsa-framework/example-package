@@ -134,15 +134,15 @@ verify_provenance_authenticity() {
     fi
 
     # Default parameters.
-    # After v1.2.0, branch verification is optional, so we can always verify,
+    # After v1.2, branch verification is optional, so we can always verify,
     # regardless of the branch value.
     # https://github.com/slsa-framework/slsa-verifier/pull/192
-    if [[ "$tag" == "HEAD" ]] || version_gt "$tag" "v1.2.0"; then
+    if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.3"; then
         echo "  **** Default parameters (annotated tags) *****"
         $verifierCmd "${artifactArg[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "not main default parameters"
     elif [[ -z "$annotated_tags" ]]; then
-        # Until v1.2.0, we verified the default branch as "main".
+        # Up until v1.3, we verified the default branch as "main".
         if [[ "$BRANCH" == "main" ]]; then
             echo "  **** Default parameters (main) *****"
             $verifierCmd "${artifactArg[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
