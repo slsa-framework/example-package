@@ -17,7 +17,7 @@ while read -r line; do
     if [ "$days" -gt 7 ]; then
         echo "Deleting tag $tag..."
         GH_TOKEN=$token gh release delete "$tag" -y
-        # Also delete the tag for the release.
+        # Also delete the tag for the release. Use the normal GH_TOKEN.
         git push --delete origin "$tag"
     fi
 done <<<"$(GH_TOKEN=$token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/${GITHUB_REPOSITORY}/releases" --paginate | jq -r '.[] | "\(.tag_name) \(.created_at)"')"
