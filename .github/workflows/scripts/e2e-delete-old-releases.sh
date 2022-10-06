@@ -10,11 +10,6 @@ if [[ -z "$token" ]]; then
     token=$GH_TOKEN
 fi
 
-# TODO(github.com/slsa-framework/example-package/issues/113): Delete tags for releases.
-#
-# NOTE: use published_at for now because created_at comes from the commit date
-# of the tag for the release. If the release is re-created for an existing old
-# tag it will get deleted immediately.
 while read -r line; do
     tag=$(echo "$line" | awk '{ print $1 }')
     created_at=$(echo "$line" | awk '{ print $2 }')
@@ -25,4 +20,4 @@ while read -r line; do
         # Also delete the tag for the release.
         GH_TOKEN=$token git push --delete origin "$tag"
     fi
-done <<<"$(GH_TOKEN=$token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/${GITHUB_REPOSITORY}/releases" --paginate | jq -r '.[] | "\(.tag_name) \(.published_at)"')"
+done <<<"$(GH_TOKEN=$token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/${GITHUB_REPOSITORY}/releases" --paginate | jq -r '.[] | "\(.tag_name) \(.created_at)"')"
