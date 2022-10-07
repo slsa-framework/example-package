@@ -345,6 +345,13 @@ e2e_run_verifier_all_releases() {
             continue
         fi
 
+        # Check pre-release status
+        local PRE_RELEASE
+        PRE_RELEASE=$(echo "$line" | cut -f2)
+        if [ "$PRE_RELEASE" == "Pre-release" ]; then
+            continue
+        fi
+
         # Check if a greater patch version exists
         MAJOR=$(version_major "$TAG")
         MINOR=$(version_minor "$TAG")
