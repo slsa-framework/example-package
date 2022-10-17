@@ -94,7 +94,7 @@ jobs:
 
           for tag in v4 v4.5 v4.5.6
           do
-            git tag "$tag" 
+            git tag "$tag" verifier-e2e
             git push origin "$tag"
           done
 
