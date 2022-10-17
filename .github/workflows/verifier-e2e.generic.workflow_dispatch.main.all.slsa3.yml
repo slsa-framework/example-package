@@ -6,16 +6,16 @@
 on:
   workflow_dispatch:
   push:
-    branches: 
-      - verifier-e2e
-      - '!main'
     tags:
-      - '*'
+      # We only expect these on a hard-coded set of tags.
+      - 'v4'
+      - 'v4.5'
+      - 'v4.5.6'
 
 permissions: read-all
 
 env:
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
 
 jobs:
   generate_name:
@@ -88,13 +88,12 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
-        with:
-          ref: verifier-e2e
       - id: push
         run: |
           # Dispatch tags v4, v4.5, and v4.5.6 on verifier-e2e
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
           for tag in v4 v4.5 v4.5.6
           do
@@ -120,5 +119,6 @@ jobs:
           TAG=${{ github.ref_name }}
           echo $TAG
           git tag -d $TAG
+          git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --delete origin $TAG
 
