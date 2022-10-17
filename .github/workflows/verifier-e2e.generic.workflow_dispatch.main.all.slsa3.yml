@@ -84,17 +84,18 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+        with:
+          ref: verifier-e2e
       - id: push
         run: |
           # Dispatch tags v4, v4.5, and v4.5.6 on verifier-e2e
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git checkout origin/verifier-e2e
 
           for tag in v4 v4.5 v4.5.6
           do
             git tag -a "$tag" 
-            git push verifier-e2e "$tag"
+            git push origin "$tag"
           done
 
   # Delete the tag once the provenance has been created.
