@@ -6,7 +6,11 @@
 on:
   workflow_dispatch:
   push:
-    branches: [verifier-e2e]
+    branches: 
+      - verifier-e2e
+      - '!main'
+    tags:
+      - '*'
 
 permissions: read-all
 
