@@ -31,8 +31,9 @@ jobs:
           echo "::set-output name=binary-name::binary-linux-amd64-v${GITHUB_TAG}"
 
   build:
+    needs: generate_name
     env:
-      binary-name: ${{ steps.generate_name.outputs.binary-name }}
+      binary-name: ${{ needs.generate_name.outputs.binary-name }}
     outputs:
       binary-name: ${{ steps.build.outputs.binary-name }}
       digest: ${{ steps.hash.outputs.digest }}
