@@ -49,8 +49,8 @@ jobs:
         id: build
         run: |
           bazelisk build //:hello
-          cp bazel-bin/hello_/hello ${BINARY_NAME} # Copy binary from Bazel path to root
-          echo "::set-output name=binary-name::${BINARY_NAME}"
+          cp bazel-bin/hello_/hello $binary-name # Copy binary from Bazel path to root
+          echo "::set-output name=binary-name::$binary-name"
       - name: Upload binary
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v2.3.1
         with:
@@ -63,7 +63,7 @@ jobs:
         id: hash
         run: |
           set -euo pipefail
-          echo "::set-output name=digest::$(sha256sum $BINARY_NAME | base64 -w0)"
+          echo "::set-output name=digest::$(sha256sum $binary-name | base64 -w0)"
 
   provenance:
     needs: [build]
