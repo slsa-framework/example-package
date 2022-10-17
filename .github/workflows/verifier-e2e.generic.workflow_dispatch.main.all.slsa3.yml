@@ -33,7 +33,7 @@ jobs:
   build:
     needs: generate_name
     env:
-      binary-name: ${{ needs.generate_name.outputs.binary-name }}
+      BINARY_NAME: ${{ needs.generate_name.outputs.binary-name }}
     outputs:
       binary-name: ${{ steps.build.outputs.binary-name }}
       digest: ${{ steps.hash.outputs.digest }}
@@ -49,8 +49,8 @@ jobs:
         id: build
         run: |
           bazelisk build //:hello
-          cp bazel-bin/hello_/hello $binary-name # Copy binary from Bazel path to root
-          echo "::set-output name=binary-name::$binary-name"
+          cp bazel-bin/hello_/hello $BINARY_NAME # Copy binary from Bazel path to root
+          echo "::set-output name=binary-name::$BINARY_NAME"
       - name: Upload binary
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v2.3.1
         with:
