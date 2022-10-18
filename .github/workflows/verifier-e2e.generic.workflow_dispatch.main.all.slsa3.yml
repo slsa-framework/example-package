@@ -98,7 +98,7 @@ jobs:
 
           for tag in v4 v4.5 v4.5.6
           do
-            curl -s \
+            curl -s -v \
               -X POST \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${PAT_TOKEN}" \
