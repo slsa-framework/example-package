@@ -70,7 +70,7 @@ jobs:
   # Delete the tag once the provenance has been created.
   delete-tags:
     if: github.event_name == 'push'
-    needs: [provenance]
+    needs: [build]
     runs-on: ubuntu-latest
     permissions:
       contents: write
