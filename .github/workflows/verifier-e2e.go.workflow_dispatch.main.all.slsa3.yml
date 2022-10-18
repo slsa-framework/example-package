@@ -32,11 +32,12 @@ jobs:
             exit 0
           fi
           # This must be a tag event.
+          echo "using tag name for binary-name"
           GITHUB_TAG=${{ github.ref_name }}
           echo "::set-output name=binary-name::binary-linux-amd64-v${GITHUB_TAG}"
 
   build:
-    if: github.event_name == 'workflow_dispatch'
+    needs: generate_name
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
