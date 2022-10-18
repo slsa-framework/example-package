@@ -103,7 +103,7 @@ jobs:
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${PAT_TOKEN}" \
               "https://api.github.com/repos/$GITHUB_REPOSITORY/git/tags" \
-              -d '{"tag":"$tag","message":"verifier e2e","object":"$GITHUB_SHA","type":"commit"}'
+              -d '{"tag":"$tag","message":"verifier e2e","object":"${GITHUB_SHA}","type":"commit"}'
           done
 
   # Delete the tag once the provenance has been created.
