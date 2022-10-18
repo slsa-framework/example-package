@@ -15,7 +15,8 @@ on:
 permissions: read-all
 
 env:
-  GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+  PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   generate_name:
@@ -89,16 +90,22 @@ jobs:
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - id: push
+        shell: bash
         run: |
           # Dispatch tags v4, v4.5, and v4.5.6
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git remote set-url origin "https://${GITHUB_ACTOR}:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          DATE=$(date --utc)
 
           for tag in v4 v4.5 v4.5.6
           do
-            git tag "$tag"
-            git push origin "$tag"
+            cat <<EOF >DATA
+{"tag":$tag,"message":"verifier-e2e","object":"$GITHUB_SHA","type":"commit","tagger":{"name":"github-actions","email":"github-actions@github.com","date":"$DATE"}}'
+EOF
+            curl -s \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${PAT_TOKEN}" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/git/tags"
+              -d @DATA
           done
 
   # Delete the tag once the provenance has been created.
