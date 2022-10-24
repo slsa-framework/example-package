@@ -30,7 +30,7 @@ verify_provenance_content() {
     has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
     TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
-    DIR="$PWD"
+    DIR="$PWD/__PROJECT_CHECKOUT_DIR__"
     if [[ -n "$GO_DIR" ]]; then
         DIR="$DIR/$GO_DIR"
     fi
@@ -50,11 +50,11 @@ verify_provenance_content() {
     # First step is vendoring
     e2e_verify_predicate_buildConfig_step_command "0" "$ATTESTATION" "[\"mod\",\"vendor\"]"
     e2e_verify_predicate_buildConfig_step_env "0" "$ATTESTATION" "[]"
-    e2e_verify_predicate_buildConfig_step_workingDir "0" "$ATTESTATION" "$DIR/__PROJECT_CHECKOUT_DIR__"
+    e2e_verify_predicate_buildConfig_step_workingDir "0" "$ATTESTATION" "$DIR"
 
     # Second step is the actual compilation.
     e2e_verify_predicate_buildConfig_step_env "1" "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
-    e2e_verify_predicate_buildConfig_step_workingDir "1" "$ATTESTATION" "$DIR/__PROJECT_CHECKOUT_DIR__"
+    e2e_verify_predicate_buildConfig_step_workingDir "1" "$ATTESTATION" "$DIR"
 
     if [[ -z "$LDFLAGS" ]]; then
         e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"$BINARY\"]"
