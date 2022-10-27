@@ -18,8 +18,12 @@ fi
 
 if [[ -z "$ISSUE_ID" ]]; then
     # Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
-    TITLE=$(echo "$THIS_FILE" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
-    WORKFLOW=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    if [[ -z "$TITLE" ]]; then
+        TITLE=$(echo "$THIS_FILE" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
+    fi
+    if [[ -z "$WORKFLOW" ]]; then
+        WORKFLOW=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    fi
     GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue create -t "[e2e]: $TITLE" -F ./BODY --label "e2e" --label "type:bug" --label "workflow:$WORKFLOW"
 else
     GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
