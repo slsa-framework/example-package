@@ -1,6 +1,6 @@
 # This produces a test for the generic workflows for the CLI e2e test.
 # The output will be a file binary-linux-amd64-workflow_dispatch and
-# its associated provenance that should be moved to the 
+# its associated provenance that should be moved to the
 # cli/slsa-verifier/testdata/gha_generic/$BUILDER_TAG folder.
 
 on:
@@ -24,7 +24,7 @@ jobs:
       binary-name: ${{ steps.create_name.outputs.binary-name }}
     runs-on: ubuntu-latest
     steps:
-      - name: Creates the output name 
+      - name: Creates the output name
         id: create_name
         run: |
           if [ ${{ github.event_name == 'workflow_dispatch' }} ]; then
