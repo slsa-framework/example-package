@@ -24,7 +24,10 @@ if [[ -z "$ISSUE_ID" ]]; then
     if [[ -z "$WORKFLOW" ]]; then
         WORKFLOW=$(echo "$THIS_FILE" | cut -d '.' -f2)
     fi
-    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue create -t "[e2e]: $TITLE" -F ./BODY --label "e2e" --label "type:bug" --label "workflow:$WORKFLOW"
+    if [[ -z "$HEADER" ]]; then
+        HEADER="e2e"
+    fi
+    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue create -t "[$HEADER]: $TITLE" -F ./BODY --label "$HEADER" --label "type:bug" --label "workflow:$WORKFLOW"
 else
     GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
 fi
