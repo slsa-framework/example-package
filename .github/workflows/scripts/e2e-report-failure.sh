@@ -17,8 +17,8 @@ if [[ -z "$TOKEN" ]]; then
 fi
 
 if [[ -z "$ISSUE_ID" ]]; then
-    # Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
     if [[ -z "$TITLE" ]]; then
+        # Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
         TITLE=$(echo "$THIS_FILE" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
     fi
     if [[ -z "$WORKFLOW" ]]; then
