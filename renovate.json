@@ -5,12 +5,6 @@
   "packageRules": [
     {
       "matchManagers": ["github-actions"],
-      "matchDepTypes": ["devDependencies"],
-      "groupName": "github-actions devDependencies"
-    },
-    {
-      "matchManagers": ["github-actions"],
-      "matchDepTypes": ["dependencies"],
       "groupName": "github-actions"
     }
   ]
