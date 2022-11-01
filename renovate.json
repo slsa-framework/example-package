@@ -6,6 +6,16 @@
     {
       "matchManagers": ["github-actions"],
       "groupName": "github-actions"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "npm dev"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["dependencies"],
+      "groupName": "npm"
     }
   ]
 }
