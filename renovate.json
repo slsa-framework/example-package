@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "schedule": ["every weekend"],
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "github-actions devDependencies"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["dependencies"],
+      "groupName": "github-actions"
+    }
+  ]
+}
