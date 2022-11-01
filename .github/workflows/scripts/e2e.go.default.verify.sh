@@ -30,7 +30,7 @@ verify_provenance_content() {
     has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
     TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
-    DIR="$PWD"
+    DIR="$PWD/__PROJECT_CHECKOUT_DIR__"
     if [[ -n "$GO_DIR" ]]; then
         DIR="$DIR/$GO_DIR"
     fi
