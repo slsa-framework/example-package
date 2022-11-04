@@ -17,7 +17,7 @@ verify_provenance_content() {
     SUBJECT=$(echo "${CONTAINER}" | cut -f1 -d"@")
     e2e_verify_predicate_subject_name "$ATTESTATION" "$SUBJECT"
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/heads/main"
-    e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/generic@v1"
+    e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/container@v1"
 }
 
 THIS_FILE=$(e2e_this_file)
