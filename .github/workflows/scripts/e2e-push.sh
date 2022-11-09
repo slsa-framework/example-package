@@ -7,12 +7,10 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 # We push to main a file e2e/wokflow-name.txt
 # with the date inside, to be sure the file is different.
 
-THIS_FILE=$(e2e_this_file)
-
 DATE=$(date --utc)
-FILE=e2e/$THIS_FILE.txt
+FILE=e2e/$(e2e_this_file).txt
 COMMIT_MESSAGE="$GITHUB_WORKFLOW"
-BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+BRANCH=$(e2e_this_branch)
 
 # Check presence of file in the correct branch.
 gh repo clone "$GITHUB_REPOSITORY" -- -b "$BRANCH"

@@ -11,6 +11,11 @@ e2e_this_file() {
     gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3
 }
 
+# Gets the name of the branch for the e2e test.
+e2e_this_branch() {
+    e2e_this_file | cut -d '.' -f4
+}
+
 # Converter from yaml to JSON.
 #sudo apt-get install jc
 
