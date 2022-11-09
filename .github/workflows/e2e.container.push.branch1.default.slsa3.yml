@@ -48,8 +48,7 @@ jobs:
 
           source "./.github/workflows/scripts/e2e-utils.sh"
 
-          THIS_FILE=$(e2e_this_file)
-          BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+          BRANCH=$(e2e_this_branch)
           if [[ "$BRANCH" == "$GITHUB_REF_NAME" ]]; then
             echo "::set-output name=continue::yes"
           fi
