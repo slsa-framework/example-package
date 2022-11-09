@@ -16,6 +16,7 @@ env:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
+    # NOTE: workflows are only scheduled on the main branch.
     if: github.event_name == 'schedule'
     permissions:
       actions: write
