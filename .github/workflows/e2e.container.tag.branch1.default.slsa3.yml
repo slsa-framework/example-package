@@ -1,9 +1,5 @@
-# This e2e test performs the following via a GitHub Actions push event with ref_type == tag.
-# - Build the Go application into a Docker image
-# - Push the image to ghcr.io
-# - Generate SLSA provenance for the image
-# - Upload the provenance to ghcr.io
-# - Verify the created provenance attestation.
+# NOTE: this file is identical to the 'main' version of this test.
+# The only logic that's different is in e2e-create-release.sh
 
 on:
   schedule:
