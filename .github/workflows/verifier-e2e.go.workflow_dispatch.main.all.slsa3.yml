@@ -5,12 +5,12 @@
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      # We only expect these on a hard-coded set of tags.
-      - "v14.2"
-      - "v14"
-      - "v13.0.30"
+  # push:
+  #   tags:
+  #     # We only expect these on a hard-coded set of tags.
+  #     - "v14.2"
+  #     - "v14"
+  #     - "v13.0.30"
 
 permissions: read-all
 
