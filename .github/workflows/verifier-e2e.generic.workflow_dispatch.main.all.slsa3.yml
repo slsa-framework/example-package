@@ -8,9 +8,9 @@ on:
   push:
     tags:
       # We only expect these on a hard-coded set of tags.
-      - 'v14.2'
-      - 'v14'
-      - 'v13.0.30'
+      - "v14.2"
+      - "v14"
+      - "v13.0.30"
 
 permissions: read-all
 
@@ -76,7 +76,7 @@ jobs:
       id-token: write # For signing.
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.2.1
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.2.2
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       compile-generator: true
