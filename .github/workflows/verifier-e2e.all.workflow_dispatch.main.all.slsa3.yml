@@ -17,7 +17,6 @@ permissions: read-all
 env:
   PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   GH_TOKEN: ${{ github.token }}
-  REIGSTRY_USERNAME: "ianlewis"
 
 jobs:
   generate_name:
@@ -94,6 +93,8 @@ jobs:
       config-file: .github/configs-go/config-ldflags-tag-name.yml
 
   container_build:
+    env:
+      REGISTRY_USERNAME: "ianlewis"
     permissions:
       contents: read # For reading repository contents.
       packages: write # For writing container images.
@@ -140,6 +141,8 @@ jobs:
           echo "::set-output name=image::$image_name"
 
   gha_container:
+    env:
+      REGISTRY_USERNAME: "ianlewis"
     needs: container_build
     permissions:
       id-token: write # For signing.
