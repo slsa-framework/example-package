@@ -15,8 +15,13 @@ on:
 permissions: read-all
 
 env:
-  PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+  PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   GH_TOKEN: ${{ github.token }}
+  IMAGE_REGISTRY: ghcr.io
+  # NOTE: This pushes a container image to a "package" under the
+  # slsa-framework GitHub org.
+  # The image name should be of the form: slsa-framework/example-package.<test name>
+  IMAGE_NAME: slsa-framework/example-package.verifier-e2e.all.tag.main.default.slsa3
 
 jobs:
   generate_name:
