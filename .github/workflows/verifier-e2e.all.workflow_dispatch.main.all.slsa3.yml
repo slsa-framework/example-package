@@ -141,8 +141,6 @@ jobs:
           echo "::set-output name=image::$image_name"
 
   gha_container:
-    env:
-      REGISTRY_USERNAME: "ianlewis"
     needs: container_build
     permissions:
       id-token: write # For signing.
@@ -152,7 +150,7 @@ jobs:
     with:
       image: ${{ needs.container_build.outputs.image }}
       digest: ${{ needs.container_build.outputs.digest }}
-      registry-username: ${{ env.REGISTRY_USERNAME }}
+      registry-username: "ianlewis" # We cannot use env vars here
       compile-generator: true
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
