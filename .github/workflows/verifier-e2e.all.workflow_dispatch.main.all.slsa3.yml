@@ -20,8 +20,6 @@ env:
 
 jobs:
   generate_name:
-    needs: shim
-    if: needs.shim.outputs.continue == 'yes'
     outputs:
       binary-name: ${{ steps.create_name.outputs.binary-name }}
     runs-on: ubuntu-latest
