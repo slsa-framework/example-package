@@ -45,10 +45,10 @@ strip_zeros() {
 # version_major prints the major version number if numeric.
 version_major() {
     # sed strips off remaining non-digit text. e.g. v1-rc0 will return 1
-    VER=$(strip_zeros "$(echo "${1#"v"}" | cut -s -d '.' -f1 | sed -e 's/^\([0-9]*\).*/\1/g')")
+    VER=$(strip_zeros "$(echo "${1#"v"}" | cut -d '-' -f1 | cut -s -d '.' -f1 | sed -e 's/^\([0-9]*\).*/\1/g')")
     if [ "$VER" == "" ]; then
         # string may not contain delimiters.
-        VER=$(strip_zeros "${1#"v"}" | sed -e 's/^\([0-9]*\).*/\1/g')
+        VER=$(strip_zeros "${1#"v"}" | cut -d '-' -f1 | sed -e 's/^\([0-9]*\).*/\1/g')
     fi
     echo "$VER"
 }
@@ -56,13 +56,24 @@ version_major() {
 # version_minor prints the minor version number if numeric.
 version_minor() {
     # sed strips off remaining non-digit text. e.g. v1.2-rc0 will return 2
-    strip_zeros "$(echo "${1#"v"}" | cut -s -d '.' -f2 | sed -e 's/^\([0-9]*\).*/\1/g')"
+    strip_zeros "$(echo "${1#"v"}" | cut -d '-' -f1 | cut -s -d '.' -f2 | sed -e 's/^\([0-9]*\).*/\1/g')"
 }
 
 # version_patch prints the patch version number if numeric.
 version_patch() {
     # sed strips off remaining non-digit text. e.g. v1.3.4-rc0 will return 4
-    strip_zeros "$(echo "${1#"v"}" | cut -s -d '.' -f3 | sed -e 's/^\([0-9]*\).*/\1/g')"
+    strip_zeros "$(echo "${1#"v"}" | cut -d '-' -f1 | cut -s -d '.' -f3 | sed -e 's/^\([0-9]*\).*/\1/g')"
+}
+
+# version_pre prints the string pre-release portion of the tag if present.
+version_pre() {
+    echo "${1#"v"}" | cut -s -d '-' -f2
+}
+
+# version_rc prints the release candidate version if numeric.
+version_rc() {
+    # sed strips off remaining non-digit text. e.g. v1.3.4-rc.03abc will return 3
+    strip_zeros "$(version_pre "$1" | grep -e '^rc\.[0-9]\+' | sed -e 's/^rc\.\([0-9]*\).*/\1/g')"
 }
 
 # version_eq returns 0 if the left-hand version is equal to the right-hand
@@ -71,18 +82,36 @@ version_patch() {
 # $2: right-hand version string
 version_eq() {
     # strip 'v' prefix from versions
-    RH=${1#+"v"}
-    LH=${2#+"v"}
+    local lh=${1#+"v"}
+    local rh=${2#+"v"}
 
-    RH_MAJOR=$(version_major "$RH")
-    RH_MINOR=$(version_minor "$RH")
-    RH_PATCH=$(version_patch "$RH")
+    local lh_major lh_minor lh_patch lh_pre lh_rc
+    lh_major=$(version_major "$lh")
+    lh_minor=$(version_minor "$lh")
+    lh_patch=$(version_patch "$lh")
+    lh_pre=$(version_pre "$lh")
+    lh_rc=$(version_rc "$lh")
 
-    LH_MAJOR=$(version_major "$LH")
-    LH_MINOR=$(version_minor "$LH")
-    LH_PATCH=$(version_patch "$LH")
+    local rh_major rh_minor rh_patch rh_pre rh_rc
+    rh_major=$(version_major "$rh")
+    rh_minor=$(version_minor "$rh")
+    rh_patch=$(version_patch "$rh")
+    rh_pre=$(version_pre "$rh")
+    rh_rc=$(version_rc "$rh")
 
-    [ "${RH_MAJOR:-0}" -eq "${LH_MAJOR:-0}" ] && [ "${RH_MINOR:-0}" -eq "${LH_MINOR:-0}" ] && [ "${RH_PATCH:-0}" -eq "${LH_PATCH:-0}" ]
+    if [ "${rh_major:-0}" -eq "${lh_major:-0}" ] && [ "${rh_minor:-0}" -eq "${lh_minor:-0}" ] && [ "${rh_patch:-0}" -eq "${lh_patch:-0}" ]; then
+        if [ "${rh_rc}" != "" ] && [ "${lh_rc}" != "" ]; then
+            if [ "${rh_rc}" == "${lh_rc}" ]; then
+                return 0
+            fi
+        else
+            if [ "${rh_pre}" == "${lh_pre}" ]; then
+                return 0
+            fi
+        fi
+    fi
+
+    return 1
 }
 
 # version_gt returns 0 if the left-hand version is greater than the right-handd
@@ -91,27 +120,67 @@ version_eq() {
 # $2: right-hand version string
 version_gt() {
     # strip 'v' prefix from versions
-    LH=${1#+"v"}
-    RH=${2#+"v"}
+    local lh=${1#+"v"}
+    local rh=${2#+"v"}
 
-    if [ "$LH" == "$RH" ]; then
+    if [ "$lh" == "$rh" ]; then
         return 1
     fi
 
-    LH_MAJOR=$(version_major "$LH")
-    LH_MINOR=$(version_minor "$LH")
-    LH_PATCH=$(version_patch "$LH")
+    local lh_major lh_minor lh_patch lh_pre lh_rc
+    lh_major=$(version_major "$lh")
+    lh_minor=$(version_minor "$lh")
+    lh_patch=$(version_patch "$lh")
+    lh_pre=$(version_pre "$lh")
+    lh_rc=$(version_rc "$lh")
 
-    RH_MAJOR=$(version_major "$RH")
-    RH_MINOR=$(version_minor "$RH")
-    RH_PATCH=$(version_patch "$RH")
+    local rh_major rh_minor rh_patch rh_pre rh_rc
+    rh_major=$(version_major "$rh")
+    rh_minor=$(version_minor "$rh")
+    rh_patch=$(version_patch "$rh")
+    rh_pre=$(version_pre "$rh")
+    rh_rc=$(version_rc "$rh")
 
-    if [ "${LH_MAJOR:-0}" == "${RH_MAJOR:-0}" ]; then
-        version_gt "${LH_MINOR:-0}.${LH_PATCH:-0}" "${RH_MINOR:-0}.${RH_PATCH:-0}"
-    else
-        # exit 0 if LH is greater than RH
-        [ "${LH_MAJOR:-0}" -gt "${RH_MAJOR:-0}" ]
+    if [ "${lh_pre}" != "" ] || [ "${rh_pre}" != "" ]; then
+        if version_eq "${lh_major:-0}.${lh_minor:-0}.${lh_patch:-0}" "${rh_major:-0}.${rh_minor:-0}.${rh_patch:-0}"; then
+            # compare pre-release values
+            if [ "${lh_rc}" != "" ] && [ "${rh_rc}" != "" ]; then
+                if [ "${lh_rc:-0}" -gt "${rh_rc:-0}" ]; then
+                    return 0
+                else
+                    return 1
+                fi
+            fi
+
+            if [ "${lh_pre}" != "" ] && [ "${rh_pre}" != "" ]; then
+                if [[ "${lh_pre}" > "${rh_pre}" ]]; then
+                    return 0
+                else
+                    return 1
+                fi
+            fi
+
+            # An empty pre-release value is always greater than a pre-release value.
+            if [ "${lh_pre}" == "" ]; then
+                return 0
+            else
+                return 1
+            fi
+        fi
     fi
+
+    if [ "${lh_major:-0}" == "${rh_major:-0}" ]; then
+        if version_gt "${lh_minor:-0}.${lh_patch:-0}-${lh_pre}" "${rh_minor:-0}.${rh_patch:-0}-${rh_pre}"; then
+            return 0
+        fi
+    else
+        # exit 0 if lh is greater than rh
+        if [ "${lh_major:-0}" -gt "${rh_major:-0}" ]; then
+            return 0
+        fi
+    fi
+
+    return 1
 }
 
 # version_re returns 0 if the left-hand version is greater than or equal to the
@@ -128,27 +197,67 @@ version_ge() {
 # $2: right-hand version string
 version_lt() {
     # strip 'v' prefix from versions
-    LH=${1#+"v"}
-    RH=${2#+"v"}
+    local lh=${1#+"v"}
+    local rh=${2#+"v"}
 
-    if [ "$LH" == "$RH" ]; then
+    if [ "$lh" == "$rh" ]; then
         return 1
     fi
 
-    LH_MAJOR=$(version_major "$LH")
-    LH_MINOR=$(version_minor "$LH")
-    LH_PATCH=$(version_patch "$LH")
+    local lh_major lh_minor lh_patch lh_pre lh_rc
+    lh_major=$(version_major "$lh")
+    lh_minor=$(version_minor "$lh")
+    lh_patch=$(version_patch "$lh")
+    lh_pre=$(version_pre "$lh")
+    lh_rc=$(version_rc "$lh")
 
-    RH_MAJOR=$(version_major "$RH")
-    RH_MINOR=$(version_minor "$RH")
-    RH_PATCH=$(version_patch "$RH")
+    local rh_major rh_minor rh_patch rh_pre rh_rc
+    rh_major=$(version_major "$rh")
+    rh_minor=$(version_minor "$rh")
+    rh_patch=$(version_patch "$rh")
+    rh_pre=$(version_pre "$rh")
+    rh_rc=$(version_rc "$rh")
 
-    if [ "${LH_MAJOR:-0}" == "${RH_MAJOR:-0}" ]; then
-        version_lt "${LH_MINOR:-0}.${LH_PATCH:-0}" "${RH_MINOR:-0}.${RH_PATCH:-0}"
-    else
-        # exit 0 if LH is less than RH
-        [ "${LH_MAJOR:-0}" -lt "${RH_MAJOR:-0}" ]
+    if [ "${lh_pre}" != "" ] || [ "${rh_pre}" != "" ]; then
+        if version_eq "${lh_major:-0}.${lh_minor:-0}.${lh_patch:-0}" "${rh_major:-0}.${rh_minor:-0}.${rh_patch:-0}"; then
+            # compare pre-release values
+            if [ "${lh_rc}" != "" ] && [ "${rh_rc}" != "" ]; then
+                if [ "${lh_rc:-0}" -lt "${rh_rc:-0}" ]; then
+                    return 0
+                else
+                    return 1
+                fi
+            fi
+
+            if [ "${lh_pre}" != "" ] && [ "${rh_pre}" != "" ]; then
+                if [[ "${lh_pre}" < "${rh_pre}" ]]; then
+                    return 0
+                else
+                    return 1
+                fi
+            fi
+
+            # An empty pre-release value is always greater than a pre-release value.
+            if [ "${rh_pre}" == "" ]; then
+                return 0
+            else
+                return 1
+            fi
+        fi
     fi
+
+    if [ "${lh_major:-0}" == "${rh_major:-0}" ]; then
+        if version_lt "${lh_minor:-0}.${lh_patch:-0}-${lh_pre}" "${rh_minor:-0}.${rh_patch:-0}-${rh_pre}"; then
+            return 0
+        fi
+    else
+        # exit 0 if lh is less than rh
+        if [ "${lh_major:-0}" -lt "${rh_major:-0}" ]; then
+            return 0
+        fi
+    fi
+
+    return 1
 }
 
 # version_le returns 0 if the left-hand version is less than or equal to the
