@@ -20,6 +20,8 @@ env:
 
 jobs:
   generate_name:
+    needs: shim
+    if: needs.shim.outputs.continue == 'yes'
     outputs:
       binary-name: ${{ steps.create_name.outputs.binary-name }}
     runs-on: ubuntu-latest
@@ -70,7 +72,7 @@ jobs:
           set -euo pipefail
           echo "::set-output name=digest::$(sha256sum $BINARY_NAME | base64 -w0)"
 
-  provenance:
+  gha_generic:
     needs: [build]
     permissions:
       id-token: write # For signing.
@@ -80,6 +82,78 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       compile-generator: true
+
+  gha_go:
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.2.2
+    with:
+      go-version: 1.18
+      # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
+      config-file: .github/configs-go/config-ldflags-tag-name.yml
+
+  container_build:
+    permissions:
+      contents: read # For reading repository contents.
+      packages: write # For writing container images.
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      digest: ${{ steps.build.outputs.digest }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v2.3.4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@dc7b9719a96d48369863986a06765841d7ea23f6 # tag=v2.0.0
+
+      - name: Authenticate Docker
+        uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b # tag=v2.0.0
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@69f6fc9d46f2f8bf0d5491e4aabe0bb8c6a4678a # tag=v4.0.1
+        with:
+          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@e551b19e49efd4e98792db7592c17c09b89db8d8 # tag=v3.0.0
+        id: build
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Output image
+        id: image
+        run: |
+          # NOTE: We need to use the image and digest in order to make sure
+          # that the image we attest has not been modified.
+          # NOTE: The digest output from docker/build-push-action is of the
+          # form "sha256:<digest>"
+          image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
+          echo "::set-output name=image::$image_name"
+
+  gha_container:
+    needs: container_build
+    permissions:
+      id-token: write # For signing.
+      actions: read # For reading workflow info.
+      packages: write # For uploading attestations.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
+    with:
+      image: ${{ needs.container_build.outputs.image }}
+      digest: ${{ needs.container_build.outputs.digest }}
+      registry-username: ${{ github.actor }}
+      compile-generator: true
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   # Now dispatch this workflow again with push tags.
   dispatch:
@@ -98,13 +172,13 @@ jobs:
 
           for tag in v14 v14.2 v13.0.30
           do
-            GH_TOKEN=${PAT_TOKEN} gh release create "$tag" --target main
+            GH_TOKEN=${PAT_TOKEN} gh release create "$tag" --target main --notes "gha_generic"
           done
 
   # Delete the tag once the provenance has been created.
   delete-tags:
     if: github.event_name == 'push'
-    needs: [provenance]
+    needs: [gha_generic, gha_go, gha_container]
     runs-on: ubuntu-latest
     permissions:
       contents: write
