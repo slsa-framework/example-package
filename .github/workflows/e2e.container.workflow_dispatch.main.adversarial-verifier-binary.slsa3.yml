@@ -73,14 +73,13 @@ jobs:
     permissions:
       id-token: write # For signing.
       actions: read # For reading workflow info.
-      packages: write # For uploading attestations.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
       image: ${{ needs.build.outputs.image }}
       digest: ${{ needs.build.outputs.digest }}
       registry-username: ${{ github.actor }}
     secrets:
-      registry-password: ${{ secrets.GITHUB_TOKEN }}
+      registry-password: ${{ secrets.PAT_TOKEN }}
 
   if-succeeded:
     runs-on: ubuntu-latest
