@@ -170,14 +170,15 @@ jobs:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - id: push
         run: |
-          # Dispatch tags v14 v14.2 v13.0.30
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
-          TAG=${{ github.ref_name }}
-          echo $TAG
-          GH_TOKEN=${PAT_TOKEN} gh release delete "$TAG" -y
-          git push --delete origin "$TAG"
+          # Dispatch tags v14 v14.2 v13.0.30
+          for tag in v14 v14.2 v13.0.30
+          do
+            GH_TOKEN=${PAT_TOKEN} gh release delete "$TAG" -y --cleanup-tag
+            git push --delete origin "$TAG"
+          done
 
   # Now dispatch this workflow again with push tags.
   dispatch:
