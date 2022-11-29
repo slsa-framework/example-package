@@ -91,6 +91,7 @@ jobs:
     permissions:
       id-token: write # For signing.
       actions: read # For reading workflow info.
+      packages: write # For uploading attestations.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
     with:
       image: ${{ needs.build.outputs.image }}
@@ -98,7 +99,7 @@ jobs:
       registry-username: ${{ github.actor }}
       compile-generator: true
     secrets:
-      registry-password: ${{ secrets.PAT_TOKEN }}
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   # Verify the created provenance attestation.
   verify:
