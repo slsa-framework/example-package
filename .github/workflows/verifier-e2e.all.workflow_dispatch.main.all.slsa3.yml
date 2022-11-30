@@ -176,9 +176,8 @@ jobs:
           # Dispatch tags v14 v14.2 v13.0.30
           for tag in v14 v14.2 v13.0.30
           do
-            GH_TOKEN=${PAT_TOKEN} gh release delete "$TAG" -y --cleanup-tag || true
-            git tag -d "$TAG" || true
-            git push --delete origin "$TAG" || true
+            GH_TOKEN=${PAT_TOKEN} gh release delete "$tag" -y --cleanup-tag || true
+            git push --delete origin "$tag" || true
           done
 
   # Now dispatch this workflow again with push tags.
