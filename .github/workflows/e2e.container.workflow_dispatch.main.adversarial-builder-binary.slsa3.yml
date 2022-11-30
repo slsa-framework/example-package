@@ -1,0 +1,95 @@
+on:
+  # Only triggered manually for pre-release.
+  workflow_dispatch:
+
+permissions: read-all
+
+env:
+  PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+  IMAGE_REGISTRY: ghcr.io
+  # NOTE: This pushes a container image to a "package" under the
+  # slsa-framework GitHub org.
+  # The image name should be of the form: slsa-framework/example-package.<test name>
+  IMAGE_NAME: slsa-framework/example-package.e2e.container.workflow_dispatch.main.adversarial-verifier-binary.slsa3
+
+  DEFAULT_VERSION: v27.0.0
+
+jobs:
+  # Build the Go application into a Docker image
+  # Push the image to ghcr.io
+  build:
+    permissions:
+      contents: read # For reading repository contents.
+      packages: write # For writing container images.
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      digest: ${{ steps.build.outputs.digest }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v2.3.4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@dc7b9719a96d48369863986a06765841d7ea23f6 # tag=v2.0.0
+
+      - name: Authenticate Docker
+        uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b # tag=v2.0.0
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@69f6fc9d46f2f8bf0d5491e4aabe0bb8c6a4678a # tag=v4.0.1
+        with:
+          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@e551b19e49efd4e98792db7592c17c09b89db8d8 # tag=v3.0.0
+        id: build
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Output image
+        id: image
+        run: |
+          # NOTE: We need to use the image and digest in order to make sure
+          # that the image we attest has not been modified.
+          # NOTE: The digest output from docker/build-push-action is of the
+          # form "sha256:<digest>"
+          image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
+          echo "::set-output name=image::$image_name"
+
+  # Generate SLSA provenance for the image
+  # Upload the provenance to ghcr.io
+  provenance:
+    needs: [build]
+    permissions:
+      id-token: write # For signing.
+      actions: read # For reading workflow info.
+      packages: write # For uploading attestations.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.4.0-rc.1
+    with:
+      image: ${{ needs.build.outputs.image }}
+      digest: ${{ needs.build.outputs.digest }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [provenance]
+    if: needs.provenance.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - run: |
+          set -euo pipefail
+
+          echo "This test should fail"
+          exit 1
