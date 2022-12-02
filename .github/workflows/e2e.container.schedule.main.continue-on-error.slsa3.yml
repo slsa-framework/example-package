@@ -118,7 +118,7 @@ jobs:
       - env:
           CONTAINER: "${{ env.container }}"
           PROVENANCE: "${{ env.provenance_file }}"
-          OUTCOME: ${{ needs.build.outputs.outcome }}
+          OUTCOME: ${{ needs.provenance.outputs.outcome }}
         run: |
           [ "$OUTCOME" == "success" ] && ./.github/workflows/scripts/e2e.container.default.verify.sh
 
@@ -149,7 +149,7 @@ jobs:
     with:
       # The image does not exist.
       image: ${IMAGE_REGISTRY}/${IMAGE_NAME}
-      digest: ${{ needs.build.outputs.digest }}
+      digest: c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4
       registry-username: ${{ github.actor }}
       compile-generator: true
       continue-on-error: true
@@ -163,17 +163,14 @@ jobs:
     # other pre-submits.
     name: verify container provenance (continue-on-error invalid image)
     needs: [provenance-continue-on-error]
-    # Note: we don't use `if: always()` because it should not fail.
     permissions:
       packages: read # For reading attestations.
     runs-on: ubuntu-latest
     steps:
       - env:
-          CONTAINER: "${{ env.container }}"
-          PROVENANCE: "${{ env.provenance_file }}"
-          OUTCOME: ${{ needs.build.outputs.outcome }}
+          OUTCOME: ${{ needs.provenance-continue-on-error.outputs.outcome }}
         run: |
-          [ "$OUTCOME" == "failure" ] && ./.github/workflows/scripts/e2e.container.default.verify.sh
+          [ "$OUTCOME" == "failure" ]
 
   if-succeeded-continue-on-error:
     runs-on: ubuntu-latest
