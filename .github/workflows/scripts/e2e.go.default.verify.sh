@@ -44,7 +44,7 @@ verify_provenance_content() {
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1"
 
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "os" "ubuntu20"
+    e2e_verify_predicate_invocation_environment "$ATTESTATION" "os" "ubuntu22"
     e2e_verify_predicate_invocation_environment "$ATTESTATION" "arch" "X64"
 
     # First step is vendoring
