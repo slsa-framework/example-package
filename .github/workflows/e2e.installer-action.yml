@@ -13,6 +13,10 @@ jobs:
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "2.0.0" ]
       
+      - run: |
+          binary_path=$(which slsa-verifier)
+          rm -rf "$binary_path"
+
       # Install at commit.
       - uses: slsa-framework/slsa-verifier/actions/installer@936dc46aca3ed973d542a09d2a9d890705ce5011
       - run: |
