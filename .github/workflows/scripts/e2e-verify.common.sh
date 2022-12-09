@@ -27,8 +27,8 @@ e2e_verify_common_invocation() {
 
     e2e_verify_predicate_invocation_environment "$1" "github_actor" "$GITHUB_ACTOR"
     e2e_verify_predicate_invocation_environment "$1" "github_sha1" "$GITHUB_SHA"
-    # e2e_verify_predicate_invocation_environment "$1" "os" "ubuntu20"
-    # e2e_verify_predicate_invocation_environment "$1" "arch" "X64"
+    e2e_verify_predicate_invocation_environment "$1" "os" "ubuntu22"
+    e2e_verify_predicate_invocation_environment "$1" "arch" "X64"
     e2e_verify_predicate_invocation_environment "$1" "github_event_name" "$GITHUB_EVENT_NAME"
     e2e_verify_predicate_invocation_environment "$1" "github_ref" "$GITHUB_REF"
     e2e_verify_predicate_invocation_environment "$1" "github_ref_type" "$GITHUB_REF_TYPE"
