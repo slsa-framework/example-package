@@ -49,7 +49,7 @@ jobs:
           name: ${{ needs.build.outputs.go-binary-name }}
       - name: Download provenance
         env:
-          PROVENANCE: ${{ needs.build.outputs.attestation-name }}.intoto.jsonl
+          PROVENANCE: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
           TAG: ${{ needs.release.outputs.tag }}
         run: gh release download "$TAG" -p "$PROVENANCE"
       - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # tag=v2.2.0
