@@ -27,8 +27,6 @@ e2e_verify_common_invocation() {
 
     e2e_verify_predicate_invocation_environment "$1" "github_actor" "$GITHUB_ACTOR"
     e2e_verify_predicate_invocation_environment "$1" "github_sha1" "$GITHUB_SHA"
-    e2e_verify_predicate_invocation_environment "$1" "os" "ubuntu22"
-    e2e_verify_predicate_invocation_environment "$1" "arch" "X64"
     e2e_verify_predicate_invocation_environment "$1" "github_event_name" "$GITHUB_EVENT_NAME"
     e2e_verify_predicate_invocation_environment "$1" "github_ref" "$GITHUB_REF"
     e2e_verify_predicate_invocation_environment "$1" "github_ref_type" "$GITHUB_REF_TYPE"
@@ -168,7 +166,7 @@ verify_provenance_authenticity() {
 
     # Workflow inputs
     workflow_inputs=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep workflow_inputs)
-    if [[ -n "$workflow_inputs" ]] && [[ version_ge "$tag" "v1.3" || "$tag" == "HEAD" ]]; then
+    if [[ -n "$workflow_inputs" ]] && ( version_ge "$tag" "v1.3" || [[ "$tag" == "HEAD" ]] ); then
         echo "  **** Correct Workflow Inputs *****"
         $verifierCmd "${branchOpts[@]}" "${artifactArg[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${workflowInputArg[@]}" test=true
         e2e_assert_eq "$?" "0" "should be workflow inputs"
