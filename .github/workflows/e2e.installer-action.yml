@@ -1,10 +1,12 @@
 on:
+  schedule:
+    - cron: "0 9 * * *"
   workflow_dispatch:
 
 permissions: read-all
 
 jobs:
-  test-tags:
+  installer:
     runs-on: ubuntu-latest
     steps:
       # Install at tag.
@@ -22,3 +24,19 @@ jobs:
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "2.0.0" ]
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [installer]
+    if: needs.build.result == 'success'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [installer]
+    if: always() && needs.build.result == 'failure'
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh

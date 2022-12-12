@@ -43,7 +43,7 @@ fi
 major=$(version_major "$tag")
 if [ "$major" == "$default_major" ]; then
     echo "match: continue"
-    echo "::set-output name=continue::yes"
+    echo "continue=yes" >> "$GITHUB_OUTPUT"
     exit 0
 fi
 
