@@ -64,7 +64,8 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       compile-generator: true
-      upload-tag-name: ${{ needs.release.outputs.tag }}
+      upload-tag-name: "${{ needs.release.outputs.tag }}"
+      upload-assets: true
 
   verify:
     runs-on: ubuntu-latest
@@ -89,8 +90,7 @@ jobs:
         env:
           BINARY: artifact1
           PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
-        run: |
-          ./.github/workflows/scripts/e2e.generic.default.verify.sh
+        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
   if-succeeded:
     runs-on: ubuntu-latest
