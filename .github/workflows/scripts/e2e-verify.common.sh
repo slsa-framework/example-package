@@ -311,8 +311,9 @@ e2e_run_verifier_all_releases() {
     local VERIFIER_BINARY="slsa-verifier-linux-amd64"
 
     # First, verify provenance with the verifier at HEAD.
+    # TODO: Verify provenance with verifier at v1 HEAD?
     go env -w GOFLAGS=-mod=mod
-    go install "github.com/$VERIFIER_REPOSITORY/cli/slsa-verifier@main"
+    go install "github.com/$VERIFIER_REPOSITORY/v2/cli/slsa-verifier@main"
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
     verify_provenance_authenticity "slsa-verifier" "HEAD"
 
