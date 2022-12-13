@@ -6,7 +6,7 @@ on:
 permissions: read-all
 
 env:
-  LATEST_VERSION: v2.0.0
+  LATEST_VERSION: v2.0.1-rc.3
   PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Install at tag.
-      - uses: slsa-framework/slsa-verifier/actions/installer@v2.0.0
+      - uses: slsa-framework/slsa-verifier/actions/installer@v2.0.1-rc.3
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
