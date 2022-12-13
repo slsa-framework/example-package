@@ -6,25 +6,18 @@ on:
 permissions: read-all
 
 env:
-  MIMINUM_VERIFIER_VERSION: v2.0.0
+  LATEST_VERSION: v2.0.0
   PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
 
 jobs:
   installer:
     runs-on: ubuntu-latest
     steps:
-      # Get the latest version to test.
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
-      - run: ./.github/workflows/scripts/e2e-latest-verifier-version.sh
-        id: latest
-
       # Install at tag.
       - uses: slsa-framework/slsa-verifier/actions/installer@v2.0.0
-      - env:
-          VERSION: ${{ steps.latest.outputs.latest_tag }}
-        run: |
+      - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
-          [ "$version" == "${VERSION:1}" ]
+          [ "$version" == "${LATEST_VERSION:1}" ]
       
       - run: |
           binary_path=$(which slsa-verifier)
@@ -32,16 +25,14 @@ jobs:
 
       # Install at commit.
       - uses: slsa-framework/slsa-verifier/actions/installer@936dc46aca3ed973d542a09d2a9d890705ce5011
-      - env:
-          VERSION: ${{ steps.latest.outputs.latest_tag }}
-        run: |
+      - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
-          [ "$version" == "${VERSION:1}" ]
+          [ "$version" == "${LATEST_VERSION:1}" ]
 
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [installer]
-    if: needs.build.result == 'success'
+    if: needs.installer.result == 'success'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
@@ -49,7 +40,7 @@ jobs:
   if-failed:
     runs-on: ubuntu-latest
     needs: [installer]
-    if: always() && needs.build.result == 'failure'
+    if: always() && needs.installer.result == 'failure'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
