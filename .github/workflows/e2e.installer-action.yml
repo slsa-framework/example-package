@@ -10,17 +10,20 @@ env:
   PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
 
 jobs:
-  installer-tag:
+  installer:
     runs-on: ubuntu-latest
     steps:
+      # Install at tag.
       - uses: slsa-framework/slsa-verifier/actions/installer@v2.0.1-rc.3
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
-  
-  installer-commit:
-    runs-on: ubuntu-latest
-    steps:
+      
+      - run: |
+          binary_path=$(which slsa-verifier)
+          rm -rf "$binary_path"
+
+      # Install at commit.
       - uses: slsa-framework/slsa-verifier/actions/installer@a43888265e1f6aae98c924538298944f2721dcf0
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
@@ -28,16 +31,16 @@ jobs:
 
   if-succeeded:
     runs-on: ubuntu-latest
-    needs: [installer-tag, installer-commit]
-    if: needs.installer-tag.result == 'success' && needs.installer-commit.outputs.result == 'success'
+    needs: [installer]
+    if: needs.installer.result == 'success'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
     runs-on: ubuntu-latest
-    needs: [installer-tag]
-    if: always() && (needs.installer-tag.result == 'failure' || needs.installer-commit.outputs.result == 'failure')
+    needs: [installer]
+    if: always() && needs.installer.result == 'failure'
     steps:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
