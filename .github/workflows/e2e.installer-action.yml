@@ -7,6 +7,7 @@ permissions: read-all
 
 env:
   MIMINUM_VERIFIER_VERSION: v2.0.0
+  PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
 
 jobs:
   installer:
