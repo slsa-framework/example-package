@@ -8,6 +8,7 @@ permissions: read-all
 env:
   LATEST_VERSION: v2.0.1-rc.3
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-verifier
 
 jobs:
   installer:
