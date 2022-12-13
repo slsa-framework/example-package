@@ -27,7 +27,7 @@ jobs:
       - uses: slsa-framework/slsa-verifier/actions/installer@a43888265e1f6aae98c924538298944f2721dcf0
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
-          [ "$version" != "${LATEST_VERSION:1}" ]
+          [ "$version" == "${LATEST_VERSION:1}" ]
 
   if-succeeded:
     runs-on: ubuntu-latest
