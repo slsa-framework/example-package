@@ -6,6 +6,7 @@ on:
 permissions: read-all
 
 env:
+  # UPDATE ON RELEASE: version.
   LATEST_VERSION: v2.0.1-rc.3
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-verifier
@@ -15,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Install at tag.
+      # UPDATE ON RELEASE: tag.
       - uses: slsa-framework/slsa-verifier/actions/installer@v2.0.1-rc.3
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
@@ -25,8 +27,10 @@ jobs:
           rm -rf "$binary_path"
 
       # Install at commit.
+      # UPDATE ON RELEASE: commit sha.
       - uses: slsa-framework/slsa-verifier/actions/installer@a43888265e1f6aae98c924538298944f2721dcf0
       - run: |
+          # UPDATE ON RELEASE
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
 
