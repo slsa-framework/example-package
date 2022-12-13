@@ -5,15 +5,25 @@ on:
 
 permissions: read-all
 
+env:
+  MIMINUM_VERIFIER_VERSION: v2.0.0
+
 jobs:
   installer:
     runs-on: ubuntu-latest
     steps:
+      # Get the latest version to test.
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - run: ./.github/workflows/scripts/e2e-latest-verifier-version.sh
+        id: latest
+
       # Install at tag.
       - uses: slsa-framework/slsa-verifier/actions/installer@v2.0.0
-      - run: |
+      - env:
+          VERSION: ${{ steps.latest.outputs.latest_tag }}
+        run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
-          [ "$version" == "2.0.0" ]
+          [ "$version" == "${VERSION:1}" ]
       
       - run: |
           binary_path=$(which slsa-verifier)
@@ -21,9 +31,11 @@ jobs:
 
       # Install at commit.
       - uses: slsa-framework/slsa-verifier/actions/installer@936dc46aca3ed973d542a09d2a9d890705ce5011
-      - run: |
+      - env:
+          VERSION: ${{ steps.latest.outputs.latest_tag }}
+        run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
-          [ "$version" == "2.0.0" ]
+          [ "$version" == "${VERSION:1}" ]
 
   if-succeeded:
     runs-on: ubuntu-latest
