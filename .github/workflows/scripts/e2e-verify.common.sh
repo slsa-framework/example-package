@@ -201,8 +201,9 @@ verify_provenance_authenticity() {
     # https://github.com/slsa-framework/slsa-verifier/pull/192
     if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.3"; then
         echo "  **** Default parameters (annotated tags) *****"
+        echo $verifierCmd "${artifactArg[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${builderMinArgs[@]}"
         $verifierCmd "${artifactArg[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${builderMinArgs[@]}"
-        e2e_assert_eq "$?" "0" "not main default parameters"
+        e2e_assert_eq "$?" "0" "not main default parameters (annotated_tags)"
     elif [[ -z "$annotated_tags" ]]; then
         # Up until v1.3, we verified the default branch as "main".
         if [[ "$BRANCH" == "main" ]]; then
