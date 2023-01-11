@@ -200,4 +200,3 @@ jobs:
           do
             GH_TOKEN=${PAT_TOKEN} gh release create "$tag" --target main --notes "gha_generic"
           done
-

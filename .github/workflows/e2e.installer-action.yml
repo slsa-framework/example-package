@@ -21,7 +21,7 @@ jobs:
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
-      
+
       - run: |
           binary_path=$(which slsa-verifier)
           rm -rf "$binary_path"
