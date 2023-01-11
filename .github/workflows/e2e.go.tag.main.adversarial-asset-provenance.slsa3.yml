@@ -24,7 +24,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - id: create
         run: |
           set -euo pipefail
@@ -37,7 +37,7 @@ jobs:
     outputs:
       continue: ${{ steps.verify.outputs.continue }}
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - id: verify
         run: |
           set -euo pipefail
@@ -49,7 +49,7 @@ jobs:
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - uses: ./.github/actions/tamper-artifact-new
         with:
           artifact: binary-linux-amd64.intoto.jsonl
@@ -67,7 +67,7 @@ jobs:
       branch: ${{ steps.ldflags.outputs.branch }}
     steps:
       - id: checkout
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.3.4
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
           fetch-depth: 0
       - id: ldflags
@@ -107,7 +107,7 @@ jobs:
     needs: [shim, build]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: |
           set -euo pipefail
 
@@ -118,7 +118,7 @@ jobs:
     needs: [shim, build]
     if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'failure'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: |
           set -euo pipefail
 

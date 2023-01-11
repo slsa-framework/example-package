@@ -62,7 +62,7 @@ jobs:
           cp bazel-bin/hello_/hello $BINARY_NAME # Copy binary from Bazel path to root
           echo "::set-output name=binary-name::$BINARY_NAME"
       - name: Upload binary
-        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v2.3.1
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ steps.build.outputs.binary-name }}
           path: ${{ steps.build.outputs.binary-name }}
@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v2.3.4
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@dc7b9719a96d48369863986a06765841d7ea23f6 # tag=v2.0.0
@@ -167,7 +167,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - id: push
         run: |
           git config user.name "${GITHUB_ACTOR}"
@@ -188,7 +188,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - id: push
         shell: bash
         run: |
