@@ -97,9 +97,8 @@ get_builder_id(){
 assemble_minimum_builder_args(){
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=$(get_builder_id)
-    builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
     if [[ "$build_type" == "gcb" ]]; then
-        read -ra builderArg <<<"--builder-id=$builder_raw_id@$builder_tag"
+        read -ra builderArg <<<"--builder-id=$builder_id"
     else
         read -ra builderArg <<<""
     fi
@@ -112,8 +111,11 @@ assemble_raw_builder_args(){
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=$(get_builder_id)
     builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
-    # We only support GCB verification with the full ID.
-    read -ra builderArg <<<"--builder-id=$builder_raw_id@$builder_tag"
+    if [[ "$build_type" == "gcb" ]]; then
+        read -ra builderArg <<<"--builder-id=$builder_id"
+    else
+        read -ra builderArg <<<"--builder-id=$builder_raw_id"
+    fi
     echo "${builderArg[@]}"
 }
 
@@ -122,9 +124,7 @@ assemble_raw_builder_args(){
 assemble_full_builder_args(){
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=$(get_builder_id)
-    builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
-    builder_tag=$(echo "$builder_id" | cut -f2 -d '@')
-    read -ra builderArg <<<"--builder-id=$builder_raw_id@$builder_tag"
+    read -ra builderArg <<<"--builder-id=$builder_id"
     echo "${builderArg[@]}"
 }
 
