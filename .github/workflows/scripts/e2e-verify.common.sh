@@ -273,7 +273,7 @@ verify_provenance_authenticity() {
     echo "  **** Wrong raw builder.id *****"
     # shellcheck disable=SC2145 # We inntend to alter the builder ID.
     $verifierCmd "${artifactAndbuilderRawArgs[@]}a" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_eq "$?" "0" "wrong raw builder id"
+    e2e_assert_not_eq "$?" "0" "wrong raw builder id"
     
     # Correct full builder ID verification
     echo "  **** Correct full builder.id *****"
@@ -284,7 +284,7 @@ verify_provenance_authenticity() {
     echo "  **** Wrong full builder.id *****"
     # shellcheck disable=SC2145 # We inntend to alter the builder ID.
     $verifierCmd "${artifactAndbuilderFullArgs[@]}a" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_eq "$?" "0" "wrong full builder id"
+    e2e_assert_not_eq "$?" "0" "wrong full builder id"
 
     # Note that for containers with attached provenance, we will skip this test.
     # TODO(github.com/slsa-framework/example-package/issues/108):
