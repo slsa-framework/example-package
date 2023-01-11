@@ -194,9 +194,14 @@ verify_provenance_authenticity() {
     # NOTE: we concatenate artifact and builder ID args because the builder ID is optional
     # and may be empty. But if we use an empty argument, the verifier interprets it
     # as an artifact of empty path... and fails because it cannot open an empty artifact file.
-    artifactAndbuilderMinArgs=("${artifactArg[@]} $(assemble_minimum_builder_args)")
-    artifactAndbuilderRawArgs=("${artifactArg[@]} $(assemble_raw_builder_args)")
-    artifactAndbuilderFullArgs=("${artifactArg[@]} $(assemble_full_builder_args)")
+    artifactAndbuilderMinArgs=("${artifactArg[@]}")
+    tmp="$(assemble_minimum_builder_args)"
+    if [[ -n "$tmp" ]]; then
+        artifactAndbuilderMinArgs+=("$tmp")
+    fi
+    # NOTE: builder-id is never empty in these cases.
+    artifactAndbuilderRawArgs=("${artifactArg[@]}" "$(assemble_raw_builder_args)")
+    artifactAndbuilderFullArgs=("${artifactArg[@]}" "$(assemble_full_builder_args)")
 
     # Default parameters.
     # After v1.2, branch verification is optional, so we can always verify,
