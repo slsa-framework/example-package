@@ -95,32 +95,38 @@ get_builder_id(){
 # assemble_minimum_builder_args assembles the minimum arguments
 # number of arguments for the build ID.
 assemble_minimum_builder_args(){
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
-    builder_id=$(get_builder_id)
-    if [[ "$build_type" == "gcb" ]]; then
-        echo "--builder-id=$builder_id"
+    if version_ge "$tag" "v2" || [[ "$tag" == "HEAD" ]]; then
+        build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+        builder_id=$(get_builder_id)
+        if [[ "$build_type" == "gcb" ]]; then
+            echo "--builder-id=$builder_id"
+        fi
     fi
 }
 
 # assemble_raw_builder_args assembles 
 # builder ID with the builder.id but without the tag.
 assemble_raw_builder_args(){
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
-    builder_id=$(get_builder_id)
-    builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
-    if [[ "$build_type" == "gcb" ]]; then
-        echo "--builder-id=$builder_id"
-    else
-        echo "--builder-id=$builder_raw_id"
+    if version_ge "$tag" "v2" || [[ "$tag" == "HEAD" ]]; then
+        build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+        builder_id=$(get_builder_id)
+        builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
+        if [[ "$build_type" == "gcb" ]]; then
+            echo "--builder-id=$builder_id"
+        else
+            echo "--builder-id=$builder_raw_id"
+        fi
     fi
 }
 
 # assemble_full_builder_args assembles 
 # builder ID with the builder.id@tag.
 assemble_full_builder_args(){
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
-    builder_id=$(get_builder_id)
-    echo "--builder-id=$builder_id"
+    if version_ge "$tag" "v2" || [[ "$tag" == "HEAD" ]]; then
+        build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+        builder_id=$(get_builder_id)
+        echo "--builder-id=$builder_id"
+    fi
 }
 
 # verify_provenance_authenticity is a function that verifies the authenticity of
@@ -190,15 +196,13 @@ verify_provenance_authenticity() {
     # and may be empty. But if we use an empty argument, the verifier interprets it
     # as an artifact of empty path... and fails because it cannot open an empty artifact file.
     artifactAndbuilderMinArgs=("${artifactArg[@]}")
-    tmp="$(assemble_minimum_builder_args)"
+    tmp=$(assemble_minimum_builder_args "$tag")
     if [[ -n "$tmp" ]]; then
         artifactAndbuilderMinArgs+=("$tmp")
     fi
     # NOTE: builder-id is never empty in these cases.
-    artifactAndbuilderRawArgs=("${artifactArg[@]}" "$(assemble_raw_builder_args)")
-    echo "artifactAndbuilderRawArgs:" "${artifactAndbuilderRawArgs[@]}"
-    artifactAndbuilderFullArgs=("${artifactArg[@]}" "$(assemble_full_builder_args)")
-    echo "artifactAndbuilderFullArgs:" "${artifactAndbuilderFullArgs[@]}"
+    artifactAndbuilderRawArgs=("${artifactArg[@]}" "$(assemble_raw_builder_args "$tag")")
+    artifactAndbuilderFullArgs=("${artifactArg[@]}" "$(assemble_full_builder_args "$tag")")
 
     # Default parameters.
     # After v1.2, branch verification is optional, so we can always verify,
@@ -263,7 +267,6 @@ verify_provenance_authenticity() {
 
     # Correct raw builder ID verification
     echo "  **** Correct raw builder.id *****"
-    echo $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "correct raw builder id"
 
