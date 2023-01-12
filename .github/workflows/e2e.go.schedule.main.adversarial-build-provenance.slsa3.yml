@@ -17,7 +17,7 @@ jobs:
   build-provenance-tamper:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - uses: ./.github/actions/tamper-artifact-new
         with:
           # Note: pretty hard to time correctly in practice. Often times the build part will fail instead.
@@ -50,7 +50,7 @@ jobs:
     needs: [build]
     if: needs.build.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: |
           set -euo pipefail
 
@@ -62,7 +62,7 @@ jobs:
     needs: [build]
     if: always() && needs.build.result == 'failure'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: |
           set -euo pipefail
 

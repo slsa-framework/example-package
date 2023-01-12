@@ -23,7 +23,7 @@ jobs:
       actions: write
       contents: write
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: ./.github/workflows/scripts/e2e-dispatch.sh
 
   build:
@@ -46,7 +46,7 @@ jobs:
           cp bazel-bin/hello_/hello . # Copy binary from Bazel path to root
           echo "::set-output name=binary-name::hello"
       - name: Upload binary
-        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v2.3.1
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ steps.build.outputs.binary-name }}
           path: ${{ steps.build.outputs.binary-name }}
@@ -78,14 +78,14 @@ jobs:
     needs: [build, provenance]
     if: github.event_name == 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
           name: ${{ needs.build.outputs.binary-name }}
       - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
-      - uses: actions/setup-go@f6164bd8c8acb4a71fb2791a8b6c4024ff038dab # tag=v2.2.0
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
           go-version: "1.18"
       - env:
@@ -98,7 +98,7 @@ jobs:
     needs: [build, provenance, verify]
     if: github.event_name == 'workflow_dispatch' && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -106,5 +106,5 @@ jobs:
     needs: [build, provenance, verify]
     if: always() && github.event_name == 'workflow_dispatch' && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
