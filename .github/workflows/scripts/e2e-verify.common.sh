@@ -73,16 +73,16 @@ get_builder_id(){
     builder_id=""
     case $build_type in
         "go")
-            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@main"
+            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
             ;;
         "generic")
-            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main" 
+            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/heads/main" 
             ;;
         "gcb")
             builder_id="https://cloudbuild.googleapis.com/GoogleHostedWorker@v0.3"
             ;;
         "container")
-            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main" 
+            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/heads/main" 
             ;;
         *)
             echo "unknown build_type: $build_type"
