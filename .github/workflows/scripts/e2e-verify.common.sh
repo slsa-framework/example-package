@@ -201,7 +201,9 @@ verify_provenance_authenticity() {
     fi
     # NOTE: builder-id is never empty in these cases.
     artifactAndbuilderRawArgs=("${artifactArg[@]}" "$(assemble_raw_builder_args)")
+    echo "artifactAndbuilderRawArgs:" "${artifactAndbuilderRawArgs[@]}"
     artifactAndbuilderFullArgs=("${artifactArg[@]}" "$(assemble_full_builder_args)")
+    echo "artifactAndbuilderFullArgs:" "${artifactAndbuilderFullArgs[@]}"
 
     # Default parameters.
     # After v1.2, branch verification is optional, so we can always verify,
@@ -266,6 +268,7 @@ verify_provenance_authenticity() {
 
     # Correct raw builder ID verification
     echo "  **** Correct raw builder.id *****"
+    echo $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "correct raw builder id"
 
