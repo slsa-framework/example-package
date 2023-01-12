@@ -98,11 +98,8 @@ assemble_minimum_builder_args(){
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=$(get_builder_id)
     if [[ "$build_type" == "gcb" ]]; then
-        read -ra builderArg <<<"--builder-id=$builder_id"
-    else
-        read -ra builderArg <<<""
+        echo "--builder-id=$builder_id"
     fi
-    echo "${builderArg[@]}"
 }
 
 # assemble_raw_builder_args assembles 
@@ -112,11 +109,10 @@ assemble_raw_builder_args(){
     builder_id=$(get_builder_id)
     builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
     if [[ "$build_type" == "gcb" ]]; then
-        read -ra builderArg <<<"--builder-id=$builder_id"
+        echo "--builder-id=$builder_id"
     else
-        read -ra builderArg <<<"--builder-id=$builder_raw_id"
+        echo "--builder-id=$builder_raw_id"
     fi
-    echo "${builderArg[@]}"
 }
 
 # assemble_full_builder_args assembles 
@@ -124,8 +120,7 @@ assemble_raw_builder_args(){
 assemble_full_builder_args(){
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=$(get_builder_id)
-    read -ra builderArg <<<"--builder-id=$builder_id"
-    echo "${builderArg[@]}"
+    echo "--builder-id=$builder_id"
 }
 
 # verify_provenance_authenticity is a function that verifies the authenticity of
