@@ -64,11 +64,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - name: Download binary
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build.outputs.binary-name }}
       - name: Download provenance
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+        uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
       - name: Setup Go

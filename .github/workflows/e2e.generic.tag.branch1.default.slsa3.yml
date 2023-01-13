@@ -93,10 +93,10 @@ jobs:
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
-      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build.outputs.binary-name }}
-      - uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
       - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
