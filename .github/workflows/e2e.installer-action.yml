@@ -28,7 +28,7 @@ jobs:
 
       # Install at commit.
       # UPDATE ON RELEASE: commit sha.
-      - uses: slsa-framework/slsa-verifier/actions/installer@1da39d7e06d7c339a964c5597c9eaebb95b5deb0
+      - uses: slsa-framework/slsa-verifier/actions/installer@fb8ab2af45ceb658c0643e120363020bf0bbb3e4
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
