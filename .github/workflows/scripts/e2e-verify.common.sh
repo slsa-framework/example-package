@@ -263,29 +263,29 @@ verify_provenance_authenticity() {
 
     # Wrong tag
     echo "  **** Wrong tag *****"
-    $verifierCmd "${tagArg[@]}" v1.2.3 "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    $verifierCmd "${branchOpts[@]}" "${tagArg[@]}" v1.2.3 "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong tag"
 
     # Correct raw builder ID verification
     echo "  **** Correct raw builder.id *****"
-    $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    $verifierCmd "${branchOpts[@]}" "${artifactAndbuilderRawArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "correct raw builder id"
 
     # Wrong raw builder ID verification
     echo "  **** Wrong raw builder.id *****"
-    # shellcheck disable=SC2145 # We inntend to alter the builder ID.
-    $verifierCmd "${artifactAndbuilderRawArgs[@]}a" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    # shellcheck disable=SC2145 # We intend to alter the builder ID.
+    $verifierCmd "${branchOpts[@]}" "${artifactAndbuilderRawArgs[@]}a" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong raw builder id"
     
     # Correct full builder ID verification
     echo "  **** Correct full builder.id *****"
-    $verifierCmd "${artifactAndbuilderFullArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    $verifierCmd "${branchOpts[@]}" "${artifactAndbuilderFullArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "correct full builder id"
 
     # Wrong full builder ID verification
     echo "  **** Wrong full builder.id *****"
     # shellcheck disable=SC2145 # We inntend to alter the builder ID.
-    $verifierCmd "${artifactAndbuilderFullArgs[@]}a" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+    $verifierCmd "${branchOpts[@]}" "${artifactAndbuilderFullArgs[@]}a" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong full builder id"
 
     # Note that for containers with attached provenance, we will skip this test.
