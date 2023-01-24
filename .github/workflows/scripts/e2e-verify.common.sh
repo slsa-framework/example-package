@@ -268,7 +268,6 @@ verify_provenance_authenticity() {
 
     # Correct raw builder ID verification
     echo "  **** Correct raw builder.id *****"
-    echo $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_eq "$?" "0" "correct raw builder id"
 
