@@ -285,7 +285,7 @@ verify_provenance_authenticity() {
 
     # Wrong full builder ID verification
     echo "  **** Wrong full builder.id *****"
-    # shellcheck disable=SC2145 # We inntend to alter the builder ID.
+    # shellcheck disable=SC2145 # We intend to alter the builder ID.
     $verifierCmd "${artifactAndbuilderFullArgs[@]}a" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong full builder id"
 
