@@ -14,6 +14,6 @@
     "@actions/core": "^1.8.0",
     "@actions/github": "^5.0.1",
     "@actions/http-client": "^2.0.1",
-    "@octokit/action": "^4.0.4"
+    "@octokit/action": "^5.0.0"
   }
 }
