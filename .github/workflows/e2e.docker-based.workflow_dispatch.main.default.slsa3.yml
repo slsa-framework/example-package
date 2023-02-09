@@ -27,9 +27,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write # For signing
-      # actions: read
+      actions: read
       contents: write # For asset uploads
-      packages: write # To write to github packages
     uses: asraa/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@main
     with:
       builder-image: "bash"
