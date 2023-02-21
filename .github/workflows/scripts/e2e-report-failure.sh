@@ -27,7 +27,7 @@ if [[ -z "$TOKEN" ]]; then
 fi
 
 if [[ -z "$ISSUE_ID" ]]; then
-    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue create -t "[$HEADER]: $TITLE" -F ./BODY --label "$HEADER" --label "type:bug" --label "workflow:$WORKFLOW"
+    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue create -t "[$HEADER]: $TITLE" -F ./BODY --label "$HEADER" --label "type:bug" --label "area:$WORKFLOW"
 else
     GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
 fi

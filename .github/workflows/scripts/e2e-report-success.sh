@@ -10,7 +10,7 @@ e2e_create_issue_success_body
 if [[ -z "$HEADER" ]]; then
     HEADER="e2e"
 fi
-    
+
 ISSUE_ID=$(gh -R "$ISSUE_REPOSITORY" issue list --label "$HEADER" --label "type:bug" --state open -S "$THIS_FILE" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
 
 # Use the PAT_TOKEN if one is specified.
