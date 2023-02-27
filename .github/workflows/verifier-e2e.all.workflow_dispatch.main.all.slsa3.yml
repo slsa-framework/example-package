@@ -32,13 +32,12 @@ jobs:
       - name: Creates the output name
         id: create_name
         run: |
-          if [ ${{ github.event_name == 'workflow_dispatch' }} ]; then
-            echo "::set-output name=binary-name::binary-linux-amd64-workflow_dispatch"
+          if [ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]; then
+            echo "::set-output name=binary-name::generic-binary-linux-amd64-workflow_dispatch"
             exit 0
           fi
           # This must be a tag event.
-          GITHUB_TAG=${{ github.ref_name }}
-          echo "::set-output name=binary-name::binary-linux-amd64-v${GITHUB_TAG}"
+          echo "::set-output name=binary-name::generic-binary-linux-amd64-${GITHUB_REF_NAME}"
 
   build:
     needs: generate_name
@@ -85,6 +84,7 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       compile-generator: true
+      upload-assets: true
 
   gha_go:
     permissions:
