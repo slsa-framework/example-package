@@ -189,7 +189,7 @@ verify_provenance_authenticity() {
     artifactAndbuilderMinArgs=("${artifactArg[@]}")
     artifactAndbuilderRawArgs=("${artifactArg[@]}")
     artifactAndbuilderFullArgs=("${artifactArg[@]}")
-    # We added support for builder id in v2 or so.
+    # We added support for builder id in v2 or so, but definitely for GCB.
     if version_ge "$tag" "v2" || [[ "$tag" == "HEAD" ]]; then
         tmp_min=$(assemble_minimum_builder_args)
         if [[ -n "$tmp" ]]; then
@@ -212,6 +212,8 @@ verify_provenance_authenticity() {
     if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.3"; then
         echo "  **** Default parameters (annotated tags) *****"
         
+        echo $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
+
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "not main default parameters (annotated_tags)"
     elif [[ -z "$annotated_tags" ]]; then

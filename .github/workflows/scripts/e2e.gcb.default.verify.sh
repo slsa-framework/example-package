@@ -14,6 +14,6 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 
 # Verify provenance authenticity.
-e2e_run_verifier_all_releases "HEAD"
+e2e_run_verifier_all_releases "v2.0.0"
 
 # TODO: Verify provenance content. The GCB provenance format is not like others!
