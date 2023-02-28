@@ -191,16 +191,17 @@ verify_provenance_authenticity() {
     artifactAndbuilderFullArgs=("${artifactArg[@]}")
     # We added support for builder id in v2 or so, but definitely for GCB.
     if version_ge "$tag" "v2" || [[ "$tag" == "HEAD" ]]; then
+        echo "Testing against builder args"
         tmp_min=$(assemble_minimum_builder_args)
-        if [[ -n "$tmp" ]]; then
+        if [[ -n "$tmp_min" ]]; then
             artifactAndbuilderMinArgs+=("$tmp_min")
         fi
         tmp_raw=$(assemble_raw_builder_args)
-        if [[ -n "$tmp" ]]; then
+        if [[ -n "$tmp_raw" ]]; then
             artifactAndbuilderRawArgs+=("$tmp_raw")
         fi
         tmp_full=$(assemble_full_builder_args)
-        if [[ -n "$tmp" ]]; then
+        if [[ -n "$tmp_full" ]]; then
             artifactAndbuilderFullArgs+=("$tmp_full")
         fi
     fi
