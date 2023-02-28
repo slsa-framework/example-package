@@ -27,19 +27,20 @@ jobs:
   generate_name:
     outputs:
       binary-name: ${{ steps.create_name.outputs.binary-name }}
+      config-file: ${{ steps.create_name.outputs.config-file }}
     runs-on: ubuntu-latest
     steps:
       - name: Creates the output name
         id: create_name
         run: |
           if [ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]; then
-            echo "::set-output name=binary-name::gha_generic-binary-linux-amd64-workflow_dispatch"
-            echo "::set-output name=config-file::.github/configs-go/config-ldflags-workflow_dispatch.yml"
+            echo "binary-name=gha_generic-binary-linux-amd64-workflow_dispatch" >> "$GITHUB_OUTPUT"
+            echo "config-file=.github/configs-go/config-ldflags-workflow_dispatch.yml" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # This must be a tag event.
-          echo "::set-output name=binary-name::gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}"
-          echo "::set-output name=config-file::.github/configs-go/config-ldflags-tag-name.yml"
+          echo "binary-name=gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          echo "config-file=.github/configs-go/config-ldflags-tag-name.yml" >> "$GITHUB_OUTPUT"
 
   build:
     needs: [generate_name]
@@ -61,7 +62,7 @@ jobs:
         run: |
           bazelisk build //:hello
           cp bazel-bin/hello_/hello $BINARY_NAME # Copy binary from Bazel path to root
-          echo "::set-output name=binary-name::$BINARY_NAME"
+          echo "binary-name=$BINARY_NAME" >> "$GITHUB_OUTPUT"
       - name: Upload binary
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
@@ -74,7 +75,7 @@ jobs:
         id: hash
         run: |
           set -euo pipefail
-          echo "::set-output name=digest::$(sha256sum $BINARY_NAME | base64 -w0)"
+          echo "digest=$(sha256sum $BINARY_NAME | base64 -w0)" >> "$GITHUB_OUTPUT"
 
   gha_generic:
     needs: [build]
@@ -146,7 +147,7 @@ jobs:
           # NOTE: The digest output from docker/build-push-action is of the
           # form "sha256:<digest>"
           image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
-          echo "::set-output name=image::$image_name"
+          echo "image=$image_name" >> "$GITHUB_OUTPUT"
 
   gha_container:
     needs: container_build
