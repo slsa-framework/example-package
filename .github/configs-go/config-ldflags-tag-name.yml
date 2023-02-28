@@ -11,4 +11,4 @@ flags:
 
 goos: linux
 goarch: amd64
-binary: go-binary-{{ .Os }}-{{ .Arch }}-{{ .Tag }}
+binary: gha_go-binary-{{ .Os }}-{{ .Arch }}-{{ .Tag }}

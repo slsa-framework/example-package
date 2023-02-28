@@ -33,11 +33,11 @@ jobs:
         id: create_name
         run: |
           if [ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]; then
-            echo "::set-output name=binary-name::generic-binary-linux-amd64-workflow_dispatch"
+            echo "::set-output name=binary-name::gha_generic-binary-linux-amd64-workflow_dispatch"
             exit 0
           fi
           # This must be a tag event.
-          echo "::set-output name=binary-name::generic-binary-linux-amd64-${GITHUB_REF_NAME}"
+          echo "::set-output name=binary-name::gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}"
 
   build:
     needs: generate_name
