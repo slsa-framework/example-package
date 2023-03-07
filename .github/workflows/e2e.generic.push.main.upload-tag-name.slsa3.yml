@@ -1,6 +1,14 @@
+# This
+
+# This e2e test performs the following via a GitHub Actions push event.
+# - Build the Go application
+# - Generate SLSA provenance for the binary
+# - Upload the provenance to a GitHub release
+# - Verify the created provenance attestation.
+
 on:
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "0 2 * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -11,6 +19,7 @@ env:
   PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  DEFAULT_VERSION: v32.0.0
 
 jobs:
   push:
@@ -23,11 +32,12 @@ jobs:
       - run: ./.github/workflows/scripts/e2e-push.sh
 
   build:
+    runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
     outputs:
       binary-name: ${{ steps.build.outputs.binary-name }}
       digest: ${{ steps.hash.outputs.digest }}
-    runs-on: ubuntu-latest
+      this-file: ${{ steps.hash.outputs.this-file }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -40,7 +50,7 @@ jobs:
         run: |
           bazelisk build //:hello
           cp bazel-bin/hello_/hello . # Copy binary from Bazel path to root
-          echo "::set-output name=binary-name::hello"
+          echo "binary-name=hello" >> "$GITHUB_OUTPUT"
       - name: Upload binary
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
@@ -55,11 +65,16 @@ jobs:
           BINARY_NAME: ${{ steps.build.outputs.binary-name }}
         run: |
           set -euo pipefail
-          echo "::set-output name=digest::$(sha256sum $BINARY_NAME | base64 -w0)"
+          source "./.github/workflows/scripts/e2e-utils.sh"
+          echo "digest=$(sha256sum $BINARY_NAME | base64 -w0)" >> "$GITHUB_OUTPUT"
+
+          filename="$(e2e_this_file)"
+          filename="${filename%.*}" # Remove the file extension.
+          echo "upload-tag-name=${filename}" >> "$GITHUB_OUTPUT"
 
   provenance:
-    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
     needs: [build]
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
@@ -68,7 +83,9 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       compile-generator: true
-      upload-assets: true # NOTE: ignored for non-tag pushes.
+      upload-assets: true
+      # NOTE: For non-tag triggers this will still upload to a tag.
+      upload-tag-name: "${{ needs.build.outputs.upload-tag-name }}"
 
   verify:
     runs-on: ubuntu-latest
