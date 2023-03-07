@@ -1,5 +1,3 @@
-# This
-
 # This e2e test performs the following via a GitHub Actions push event.
 # - Build the Go application
 # - Generate SLSA provenance for the binary
