@@ -35,7 +35,7 @@ jobs:
     outputs:
       binary-name: ${{ steps.build.outputs.binary-name }}
       digest: ${{ steps.hash.outputs.digest }}
-      this-file: ${{ steps.hash.outputs.this-file }}
+      upload-tag-name: ${{ steps.hash.outputs.upload-tag-name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
