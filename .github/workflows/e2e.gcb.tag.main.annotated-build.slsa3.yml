@@ -4,6 +4,8 @@ on:
   schedule:
     # Twice a month scheduled cron for rebuilding.
     - cron: "0 3 1,15 * *"
+    # Verify the last built image daily.
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 permissions: read-all
@@ -23,7 +25,7 @@ jobs:
   # This should trigger the GCB build.
   release:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *') || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
     steps:
@@ -31,78 +33,78 @@ jobs:
       - id: create
         run: ./.github/workflows/scripts/e2e-create-release.sh
 
-  # # Retrieve provenance of the latest build.
-  # provenance:
-  #   if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 3 * * *')
-  #   permissions:
-  #     id-token: write # For auth.
-  #   outputs:
-  #     image: ${{ steps.describe.outputs.image }}
-  #     provenance-name: ${{ steps.describe.outputs.provenance-name }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout the repository
-  #       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
-  #     - id: "auth"
-  #       name: "Authenticate to Google Cloud"
-  #       uses: "google-github-actions/auth@v1"
-  #       with:
-  #         workload_identity_provider: "projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider"
-  #         service_account: "example-package-user@slsa-tooling.iam.gserviceaccount.com"
-  #     - name: "Set up Cloud SDK"
-  #       uses: "google-github-actions/setup-gcloud@62d4898025f6041e16b1068643bfc5a696863587" # v1.1.0
-  #     - name: Retrieve the latest builds provenance
-  #       id: describe
-  #       run: |
-  #         # Retrieve the build ID filtering by image name
-  #         export BUILD_ID=$(gcloud builds list --filter "results.images.name=${IMAGE_REGISTRY}"/${IMAGE_NAME} --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
-  #         echo "Found build with build id ${BUILD_ID}..."
+  # Retrieve provenance of the latest build.
+  provenance:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 2 * * *')
+    permissions:
+      id-token: write # For auth.
+    outputs:
+      image: ${{ steps.describe.outputs.image }}
+      provenance-name: ${{ steps.describe.outputs.provenance-name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: "projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider"
+          service_account: "example-package-user@slsa-tooling.iam.gserviceaccount.com"
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@62d4898025f6041e16b1068643bfc5a696863587" # v1.1.0
+      - name: Retrieve the latest builds provenance
+        id: describe
+        run: |
+          # Retrieve the build ID filtering by image name
+          export BUILD_ID=$(gcloud builds list --filter "results.images.name=${IMAGE_REGISTRY}"/${IMAGE_NAME} --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
+          echo "Found build with build id ${BUILD_ID}..."
 
-  #         export IMAGE_DIGEST=$(gcloud builds describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
-  #         echo "::set-output name=image::${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}"
-  #         echo "Retrieved image digest ${IMAGE_DIGEST}..."
+          export IMAGE_DIGEST=$(gcloud builds describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
+          echo "::set-output name=image::${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}"
+          echo "Retrieved image digest ${IMAGE_DIGEST}..."
 
-  #         # Get latest builds provenance
-  #         gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}" --show-provenance --format json > provenance.json
-  #         echo "::set-output name=provenance-name::provenance.json"
-  #     - name: Upload provenance
-  #       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-  #       with:
-  #         name: ${{ steps.describe.outputs.provenance-name }}
-  #         path: ${{ steps.describe.outputs.provenance-name }}
-  #         if-no-files-found: error
-  #         retention-days: 5
+          # Get latest builds provenance
+          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}" --show-provenance --format json > provenance.json
+          echo "::set-output name=provenance-name::provenance.json"
+      - name: Upload provenance
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        with:
+          name: ${{ steps.describe.outputs.provenance-name }}
+          path: ${{ steps.describe.outputs.provenance-name }}
+          if-no-files-found: error
+          retention-days: 5
 
-  # # Verify the created provenance attestation: does not require the build job.
-  # verify:
-  #   if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 3 * * *')
-  #   needs: provenance
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
-  #     - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
-  #       with:
-  #         name: ${{ needs.provenance.outputs.provenance-name }}
-  #     - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
-  #       with:
-  #         go-version: "1.18"
-  #     - env:
-  #         CONTAINER: ${{ needs.provenance.outputs.image }}
-  #         PROVENANCE: ${{ needs.provenance.outputs.provenance-name }}
-  #       run: ./.github/workflows/scripts/e2e.gcb.default.verify.sh
+  # Verify the created provenance attestation: does not require the build job.
+  verify:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 2 * * *')
+    needs: provenance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
+        with:
+          name: ${{ needs.provenance.outputs.provenance-name }}
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+        with:
+          go-version: "1.18"
+      - env:
+          CONTAINER: ${{ needs.provenance.outputs.image }}
+          PROVENANCE: ${{ needs.provenance.outputs.provenance-name }}
+        run: ./.github/workflows/scripts/e2e.gcb.default.verify.sh
 
   if-succeeded:
     runs-on: ubuntu-latest
-    needs: [release]
-    if: needs.release.result == 'success'
+    needs: [release, provenance, verify]
+    if: needs.release.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
     runs-on: ubuntu-latest
-    needs: [release]
-    if: needs.release.result == 'failure'
+    needs: [release, provenance, verify]
+    if: always() && needs.release.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure'
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
