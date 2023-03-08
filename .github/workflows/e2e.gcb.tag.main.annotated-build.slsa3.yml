@@ -23,9 +23,12 @@ env:
 
 jobs:
   # This should trigger the GCB build.
+  # This does not run on workflow_dispatch - we may use an input here to allow 
+  # retriggering the build by workflow_dispatch.
+  # This was removed to avoid retriggering the build when intending to reverify provenance.
   release:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *') || github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *')
     permissions:
       contents: write
     steps:
