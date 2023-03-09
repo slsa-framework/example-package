@@ -236,7 +236,7 @@ verify_provenance_authenticity() {
         branchOpts=()
         # Annotated tags don't have a branch to verify, so we bail early for versions that always verify the branch.
         # See https://github.com/slsa-framework/slsa-verifier/issues/193.
-        if version_lt "$tag" "v1.3"; then
+        if version_lt "$tag" "v1.3"  && [[ "$tag" != "HEAD" ]]; then
             echo "  INFO: annotated tag verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/issues/193)"
             return 0
         fi
