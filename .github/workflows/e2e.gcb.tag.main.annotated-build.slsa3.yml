@@ -16,7 +16,8 @@ env:
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
   IMAGE_REGISTRY: us-west2-docker.pkg.dev
-  IMAGE_NAME: slsa-tooling/example-package-repo/e2e-gcb-tag-main-cloudbuild-slsa3
+  # The IMAGE_NAME matches the substitution variable in the trigger configuration.
+  IMAGE_NAME: slsa-tooling/example-package-repo/e2e-gcb-tag-main-annotated-slsa3
 
   # NOTE: This version must be unique for each e2e test built on GitHub Actions.
   DEFAULT_VERSION: v33.0.0
