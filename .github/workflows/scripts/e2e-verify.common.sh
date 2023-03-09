@@ -89,6 +89,9 @@ get_builder_id(){
         "container")
             builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/heads/main" 
             ;;
+        "docker-based")
+            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@refs/heads/main" 
+            ;;
         *)
             echo "unknown build_type: $build_type"
             exit 1
