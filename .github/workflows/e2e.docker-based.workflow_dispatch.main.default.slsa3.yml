@@ -63,7 +63,7 @@ jobs:
           go-version: "1.18"
       - env:
           BINARY: ${{ steps.build.outputs.name }}
-          PROVENANCE: ${{ env.PROVENANCE_NAME }}.sigstore
+          PROVENANCE: attestation.intoto.sigstore
         run: ./.github/workflows/scripts/e2e.docker-based.default.verify.sh
 
   if-succeeded:
