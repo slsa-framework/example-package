@@ -364,3 +364,23 @@ e2e_get_release_assets_filenames() {
     assets=$(gh release view --json assets "$tag" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
     echo "$assets"
 }
+
+e2e_verify_predicate_v1_buildDefinition_externalParameters_source() {
+    _e2e_verify_query "$1" "$2" '.buildDefinition.externalParameters.source'
+}
+
+e2e_verify_predicate_v1_buildDefinition_buildType() {
+    _e2e_verify_query "$1" "$2" '.buildDefinition.buildType'
+}
+
+e2e_verify_predicate_v1_buildDefinition_systemParameters() {
+    _e2e_verify_query "$1" "$3" ".buildDefinition.systemParameters.\"$2\".value"
+}
+
+e2e_verify_predicate_v1_runDetails_builder_id() {
+    _e2e_verify_query "$1" "$2" '.runDetails.builder.id'
+}
+
+e2e_verify_predicate_v1_runDetails_metadata_invocationId() {
+    _e2e_verify_query "$1" "$2" '.runDetails.metadata.invocationId'
+}
