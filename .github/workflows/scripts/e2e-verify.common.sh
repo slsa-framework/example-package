@@ -241,6 +241,10 @@ verify_provenance_authenticity() {
             return 0
         fi
     fi
+    if [[ "$build_type" == "gcb" ]]; then
+        # GCB does not support branch verification.
+        branchOpts=()
+    fi
 
     # Workflow inputs
     workflow_inputs=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep workflow_inputs)
