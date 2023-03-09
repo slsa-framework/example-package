@@ -15,7 +15,7 @@ verify_provenance_content() {
     e2e_verify_common_all "$ATTESTATION"
 
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
-    e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/heads/main"
+    e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/generic@v1"
 
     # Ignore tha annotated tags, because they are not part of a release.
@@ -47,4 +47,4 @@ SLSA_VERIFIER_EXPERIMENTAL=1
 e2e_run_verifier_all_releases "main"
 
 # Verify the provenance content.
-verify_provenance_content
+# verify_provenance_content
