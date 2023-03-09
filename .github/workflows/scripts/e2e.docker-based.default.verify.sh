@@ -7,6 +7,7 @@ source "./.github/workflows/scripts/e2e-verify.common.sh"
 verify_provenance_content() {
     # This is always in sigstore bundle format.
     ATTESTATION=$(jq -r '.dsseEnvelope.payload' <"$PROVENANCE" | base64 -d)
+    echo "$ATTESTATION"
     has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep assets)
     annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated || true)
 
