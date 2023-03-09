@@ -366,21 +366,21 @@ e2e_get_release_assets_filenames() {
 }
 
 e2e_verify_predicate_v1_buildDefinition_externalParameters_source() {
-    _e2e_verify_query "$1" "$2" '.buildDefinition.externalParameters.source'
+    _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.externalParameters.source'
 }
 
 e2e_verify_predicate_v1_buildDefinition_buildType() {
-    _e2e_verify_query "$1" "$2" '.buildDefinition.buildType'
+    _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.buildType'
 }
 
 e2e_verify_predicate_v1_buildDefinition_systemParameters() {
-    _e2e_verify_query "$1" "$3" ".buildDefinition.systemParameters.\"$2\".value"
+    _e2e_verify_query "$1" "$3" ".predicate.buildDefinition.systemParameters.\"$2\".value"
 }
 
 e2e_verify_predicate_v1_runDetails_builder_id() {
-    _e2e_verify_query "$1" "$2" '.runDetails.builder.id'
+    _e2e_verify_query "$1" "$2" '.predicate.runDetails.builder.id'
 }
 
 e2e_verify_predicate_v1_runDetails_metadata_invocationId() {
-    _e2e_verify_query "$1" "$2" '.runDetails.metadata.invocationId'
+    _e2e_verify_query "$1" "$2" '.predicate.runDetails.metadata.invocationId'
 }
