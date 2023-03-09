@@ -64,7 +64,12 @@ e2e_get_payload() {
 # $1: File containing the DSSE envelope.
 # $2: The new provenance payload.
 e2e_set_payload() {
-    jq -c ".payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
+    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    if [[ "$build_type" == "gcb" ]]; then
+        jq -c ".provenance_summary.provenance[0].envelope.payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
+    else
+        jq -c ".payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
+    fi
 }
 
 # get_builder_id returns the build ID used for the test.
