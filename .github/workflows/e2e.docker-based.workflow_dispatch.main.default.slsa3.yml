@@ -64,6 +64,7 @@ jobs:
       - env:
           BINARY: ${{ steps.build.outputs.name }}
           PROVENANCE: attestation.intoto.sigstore
+          SLSA_VERIFIER_EXPERIMENTAL: "1"
         run: ./.github/workflows/scripts/e2e.docker-based.default.verify.sh
 
   if-succeeded:
