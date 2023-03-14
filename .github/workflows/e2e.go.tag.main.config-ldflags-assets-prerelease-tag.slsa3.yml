@@ -1,0 +1,125 @@
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
+
+permissions: read-all
+
+env:
+  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  # WARNING: update build job if CONFIG_FILE changes.
+  CONFIG_FILE: .github/configs-go/config-ldflags-tag.yml
+  DEFAULT_VERSION: v34.0.0
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - id: create
+        run: |
+          set -euo pipefail
+
+          ./.github/workflows/scripts/e2e-create-release.sh
+
+  shim:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    outputs:
+      continue: ${{ steps.verify.outputs.continue }}
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - id: verify
+        run: |
+          set -euo pipefail
+
+          ./.github/workflows/scripts/e2e-verify-release.sh
+
+  args:
+    needs: [shim]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ldflags.outputs.version }}
+      commit: ${{ steps.ldflags.outputs.commit }}
+      branch: ${{ steps.ldflags.outputs.branch }}
+    steps:
+      - id: checkout
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        with:
+          fetch-depth: 0
+      - id: ldflags
+        run: |
+          set -euo pipefail
+
+          THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+          BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+          echo "::set-output name=version::-X main.gitVersion=v1.2.3"
+          echo "::set-output name=commit::-X main.gitCommit=abcdef"
+          echo "::set-output name=branch::-X main.gitBranch=$BRANCH"
+
+  build:
+    needs: [shim, args]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@main
+    with:
+      go-version: 1.18
+      # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
+      config-file: .github/configs-go/config-ldflags-tag.yml
+      evaluated-envs: "VERSION:${{needs.args.outputs.version}},COMMIT:${{needs.args.outputs.commit}},BRANCH:${{needs.args.outputs.branch}}"
+      compile-builder: true
+      prerelease: true
+
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: |
+  #         echo hello
+  #         #exit 1
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: [shim, build]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
+        with:
+          name: ${{ needs.build.outputs.go-binary-name }}
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+        with:
+          go-version: "1.18"
+      - env:
+          BINARY: ${{ needs.build.outputs.go-binary-name }}
+          PROVENANCE: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
+        run: ./.github/workflows/scripts/e2e.go.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [shim, build, verify]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [shim, build, verify]
+    if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh

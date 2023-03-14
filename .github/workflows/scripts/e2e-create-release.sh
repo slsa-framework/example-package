@@ -22,6 +22,9 @@ if [[ -z "$default_major" ]]; then
     exit 1
 fi
 
+prerelease=$(echo "$this_file" | cut -d '.' -f5 | grep prerelease || true)
+echo "prerelease: $prerelease"
+
 # Here we find the latest version with the major version equal to that of
 # DEFAULT_VERSION.
 latest_tag=$DEFAULT_VERSION
@@ -95,7 +98,11 @@ if [[ -n "$annotated_tags" ]]; then
 else
     # We must use a PAT here in order to trigger subsequent workflows.
     # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
-    GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
+    prereleaseFlag=""
+    if [[ -n "$prerelease" ]]; then
+        prereleaseFlag="--prerelease"
+    fi
+    GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" "$prereleaseFlag"
 fi
 
 echo "tag=$tag" >> "$GITHUB_OUTPUT"
