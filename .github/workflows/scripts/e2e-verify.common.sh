@@ -80,10 +80,10 @@ e2e_verify_common_buildDefinition_v1() {
     e2e_verify_predicate_v1_buildDefinition_systemParameters "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
     # shellcheck disable=SC2154
     e2e_verify_predicate_v1_buildDefinition_systemParameters "$1" "IMAGE_OS" "$ImageOS"
-    # shellcheck disable=SC2154
-    e2e_verify_predicate_v1_buildDefinition_systemParameters "$1" "IMAGE_VERSION" "$ImageVersion"
+    # TODO(https://github.com/slsa-framework/slsa-github-generator/issues/1809): Replace with detection of presence.
+    # e2e_verify_predicate_v1_buildDefinition_systemParameters "$1" "IMAGE_VERSION" "$ImageVersion"
     e2e_verify_predicate_v1_buildDefinition_systemParameters "$1" "RUNNER_ARCH" "$RUNNER_ARCH"
-    e2e_verify_predicate_v1_buildDefinition_systemParameters "$1" "RUNNER_NAME" "$RUNNER_NAME"
+    # e2e_verify_predicate_v1_buildDefinition_systemParameters "$1" "RUNNER_NAME" "$RUNNER_NAME"
     e2e_verify_predicate_v1_buildDefinition_systemParameters "$1" "RUNNER_OS" "$RUNNER_OS"
 }
 
