@@ -365,6 +365,13 @@ e2e_get_release_assets_filenames() {
     echo "$assets"
 }
 
+# Checks if tag is a prerelease
+e2e_is_prerelease() {
+    local tag="$1"
+    prerelease=$(gh release view "$tag" --json isPrerelease | jq -r '.isPrerelease')
+    echo "$prerelease"
+}
+
 e2e_verify_predicate_v1_buildDefinition_externalParameters_source() {
     _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.externalParameters.source'
 }

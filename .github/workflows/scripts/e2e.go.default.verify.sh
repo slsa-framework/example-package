@@ -28,6 +28,7 @@ verify_provenance_content() {
     LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
     #DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
     has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
+    is_prerelease=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep prerelease)
     TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
     DIR="$PWD/__PROJECT_CHECKOUT_DIR__"
@@ -106,10 +107,15 @@ verify_provenance_content() {
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
+        isPrelease=$(e2e_is_prerelease "$GITHUB_REF_NAME")
         if [[ -z "$has_assets" ]]; then
             e2e_assert_eq "$assets" "[\"null\",\"null\"]" "there should be no assets"
         else
             e2e_assert_eq "$assets" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
+        fi
+
+        if [[ -z "$is_prerelease" ]]; then
+            assert_true "$isPrerelease" "expected prerelease"
         fi
     fi
 }
