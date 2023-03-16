@@ -98,11 +98,11 @@ if [[ -n "$annotated_tags" ]]; then
 else
     # We must use a PAT here in order to trigger subsequent workflows.
     # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
-    prereleaseFlag=""
     if [[ -n "$prerelease" ]]; then
-        prereleaseFlag="--prerelease"
+        GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" --prerelease
+
     fi
-    GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" "$prereleaseFlag"
+    GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
 fi
 
 echo "tag=$tag" >> "$GITHUB_OUTPUT"
