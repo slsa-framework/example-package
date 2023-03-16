@@ -114,7 +114,7 @@ verify_provenance_content() {
             e2e_assert_eq "$assets" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
         fi
 
-        if [[ -z "$is_prerelease" ]]; then
+        if [[ "$is_prerelease" == "true" ]]; then
             assert_true "$isPrerelease" "expected prerelease"
         fi
     fi
