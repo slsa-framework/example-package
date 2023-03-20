@@ -100,9 +100,9 @@ else
     # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
     if [[ -n "$prerelease" ]]; then
         GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" --prerelease
-
+    else
+        GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
     fi
-    GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
 fi
 
 echo "tag=$tag" >> "$GITHUB_OUTPUT"
