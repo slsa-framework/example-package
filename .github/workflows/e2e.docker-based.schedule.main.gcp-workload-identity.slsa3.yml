@@ -110,7 +110,7 @@ jobs:
           # NOTE: We need to use the image and digest in order to make sure
           # that the image we attest has not been modified.
           image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
-          docker pull "$image_name:latest"
+          docker pull "$image_name"
           repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' $image_name)
           echo $repo_digest
 
