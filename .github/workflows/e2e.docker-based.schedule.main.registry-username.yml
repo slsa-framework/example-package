@@ -108,6 +108,9 @@ jobs:
       config-path: ".github/configs-docker/app-config.toml"
       provenance-name: attestation.intoto
       compile-builder: true
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   verify:
     runs-on: ubuntu-latest
