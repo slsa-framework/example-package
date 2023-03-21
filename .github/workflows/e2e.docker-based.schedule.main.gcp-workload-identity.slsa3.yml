@@ -112,7 +112,7 @@ jobs:
           # that the image we attest has not been modified.
           image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
           docker pull "$image_name:main"
-          repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' $image_name)
+          repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' $image_name:main)
           echo $repo_digest
 
           echo "::set-output name=image::$image_name"
