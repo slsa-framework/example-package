@@ -79,7 +79,6 @@ jobs:
 
   base:
     runs-on: ubuntu-latest
-    needs: [base-build]
     permissions:
       contents: read # For reading repository contents.
       packages: write # For writing container images.
@@ -125,7 +124,7 @@ jobs:
       id-token: write # For signing
       actions: read
       contents: write # For asset uploads
-    needs: [base-build, base]
+    needs: [base]
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@main
     with:
       builder-image: ${{ needs.base.outputs.image }}
@@ -136,7 +135,7 @@ jobs:
 
   verify:
     runs-on: ubuntu-latest
-    needs: [base-build, base, build]
+    needs: [base, build]
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
