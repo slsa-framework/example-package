@@ -92,7 +92,9 @@ jobs:
           go-version: "1.18"
       - env:
           BINARY: ${{ needs.build.outputs.go-binary-name }}
-          PROVENANCE: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
+          # NOTE: we download the artifact as `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl`,
+          # so we implictely verify that `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl = ${{ needs.build.outputs.go-provenance-name }}`.
+          PROVENANCE: ${{ needs.build.outputs.go-provenance-name }}
         run: ./.github/workflows/scripts/e2e.go.default.verify.sh
 
   if-succeeded:
