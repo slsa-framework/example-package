@@ -45,7 +45,9 @@ func main() {
 	flag.Parse()
 
 	for _, filename := range filenameFlags {
+		fmt.Println("Writing to filename: ", filename)
 		if err := os.WriteFile(filename, []byte(*content), 0644); err != nil {
+			fmt.Println("error writing to file: %w", err)
 			panic(err)
 		}
 	}
