@@ -31,7 +31,7 @@ jobs:
   # Rebuild the base image
   base-build:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'workflow_dispatch') || (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *')
+    if: inputs.trigger_build || (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *')
     permissions:
       contents: read # For reading repository contents.
       packages: write # For writing container images.
@@ -79,6 +79,7 @@ jobs:
 
   base:
     runs-on: ubuntu-latest
+    if: ${{ !inputs.trigger_build }}
     permissions:
       contents: read # For reading repository contents.
       packages: write # For writing container images.
@@ -110,7 +111,7 @@ jobs:
           # NOTE: We need to use the image and digest in order to make sure
           # that the image we attest has not been modified.
           image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
-          docker pull "$image_name"
+          docker pull "$image_name:main"
           repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' $image_name)
           echo $repo_digest
 
