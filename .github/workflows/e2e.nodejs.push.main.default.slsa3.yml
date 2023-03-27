@@ -26,7 +26,7 @@ jobs:
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
-      actions: read # For the entrypoint.
+      packages: write # Not used
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
     with:
       directory: nodejs/e2e-nodejs-push-main-default-slsa3
