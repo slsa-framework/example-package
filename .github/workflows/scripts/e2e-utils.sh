@@ -36,6 +36,35 @@ Date: $RUN_DATE
 EOF
 }
 
+# name_to_url takes a npm package name and outputs a purl for that package name.
+name_to_purl() {
+    # Get the raw package name and scope from the output of `npm pack --json`
+    # This name is of the form '<scope>/<package name>'
+    raw_package_scope=$(echo "$1" | cut -d'/' -f1)
+    raw_package_name_and_version=$(echo "$1" | cut -d'/' -f2)
+    raw_package_version=$(echo "${raw_package_name_and_version}" | cut -d'@' -f2)
+    raw_package_name=$(echo "${raw_package_name_and_version}" | cut -d'@' -f1)
+
+    if [ "${raw_package_name}" == "" ]; then
+        raw_package_name="${raw_package_scope}"
+        raw_package_scope=""
+    fi
+    # package scope (namespace) is URL(percent) encoded.
+    package_scope=$(echo "\"${raw_package_scope}\"" | jq -r '. | @uri')
+    # package name is URL(percent) encoded.
+    package_name=$(echo "\"${raw_package_name}\"" | jq -r '. | @uri')
+    # version is URL(percent) encoded. This is the version from the project's
+    # package.json and could be a commit, or any string by the user. It does not
+    # actually have to be a version number and is not validated as such by npm.
+    package_version=$(echo "\"${raw_package_version}\"" | jq -r '. | @uri')
+
+    package_id="${package_name}@${package_version}"
+    if [ "${package_scope}" != "" ]; then
+        package_id="${package_scope}/${package_id}"
+    fi
+    echo "pkg:npm/${package_id}"
+}
+
 # strip_zeros strips leading zeros.
 strip_zeros() {
     # shellcheck disable=SC2001

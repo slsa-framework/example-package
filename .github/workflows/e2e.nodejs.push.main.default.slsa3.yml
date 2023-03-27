@@ -1,0 +1,65 @@
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+env:
+  GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - run: ./.github/workflows/scripts/e2e-push.sh
+
+  build:
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
+    with:
+      directory: nodejs/e2e-nodejs-push-main-default-slsa3
+      node-version: 16
+      run-scripts: "ci build"
+      access: public
+    secrets:
+      node-auth-token: ${{ secrets.E2E_NODE_ACCESS_TOKEN }}
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - name: Set up Node environment
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        with:
+          node-version: 16
+      - run: ./.github/workflows/scripts/e2e.nodejs.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow && needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh

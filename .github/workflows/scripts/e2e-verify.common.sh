@@ -53,6 +53,43 @@ e2e_verify_common_materials() {
     e2e_verify_predicate_materials "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
 }
 
+e2e_verify_common_all_v02() {
+    e2e_verify_common_builder "$1"
+    e2e_verify_common_invocation_v02 "$1"
+    e2e_verify_common_metadata_v02 "$1"
+    e2e_verify_common_materials "$1"
+}
+
+e2e_verify_common_invocation_v02() {
+    # This does not include buildType since it is not common to all.
+    e2e_verify_predicate_invocation_configSource "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\".github/workflows/$(e2e_this_file)\"}"
+
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_EVENT_NAME" "$GITHUB_EVENT_NAME"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF" "$GITHUB_REF"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF_TYPE" "$GITHUB_REF_TYPE"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY" "$GITHUB_REPOSITORY"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ATTEMPT" "$GITHUB_RUN_ATTEMPT"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ID" "$GITHUB_RUN_ID"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "$GITHUB_RUN_NUMBER"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_SHA" "$GITHUB_SHA"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_ACTOR_ID" "$GITHUB_ACTOR_ID"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_ID" "$GITHUB_REPOSITORY_ID"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_OWNER_ID" "$GITHUB_REPOSITORY_OWNER_ID"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_REF"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
+    # shellcheck disable=SC2154
+    e2e_verify_predicate_invocation_environment "$1" "IMAGE_OS" "$ImageOS"
+    # TODO(https://github.com/slsa-framework/slsa-github-generator/issues/1809): Replace with detection of presence.
+    # e2e_verify_predicate_invocation_environment "$1" "IMAGE_VERSION" "$ImageVersion"
+    e2e_verify_predicate_invocation_environment "$1" "RUNNER_ARCH" "$RUNNER_ARCH"
+    # e2e_verify_predicate_invocation_environment "$1" "RUNNER_NAME" "$RUNNER_NAME"
+    e2e_verify_predicate_invocation_environment "$1" "RUNNER_OS" "$RUNNER_OS"
+}
+
+e2e_verify_common_metadata_v02() {
+    e2e_verify_predicate_metadata "$1" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true}}"
+}
+
 # Verifies common fields of the SLSA v1.0 predicate.
 # $1: the predicate content
 e2e_verify_common_all_v1() {
@@ -114,36 +151,36 @@ e2e_set_payload() {
 }
 
 # get_builder_id returns the build ID used for the test.
-get_builder_id(){
+get_builder_id() {
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=""
     case $build_type in
-        "go")
-            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
-            ;;
-        "generic")
-            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/heads/main" 
-            ;;
-        "gcb")
-            builder_id="https://cloudbuild.googleapis.com/GoogleHostedWorker@v0.3"
-            ;;
-        "container")
-            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/heads/main" 
-            ;;
-        "docker-based")
-            builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@refs/heads/main" 
-            ;;
-        *)
-            echo "unknown build_type: $build_type"
-            exit 1
-            ;;
+    "go")
+        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
+        ;;
+    "generic")
+        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/heads/main"
+        ;;
+    "gcb")
+        builder_id="https://cloudbuild.googleapis.com/GoogleHostedWorker@v0.3"
+        ;;
+    "container")
+        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/heads/main"
+        ;;
+    "docker-based")
+        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@refs/heads/main"
+        ;;
+    *)
+        echo "unknown build_type: $build_type"
+        exit 1
+        ;;
     esac
     echo "$builder_id"
 }
 
 # assemble_minimum_builder_args assembles the minimum arguments
 # number of arguments for the build ID.
-assemble_minimum_builder_args(){
+assemble_minimum_builder_args() {
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=$(get_builder_id)
     if [[ "$build_type" == "gcb" ]]; then
@@ -151,9 +188,9 @@ assemble_minimum_builder_args(){
     fi
 }
 
-# assemble_raw_builder_args assembles 
+# assemble_raw_builder_args assembles
 # builder ID with the builder.id but without the tag.
-assemble_raw_builder_args(){
+assemble_raw_builder_args() {
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=$(get_builder_id)
     builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
@@ -164,9 +201,9 @@ assemble_raw_builder_args(){
     fi
 }
 
-# assemble_full_builder_args assembles 
+# assemble_full_builder_args assembles
 # builder ID with the builder.id@tag.
-assemble_full_builder_args(){
+assemble_full_builder_args() {
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
     builder_id=$(get_builder_id)
     echo "--builder-id=$builder_id"
@@ -183,7 +220,7 @@ verify_provenance_authenticity() {
     local build_type
     annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated || true)
     build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
-    
+
     verifierCmd="$verifier"
     # After version v1.3.X, we split into subcommands for artifacts and images
     if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.4"; then
@@ -261,7 +298,7 @@ verify_provenance_authenticity() {
     # https://github.com/slsa-framework/slsa-verifier/pull/192
     if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.3"; then
         echo "  **** Default parameters (annotated tags) *****"
-        
+
         echo $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
 
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
@@ -285,7 +322,7 @@ verify_provenance_authenticity() {
         branchOpts=()
         # Annotated tags don't have a branch to verify, so we bail early for versions that always verify the branch.
         # See https://github.com/slsa-framework/slsa-verifier/issues/193.
-        if version_lt "$tag" "v1.3"  && [[ "$tag" != "HEAD" ]]; then
+        if version_lt "$tag" "v1.3" && [[ "$tag" != "HEAD" ]]; then
             echo "  INFO: annotated tag verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/issues/193)"
             return 0
         fi
@@ -297,7 +334,7 @@ verify_provenance_authenticity() {
 
     # Workflow inputs
     workflow_inputs=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep workflow_inputs)
-    if [[ -n "$workflow_inputs" ]] && ( version_ge "$tag" "v1.3" || [[ "$tag" == "HEAD" ]] ); then
+    if [[ -n "$workflow_inputs" ]] && (version_ge "$tag" "v1.3" || [[ "$tag" == "HEAD" ]]); then
         echo "  **** Correct Workflow Inputs *****"
         $verifierCmd "${branchOpts[@]}" "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${workflowInputArg[@]}" test=true
         e2e_assert_eq "$?" "0" "should be workflow inputs"
@@ -332,7 +369,7 @@ verify_provenance_authenticity() {
     # shellcheck disable=SC2145 # We intend to alter the builder ID.
     $verifierCmd "${artifactAndbuilderRawArgs[@]}a" "${branchOpts[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
     e2e_assert_not_eq "$?" "0" "wrong raw builder id"
-    
+
     # Correct full builder ID verification
     echo "  **** Correct full builder.id *****"
     $verifierCmd "${artifactAndbuilderFullArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
