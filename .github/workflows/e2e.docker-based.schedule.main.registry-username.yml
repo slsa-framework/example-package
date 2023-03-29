@@ -95,6 +95,9 @@ jobs:
           echo "::set-output name=image::$image_name"
           echo "::set-output name=digest::${repo_digest#*@}"
 
+          # try a docker pull
+          docker pull "$image_name@${repo_digest#*@}"
+
   build:
     permissions:
       id-token: write # For signing
