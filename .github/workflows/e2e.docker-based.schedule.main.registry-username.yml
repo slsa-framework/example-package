@@ -28,6 +28,8 @@ env:
   # The image name should be of the form: slsa-framework/example-package.<test name>
   IMAGE_NAME: slsa-framework/example-package.e2e.docker-based.schedule.main.registry-username.slsa3
 
+  REGISTRY_USERNAME: asraa
+  REGISTRY_PASSWORD: ${{ secrets.E2E_DOCKER_TOKEN }}
 
 jobs:
   # Rebuild the base image
@@ -111,9 +113,9 @@ jobs:
       config-path: ".github/configs-docker/app-config.toml"
       provenance-name: attestation.intoto
       compile-builder: true
-      registry-username: ${{ github.actor }}
+      registry-username: ${REGISTRY_USERNAME}
     secrets:
-      registry-password: ${{ secrets.GITHUB_TOKEN }}
+      registry-password: ${REGISTRY_PASSWORD}
 
   verify:
     runs-on: ubuntu-latest
