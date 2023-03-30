@@ -106,7 +106,7 @@ jobs:
       actions: read
       contents: write # For asset uploads
     needs: [base]
-    uses: asraa/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@main
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@main
     with:
       builder-image: ${{ needs.base.outputs.image }}
       builder-digest: ${{ needs.base.outputs.digest }}
@@ -115,7 +115,7 @@ jobs:
       compile-builder: true
       registry-username: ${REGISTRY_USERNAME}
     secrets:
-      registry-password: ${REGISTRY_PASSWORD}
+      registry-password: ${{ secrets.E2E_DOCKER_TOKEN }}
 
   verify:
     runs-on: ubuntu-latest
