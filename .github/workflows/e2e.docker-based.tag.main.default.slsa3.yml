@@ -1,0 +1,97 @@
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # triggers only if push new tag version, like `v0.8.4` or else
+
+permissions: read-all
+
+env:
+  # TODO: Replace this token.
+  PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+  PROVENANCE_NAME: attestation.intoto
+
+  DEFAULT_VERSION: v35.0.0
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - run: ./.github/workflows/scripts/e2e-create-release.sh
+
+  shim:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    outputs:
+      continue: ${{ steps.verify.outputs.continue }}
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - id: verify
+        run: ./.github/workflows/scripts/e2e-verify-release.sh
+
+  build:
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    permissions:
+      id-token: write # For signing
+      actions: read
+      contents: write # For asset uploads
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@main
+    with:
+      builder-image: "bash"
+      builder-digest: "sha256:9e2ba52487d945504d250de186cb4fe2e3ba023ed2921dd6ac8b97ed43e76af9"
+      config-path: ".github/configs-docker/config.toml"
+      provenance-name: attestation.intoto
+      compile-builder: true
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: [shim, build]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
+        with:
+          name: ${{ needs.build.outputs.build-outputs-name }}
+          path: outputs
+      - name: Get build artifact
+        id: build
+        run: |
+          name=$(find outputs/ -type f | head -1)
+          cp $name .
+          echo "name=$(basename $name)" >> $GITHUB_OUTPUT
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
+        with:
+          name: ${{ needs.build.outputs.attestations-download-name }}
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+        with:
+          go-version: "1.18"
+      - env:
+          BINARY: ${{ steps.build.outputs.name }}
+          PROVENANCE: attestation.intoto.sigstore
+          SLSA_VERIFIER_EXPERIMENTAL: "1"
+        run: ./.github/workflows/scripts/e2e.docker-based.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [shim, build, verify]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [shim, build, verify]
+    if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
