@@ -43,7 +43,7 @@ jobs:
           BINARY: ${{ needs.build-one.outputs.go-binary-name }}
           # NOTE: we download the artifact as `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl`,
           # so we implictely verify that `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl = ${{ needs.build.outputs.go-provenance-name }}`.
-          PROVENANCE: ${{ needs.build.outputs.go-provenance-name }}
+          PROVENANCE: ${{ needs.build-one.outputs.go-provenance-name }}
         run: ./.github/workflows/scripts/e2e.go.default.verify.sh
 
   if-succeeded-one:
@@ -92,7 +92,7 @@ jobs:
           BINARY: ${{ needs.build-two.outputs.go-binary-name }}
           # NOTE: we download the artifact as `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl`,
           # so we implictely verify that `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl = ${{ needs.build.outputs.go-provenance-name }}`.
-          PROVENANCE: ${{ needs.build.outputs.go-provenance-name }}
+          PROVENANCE: ${{ needs.build-two.outputs.go-provenance-name }}
         run: ./.github/workflows/scripts/e2e.go.default.verify.sh
 
   if-succeeded-two:
