@@ -40,6 +40,7 @@ jobs:
 
   build:
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    needs: shim
     permissions:
       id-token: write # For signing
       actions: read
