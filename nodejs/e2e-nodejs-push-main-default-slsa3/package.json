@@ -12,7 +12,7 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "typescript": "^4.8.4"
+    "typescript": "^5.0.0"
   },
   "repository": {
     "type": "git",
