@@ -148,7 +148,7 @@ jobs:
           token_format: "access_token"
           service_account: ${{ env.SERVICE_ACCOUNT }}
           workload_identity_provider: ${{ env.PROVIDER_NAME }}
-      - uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b # tag=v2.8.1
+      - uses: sigstore/cosign-installer@c3667d99424e7e6047999fb6246c0da843953c65 # v3.0.1
       - env:
           REGISTRY_USERNAME: oauth2accesstoken
           REGISTRY_PASSWORD: ${{ steps.auth.outputs.access_token }}
@@ -161,7 +161,7 @@ jobs:
           COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}" > ${GITHUB_WORKSPACE}/provenance.json
           echo "provenance_file=${GITHUB_WORKSPACE}/provenance.json" >> $GITHUB_ENV
           echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> $GITHUB_ENV
-      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+      - uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9 # v4.0.0
         with:
           go-version: "1.18"
       - env:
