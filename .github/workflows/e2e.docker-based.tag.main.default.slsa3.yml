@@ -1,7 +1,10 @@
 on:
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "0 4 * * *"
   workflow_dispatch:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # triggers only if push new tag version, like `v0.8.4` or else
 
 permissions: read-all
 
@@ -13,8 +16,31 @@ env:
 
   PROVENANCE_NAME: attestation.intoto
 
+  DEFAULT_VERSION: v35.0.0
+
 jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - run: ./.github/workflows/scripts/e2e-create-release.sh
+
+  shim:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    outputs:
+      continue: ${{ steps.verify.outputs.continue }}
+    steps:
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - id: verify
+        run: ./.github/workflows/scripts/e2e-verify-release.sh
+
   build:
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
+    needs: shim
     permissions:
       id-token: write # For signing
       actions: read
@@ -29,7 +55,8 @@ jobs:
 
   verify:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [shim, build]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
@@ -56,16 +83,16 @@ jobs:
 
   if-succeeded:
     runs-on: ubuntu-latest
-    needs: [build, verify]
-    if: needs.build.result == 'success' && needs.verify.result == 'success'
+    needs: [shim, build, verify]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
     runs-on: ubuntu-latest
-    needs: [build, verify]
-    if: always() && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    needs: [shim, build, verify]
+    if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
       - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

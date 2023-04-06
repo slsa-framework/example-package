@@ -20,7 +20,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - run: ./.github/workflows/scripts/e2e-push.sh
 
   args:
@@ -32,7 +32,7 @@ jobs:
       branch: ${{ steps.ldflags.outputs.branch }}
     steps:
       - id: checkout
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
         with:
           fetch-depth: 0
       - id: ldflags
@@ -65,14 +65,14 @@ jobs:
     needs: build
     if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ needs.build.outputs.go-binary-name }}
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
-      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+      - uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9 # v4.0.0
         with:
           go-version: "1.18"
       - env:
@@ -87,7 +87,7 @@ jobs:
     needs: [build, verify]
     if: github.event_name == 'push' && github.event.head_commit.message == github.workflow && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -95,5 +95,5 @@ jobs:
     needs: [build, verify]
     if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
