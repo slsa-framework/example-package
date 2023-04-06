@@ -107,9 +107,16 @@ jobs:
           IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
         run: |
           cosign login "${IMAGE_REGISTRY}" -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}"
+
           # TODO: use --enforce-sct
           # TODO: add cue policy for further validation.
-          COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type slsaprovenance "${IMAGE_NAME}@${IMAGE_DIGEST}" > ${GITHUB_WORKSPACE}/provenance.json
+          # NOTE: COSIGN_EXPERIMENTAL is needed to check the transparency log.
+          COSIGN_EXPERIMENTAL=1 cosign verify-attestation \
+            --type slsaprovenance \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/heads/main \
+            "${IMAGE_NAME}@${IMAGE_DIGEST}" > ${GITHUB_WORKSPACE}/provenance.json
+
           echo "provenance_file=${GITHUB_WORKSPACE}/provenance.json" >> $GITHUB_ENV
           echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> $GITHUB_ENV
       - uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9 # v4.0.0
@@ -137,7 +144,6 @@ jobs:
     steps:
       - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
-
 
   # Generate an error
   provenance-continue-on-error:
