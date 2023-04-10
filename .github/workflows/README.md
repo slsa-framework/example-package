@@ -1,10 +1,10 @@
 Info about e2e tests:
 
-- We run the re-usable workflow and we verify using the slsa-verify at HEAD and
+- We run the re-usable workflow and we verify using the [slsa-verifier](https://github.com/slsa-framework/slsa-verifier) at HEAD and
   for all previous releases. This ensures that any upcoming re-usable workflow
   (builder) release is compatible (i.e., can be verified) using any prior
-  version of the slsa-verify. See
-  [e2e.verify.common.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/e2e.verify.common.sh)
+  version of the slsa-verifier. See
+  [e2e-verify.common.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/e2e-verify.common.sh)
 
 - Each file is named
   `e2e.<ecosystem>.<trigger>.<branch>.<config-parameters>.slsa<level>.yml`.
@@ -31,7 +31,7 @@ Info about e2e tests:
   and it contains the date/time the commit is created.
 
 - Each version created has the workflow name (`$THIS_FILE`) as part of the
-  release notes. This allows workflow to exit early if the release it not
+  release notes. This allows workflow to exit early if the release is not
   intended for them, e.g. different branch, etc. The version created is the same
   as the latest version +1 for the PATCH. To ensure workflows don't race on
   release version, they each use a different MAJOR. (v10 - v23 as of today). The
@@ -56,7 +56,7 @@ Info about e2e tests:
   should fail. They use a rough time-estimate to start tampering with the
   artifacts used by the builder. This can be a bit flaky at times.
 
-- When you update the main branch, try to regularily update the branch1
+- When you update the main branch, try to regularly update the branch1
   manually. You can use `bash sync-branch1.sh` for that.
 
 - We have scripts to run the e2e tests via CLI:
