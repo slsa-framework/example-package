@@ -28,6 +28,8 @@ echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 
+export SLSA_VERIFIER_TESTING="true"
+
 # Verify provenance authenticity.
 e2e_run_verifier_all_releases "HEAD"
 

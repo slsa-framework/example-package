@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       trigger_build:
-        description: 'Trigger a build'
+        description: "Trigger a build"
         required: false
         default: false
         type: boolean
@@ -35,7 +35,7 @@ jobs:
     permissions:
       contents: read # For reading repository contents.
       packages: write # For writing container images.
-      id-token: write # For authenticating to Google Cloud Workload Identity 
+      id-token: write # For authenticating to Google Cloud Workload Identity
     outputs:
       image: ${{ steps.image.outputs.image }}
       digest: ${{ steps.build.outputs.digest }}
@@ -83,7 +83,7 @@ jobs:
     permissions:
       contents: read # For reading repository contents.
       packages: write # For writing container images.
-      id-token: write # For authenticating to Google Cloud Workload Identity 
+      id-token: write # For authenticating to Google Cloud Workload Identity
     outputs:
       image: ${{ steps.image.outputs.image }}
       digest: ${{ steps.image.outputs.digest }}
@@ -158,7 +158,6 @@ jobs:
       - env:
           BINARY: ${{ steps.build.outputs.name }}
           PROVENANCE: attestation.intoto.sigstore
-          SLSA_VERIFIER_EXPERIMENTAL: "1"
         run: ./.github/workflows/scripts/e2e.docker-based.default.verify.sh
 
   if-succeeded:

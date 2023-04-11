@@ -45,7 +45,9 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 
 # Verify provenance authenticity.
-SLSA_VERIFIER_EXPERIMENTAL="1"
+export SLSA_VERIFIER_EXPERIMENTAL="1"
+export SLSA_VERIFIER_TESTING="true"
+
 e2e_run_verifier_all_releases "HEAD"
 
 # Verify the provenance content.

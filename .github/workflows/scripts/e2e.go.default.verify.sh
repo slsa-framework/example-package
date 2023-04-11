@@ -107,7 +107,7 @@ verify_provenance_content() {
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
-        isPrelease=$(e2e_is_prerelease "$GITHUB_REF_NAME")
+        isPrerelease=$(e2e_is_prerelease "$GITHUB_REF_NAME")
         if [[ -z "$has_assets" ]]; then
             e2e_assert_eq "$assets" "[\"null\",\"null\"]" "there should be no assets"
         else
@@ -133,9 +133,10 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 echo "BINARY: file is $BINARY"
 
+export SLSA_VERIFIER_TESTING="true"
+
 # Verify provenance authenticity with min version at release v1.0.0
 e2e_run_verifier_all_releases v1.0.0
 
 # Verify the provenance content.
 verify_provenance_content
-

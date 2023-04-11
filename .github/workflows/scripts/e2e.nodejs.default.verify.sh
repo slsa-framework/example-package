@@ -58,6 +58,8 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 echo "BINARY: file is $BINARY"
 
+export SLSA_VERIFIER_TESTING="true"
+
 # Verify provenance authenticity with min version at release v1.0.0
 # TODO: verify npm packages
 # e2e_run_verifier_all_releases v1.0.0
