@@ -73,7 +73,6 @@ jobs:
         env:
           BINARY: artifact1
           PROVENANCE: ${{ needs.provenance-one.outputs.attestation-name }}
-          SLSA_VERIFIER_TESTING: "true"
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
   if-succeeded-one:
@@ -157,7 +156,6 @@ jobs:
         env:
           BINARY: artifact1
           PROVENANCE: ${{ needs.provenance-two.outputs.attestation-name }}
-          SLSA_VERIFIER_TESTING: "true"
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
   if-succeeded-two:

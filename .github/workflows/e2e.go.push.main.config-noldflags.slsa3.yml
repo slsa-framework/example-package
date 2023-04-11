@@ -57,7 +57,6 @@ jobs:
           # NOTE: we download the artifact as `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl`,
           # so we implictely verify that `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl = ${{ needs.build.outputs.go-provenance-name }}`.
           PROVENANCE: ${{ needs.build.outputs.go-provenance-name }}
-          SLSA_VERIFIER_TESTING: "true"
         run: ./.github/workflows/scripts/e2e.go.default.verify.sh
 
   if-succeeded:
