@@ -91,6 +91,7 @@ jobs:
       - env:
           BINARY: ${{ needs.build.outputs.binary-name }}
           PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
+          SLSA_VERIFIER_TESTING: "true"
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
   if-succeeded:
