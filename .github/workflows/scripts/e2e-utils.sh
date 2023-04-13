@@ -7,8 +7,16 @@ source "./.github/workflows/scripts/e2e-assert.sh"
 
 # Gets the name of the currently running workflow file.
 # Note: this requires GH_TOKEN to be set in the workflows.
+THIS_FILE=""
+
 e2e_this_file() {
-    gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3
+    # NOTE: Cache the file name so we don't make repeated calls to the API.
+    if [ "${THIS_FILE}" != "" ]; then
+        echo "${THIS_FILE}"
+        return
+    fi
+
+    THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
 }
 
 # Gets the name of the branch for the e2e test.
@@ -34,6 +42,17 @@ Trigger: $GITHUB_EVENT_NAME
 Branch: $GITHUB_REF_NAME
 Date: $RUN_DATE
 EOF
+}
+
+# e2e_npm_package_name outputs the package name for the currently running e2e test.
+e2e_npm_package_name() {
+    # Convert the test workflow file name to the package name.
+    # remove the file extension
+    package_name="$(e2e_this_file | rev | cut -d'.' -f2- | rev)"
+    # convert periods to hyphen
+    package_name="${package_name//./-}"
+    package_name="@slsa-framework/${package_name}"
+    echo "${package_name}"
 }
 
 # name_to_url takes a npm package name and outputs a purl for that package name.
