@@ -142,7 +142,7 @@ e2e_get_payload() {
 # $1: File containing the DSSE envelope.
 # $2: The new provenance payload.
 e2e_set_payload() {
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    build_type=$(e2e_this_file | cut -d '.' -f2)
     if [[ "$build_type" == "gcb" ]]; then
         jq -c ".provenance_summary.provenance[0].envelope.payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
     else
@@ -152,7 +152,7 @@ e2e_set_payload() {
 
 # get_builder_id returns the build ID used for the test.
 get_builder_id() {
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    build_type=$(e2e_this_file | cut -d '.' -f2)
     builder_id=""
     case $build_type in
     "go")
@@ -181,7 +181,7 @@ get_builder_id() {
 # assemble_minimum_builder_args assembles the minimum arguments
 # number of arguments for the build ID.
 assemble_minimum_builder_args() {
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    build_type=$(e2e_this_file | cut -d '.' -f2)
     builder_id=$(get_builder_id)
     if [[ "$build_type" == "gcb" ]]; then
         echo "--builder-id=$builder_id"
@@ -191,7 +191,7 @@ assemble_minimum_builder_args() {
 # assemble_raw_builder_args assembles
 # builder ID with the builder.id but without the tag.
 assemble_raw_builder_args() {
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    build_type=$(e2e_this_file | cut -d '.' -f2)
     builder_id=$(get_builder_id)
     builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
     if [[ "$build_type" == "gcb" ]]; then
@@ -204,7 +204,7 @@ assemble_raw_builder_args() {
 # assemble_full_builder_args assembles
 # builder ID with the builder.id@tag.
 assemble_full_builder_args() {
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    build_type=$(e2e_this_file | cut -d '.' -f2)
     builder_id=$(get_builder_id)
     echo "--builder-id=$builder_id"
 }
@@ -218,8 +218,8 @@ verify_provenance_authenticity() {
     local tag="$2"
     local annotated_tags
     local build_type
-    annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated || true)
-    build_type=$(echo "$THIS_FILE" | cut -d '.' -f2)
+    annotated_tags=$(e2e_this_file | cut -d '.' -f5 | grep annotated || true)
+    build_type=$(e2e_this_file | cut -d '.' -f2)
 
     verifierCmd="$verifier"
     # After version v1.3.X, we split into subcommands for artifacts and images
@@ -251,7 +251,7 @@ verify_provenance_authenticity() {
         fi
     fi
 
-    multi_subjects=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep multi-subjects)
+    multi_subjects=$(e2e_this_file | cut -d '.' -f5 | grep multi-subjects)
     if [[ -n "$multi_subjects" ]] && version_lt "$tag" "v1.2.0" && [[ "$tag" != "HEAD" ]]; then
         echo "  INFO: multiple subject verification at $tag: skipping due to lack of support (https://github.com/slsa-framework/slsa-verifier/pull/112)"
         return 0
@@ -333,7 +333,7 @@ verify_provenance_authenticity() {
     fi
 
     # Workflow inputs
-    workflow_inputs=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep workflow_inputs)
+    workflow_inputs=$(e2e_this_file | cut -d '.' -f5 | grep workflow_inputs)
     if [[ -n "$workflow_inputs" ]] && (version_ge "$tag" "v1.3" || [[ "$tag" == "HEAD" ]]); then
         echo "  **** Correct Workflow Inputs *****"
         $verifierCmd "${branchOpts[@]}" "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" "${workflowInputArg[@]}" test=true
@@ -537,9 +537,11 @@ e2e_run_verifier_all_releases() {
         # Check pre-release status
         local PRE_RELEASE
         PRE_RELEASE=$(echo "$line" | cut -f2)
-        if [ "$PRE_RELEASE" == "Pre-release" ]; then
+        if [ "$PRE_RELEASE" == "Pre-release" ] || [ "$(version_pre "$TAG")" != "" ]; then
             continue
         fi
+
+        # Also check if version for pre-release
 
         # Check if a greater patch version exists
         MAJOR=$(version_major "$TAG")
