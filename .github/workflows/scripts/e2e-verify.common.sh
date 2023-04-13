@@ -541,8 +541,6 @@ e2e_run_verifier_all_releases() {
             continue
         fi
 
-        # Also check if version for pre-release
-
         # Check if a greater patch version exists
         MAJOR=$(version_major "$TAG")
         MINOR=$(version_minor "$TAG")
