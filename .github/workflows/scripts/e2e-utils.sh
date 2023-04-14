@@ -428,8 +428,8 @@ e2e_verify_predicate_v1_buildDefinition_buildType() {
     _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.buildType'
 }
 
-e2e_verify_predicate_v1_buildDefinition_systemParameters() {
-    _e2e_verify_query "$1" "$3" '.predicate.buildDefinition.systemParameters.'"$2"
+e2e_verify_predicate_v1_buildDefinition_internalParameters() {
+    _e2e_verify_query "$1" "$3" '.predicate.buildDefinition.internalParameters.'"$2"
 }
 
 e2e_verify_predicate_v1_runDetails_builder_id() {
