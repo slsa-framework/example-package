@@ -56,7 +56,7 @@ jobs:
     needs: [build-one, provenance-one]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - name: Download binary
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
@@ -80,7 +80,7 @@ jobs:
     needs: [build-one, provenance-one, verify-one]
     if: needs.build-one.result == 'success' && needs.provenance-one.result == 'success' && needs.verify-one.result == 'success'
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed-one:
@@ -88,7 +88,7 @@ jobs:
     needs: [build-one, provenance-one, verify-one]
     if: always() && (needs.build-one.result == 'failure' || needs.provenance-one.result == 'failure' || needs.verify-one.result == 'failure')
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   build-two:
@@ -139,7 +139,7 @@ jobs:
     needs: [build-two, provenance-two]
     steps:
       - name: Checkout code
-        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - name: Download binary
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
@@ -163,7 +163,7 @@ jobs:
     needs: [build-two, provenance-two, verify-two]
     if: needs.build-two.result == 'success' && needs.provenance-two.result == 'success' && needs.verify-two.result == 'success'
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed-two:
@@ -171,5 +171,5 @@ jobs:
     needs: [build-two, provenance-two, verify-two]
     if: always() && (needs.build-two.result == 'failure' || needs.provenance-two.result == 'failure' || needs.verify-two.result == 'failure')
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
