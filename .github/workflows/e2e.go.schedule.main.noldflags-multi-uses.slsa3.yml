@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-one
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ needs.build-one.outputs.go-binary-name }}
@@ -51,7 +51,7 @@ jobs:
     needs: [build-one, verify-one]
     if: needs.build-one.result == 'success' && needs.verify-one.result == 'success'
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed-one:
@@ -59,7 +59,7 @@ jobs:
     needs: [build-one, verify-one]
     if: always() && (needs.build-one.result == 'failure' || needs.verify-one.result == 'failure')
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   build-two:
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-two
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build-two.outputs.go-binary-name }}
@@ -100,7 +100,7 @@ jobs:
     needs: [build-two, verify-two]
     if: needs.build-two.result == 'success' && needs.verify-two.result == 'success'
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed-two:
@@ -108,5 +108,5 @@ jobs:
     needs: [build-two, verify-two]
     if: always() && (needs.build-two.result == 'failure' || needs.verify-two.result == 'failure')
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
