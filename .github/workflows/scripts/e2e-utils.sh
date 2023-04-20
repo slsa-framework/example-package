@@ -11,12 +11,12 @@ THIS_FILE=""
 
 e2e_this_file() {
     # NOTE: Cache the file name so we don't make repeated calls to the API.
-    if [ "${THIS_FILE}" != "" ]; then
-        echo "${THIS_FILE}"
-        return
+    if [ "${THIS_FILE}" == "" ]; then
+        THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+        export THIS_FILE
     fi
 
-    THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+    echo "${THIS_FILE}"
 }
 
 # Gets the name of the branch for the e2e test.
