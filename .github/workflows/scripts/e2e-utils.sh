@@ -24,6 +24,11 @@ e2e_this_branch() {
     e2e_this_file | cut -d '.' -f4
 }
 
+# Gets the name of the event for the e2e test.
+e2e_this_event() {
+    e2e_this_file | cut -d '.' -f3
+}
+
 # Converter from yaml to JSON.
 #sudo apt-get install jc
 

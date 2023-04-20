@@ -24,11 +24,23 @@ fi
 package_dir="$(e2e_npm_package_dir)"
 
 cd "${package_dir}"
-npm version patch --no-git-tag-version
+# NOTE: npm version patch will not create a git tag if current directory does
+# not have a .git directory.
+tag=$(npm version patch)
 cd -
 
 git config --global user.name github-actions
 git config --global user.email github-actions@github.com
 git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}/package-lock.json"
+
+# Set the remote url to authenticate using the token.
 git remote set-url origin "https://github-actions:${push_token}@github.com/${GITHUB_REPOSITORY}.git"
-git push origin main
+
+# If this is an e2e test for a tag, then tag the commit.
+this_event=$(e2e_this_event)
+if [ "${this_event}" == "tag" ]; then
+    git tag "${tag}"
+    git push origin "${branch}" "${tag}"
+else
+    git push origin "${branch}"
+fi
