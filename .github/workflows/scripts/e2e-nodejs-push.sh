@@ -27,8 +27,8 @@ cd "${package_dir}"
 npm version patch --no-git-tag-version
 cd -
 
-git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}/package-lock.json"
 git config --global user.name github-actions
 git config --global user.email github-actions@github.com
+git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}/package-lock.json"
 git remote set-url origin "https://github-actions:${push_token}@github.com/${GITHUB_REPOSITORY}.git"
 git push origin main
