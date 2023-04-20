@@ -21,14 +21,12 @@ source "./.github/workflows/scripts/e2e-verify.common.sh"
 
 # Function used to verify the content of the provenance.
 verify_provenance_content() {
-    # Convert the test name to the package name.
-    # remove the file extension
-    package_name="$(e2e_this_file | rev | cut -d'.' -f2- | rev)"
-    # convert periods to hyphen
-    package_name="${package_name//./-}"
-    package_name="@slsa-framework/${package_name}"
-
     attestations=$(mktemp)
+
+    package_dir="$(e2e_npm_package_dir)"
+    package_version=$(jq -r ".version" <"${package_dir}/package.json")
+    package_name="$(e2e_npm_package_name)@${package_version}"
+
     curl -Sso "${attestations}" "$(npm view "${package_name}" --json | jq -r '.dist.attestations.url')"
 
     provenance=$(jq -r '.attestations[] | select(.predicateType=="https://slsa.dev/provenance/v0.2").bundle.dsseEnvelope.payload | @base64d' <"${attestations}")
@@ -38,10 +36,7 @@ verify_provenance_content() {
     # Verify all common provenance fields.
     e2e_verify_common_all_v02 "$provenance"
 
-    package_dir="$(e2e_npm_package_dir)"
-    package_version=$(jq -r ".version" <"${package_dir}/package.json")
-
-    e2e_verify_predicate_subject_name "$provenance" "$(name_to_purl "${package_name}")@${package_version}"
+    e2e_verify_predicate_subject_name "$provenance" "$(name_to_purl "${package_name}")"
     e2e_verify_predicate_builder_id "$provenance" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_buildType "$provenance" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
