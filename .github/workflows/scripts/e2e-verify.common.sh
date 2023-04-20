@@ -80,7 +80,7 @@ e2e_verify_common_invocation_v02() {
 }
 
 e2e_verify_common_metadata_v02() {
-    e2e_verify_predicate_metadata "$1" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true}}"
+    e2e_verify_predicate_metadata "$1" "{\"buildInvocationId\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true}}"
 }
 
 # Verifies common fields of the SLSA v1.0 predicate.
