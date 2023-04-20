@@ -32,6 +32,8 @@ jobs:
       directory: nodejs/e2e-nodejs-push-main-default-slsa3
       node-version: 16
       run-scripts: "ci, build"
+      npm-publish: true
+      access: "public"
     secrets:
       node-auth-token: ${{ secrets.E2E_NODE_ACCESS_TOKEN }}
 
