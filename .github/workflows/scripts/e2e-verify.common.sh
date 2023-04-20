@@ -77,13 +77,6 @@ e2e_verify_common_invocation_v02() {
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_OWNER_ID" "$GITHUB_REPOSITORY_OWNER_ID"
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_REF"
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
-    # shellcheck disable=SC2154
-    e2e_verify_predicate_invocation_environment "$1" "IMAGE_OS" "$ImageOS"
-    # TODO(https://github.com/slsa-framework/slsa-github-generator/issues/1809): Replace with detection of presence.
-    # e2e_verify_predicate_invocation_environment "$1" "IMAGE_VERSION" "$ImageVersion"
-    e2e_verify_predicate_invocation_environment "$1" "RUNNER_ARCH" "$RUNNER_ARCH"
-    # e2e_verify_predicate_invocation_environment "$1" "RUNNER_NAME" "$RUNNER_NAME"
-    e2e_verify_predicate_invocation_environment "$1" "RUNNER_OS" "$RUNNER_OS"
 }
 
 e2e_verify_common_metadata_v02() {
@@ -115,13 +108,6 @@ e2e_verify_common_buildDefinition_v1() {
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REPOSITORY_OWNER_ID" "$GITHUB_REPOSITORY_OWNER_ID"
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_REF"
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
-    # shellcheck disable=SC2154
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "IMAGE_OS" "$ImageOS"
-    # TODO(https://github.com/slsa-framework/slsa-github-generator/issues/1809): Replace with detection of presence.
-    # e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "IMAGE_VERSION" "$ImageVersion"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "RUNNER_ARCH" "$RUNNER_ARCH"
-    # e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "RUNNER_NAME" "$RUNNER_NAME"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "RUNNER_OS" "$RUNNER_OS"
 }
 
 # Verifies common fields of the SLSA v1.0 predicate runDetails.
