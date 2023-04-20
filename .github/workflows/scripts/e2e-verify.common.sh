@@ -529,6 +529,7 @@ e2e_run_verifier_all_releases() {
     go env -w GOFLAGS=-mod=mod
     go install "github.com/$VERIFIER_REPOSITORY/v2/cli/slsa-verifier@main"
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
+    echo "$PATH"
     verify_provenance_authenticity "slsa-verifier" "HEAD"
 
     # If the minimum version is HEAD then we are done.
