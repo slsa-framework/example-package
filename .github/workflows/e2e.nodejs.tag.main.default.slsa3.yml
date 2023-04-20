@@ -1,0 +1,70 @@
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
+
+permissions: read-all
+
+env:
+  GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  # NOTE: Not used. Just here for informational purposes.
+  # See: nodejs/<test package>/package.json for version info.
+  DEFAULT_VERSION: v36.0.0
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
+
+  build:
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      packages: write # Not used
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
+    with:
+      directory: nodejs/e2e-nodejs-push-main-default-slsa3
+      node-version: 16
+      run-scripts: "ci, build"
+      npm-publish: true
+      access: "public"
+    secrets:
+      node-auth-token: ${{ secrets.E2E_NODE_ACCESS_TOKEN }}
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - name: Set up Node environment
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        with:
+          node-version: 16
+      - run: ./.github/workflows/scripts/e2e.nodejs.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow && needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
