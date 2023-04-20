@@ -53,6 +53,10 @@ jobs:
         uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 16
+      # NOTE: for building the verifier.
+      - uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9 # v4.0.0
+        with:
+          go-version: "1.18"
       - run: ./.github/workflows/scripts/e2e.nodejs.default.verify.sh
 
   if-succeeded:
