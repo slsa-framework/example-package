@@ -21,24 +21,30 @@ source "./.github/workflows/scripts/e2e-verify.common.sh"
 
 # Function used to verify the content of the provenance.
 verify_provenance_content() {
-    attestations=$(mktemp)
+    ATTESTATIONS=$(mktemp)
+    export ATTESTATIONS
 
     package_dir="$(e2e_npm_package_dir)"
     package_version=$(jq -r ".version" <"${package_dir}/package.json")
     package_name="$(e2e_npm_package_name)@${package_version}"
 
-    curl -Sso "${attestations}" "$(npm view "${package_name}" --json | jq -r '.dist.attestations.url')"
+    curl -Sso "${ATTESTATIONS}" "$(npm view "${package_name}" --json | jq -r '.dist.attestations.url')"
 
-    provenance=$(jq -r '.attestations[] | select(.predicateType=="https://slsa.dev/provenance/v0.2").bundle.dsseEnvelope.payload | @base64d' <"${attestations}")
+    PROVENANCE=$(jq -r '.attestations[] | select(.predicateType=="https://slsa.dev/provenance/v0.2").bundle.dsseEnvelope.payload | @base64d' <"${ATTESTATIONS}")
+    export PROVENANCE
+
+    # BINARY is the tarball.
+    BINARY=$(mktemp)
+    curl -Sso "${BINARY}" "$(npm view "${package_name}" --json | jq -r '.dist.tarball')"
 
     echo "  **** Provenance content verification *****"
 
     # Verify all common provenance fields.
-    e2e_verify_common_all_v02 "$provenance"
+    e2e_verify_common_all_v02 "$PROVENANCE"
 
-    e2e_verify_predicate_subject_name "$provenance" "$(name_to_purl "${package_name}")"
-    e2e_verify_predicate_builder_id "$provenance" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
-    e2e_verify_predicate_buildType "$provenance" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
+    e2e_verify_predicate_subject_name "$PROVENANCE" "$(name_to_purl "${package_name}")"
+    e2e_verify_predicate_builder_id "$PROVENANCE" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
+    e2e_verify_predicate_buildType "$PROVENANCE" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
 
 # =====================================
@@ -54,9 +60,8 @@ echo "DEBUG: file is $(e2e_this_file)"
 
 export SLSA_VERIFIER_TESTING="true"
 
-# Verify provenance authenticity with min version at release v1.0.0
-# TODO: verify npm packages
-# e2e_run_verifier_all_releases v1.0.0
-
 # Verify the provenance content.
 verify_provenance_content
+
+# Verify provenance authenticity with min version at HEAD
+e2e_run_verifier_all_releases "HEAD"
