@@ -19,28 +19,29 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
-THIS_FILE=$(e2e_this_file)
-
-# Convert the test name to the package name.
-# remove the file extension
-PACKAGE_NAME="$(echo "${THIS_FILE}" | rev | cut -d'.' -f2- | rev)"
-# convert periods to hyphen
-PACKAGE_NAME="${PACKAGE_NAME//./-}"
-PACKAGE_NAME="@slsa-framework/${PACKAGE_NAME}"
-
-ATTESTATIONS=$(mktemp)
-curl -Sso "${ATTESTATIONS}" "$(npm view "${PACKAGE_NAME}" --json | jq -r '.dist.attestations.url')"
-
 # Function used to verify the content of the provenance.
 verify_provenance_content() {
-    provenance=$(jq -r '.attestations[] | select(.predicateType=="https://slsa.dev/provenance/v0.2").bundle.dsseEnvelope.payload | @base64d' <"${ATTESTATIONS}")
+    # Convert the test name to the package name.
+    # remove the file extension
+    package_name="$(e2e_this_file | rev | cut -d'.' -f2- | rev)"
+    # convert periods to hyphen
+    package_name="${package_name//./-}"
+    package_name="@slsa-framework/${package_name}"
+
+    attestations=$(mktemp)
+    curl -Sso "${attestations}" "$(npm view "${package_name}" --json | jq -r '.dist.attestations.url')"
+
+    provenance=$(jq -r '.attestations[] | select(.predicateType=="https://slsa.dev/provenance/v0.2").bundle.dsseEnvelope.payload | @base64d' <"${attestations}")
 
     echo "  **** Provenance content verification *****"
 
     # Verify all common provenance fields.
     e2e_verify_common_all_v02 "$provenance"
 
-    e2e_verify_predicate_subject_name "$provenance" "$(name_to_purl "${PACKAGE_NAME}")"
+    package_dir="$(e2e_npm_package_dir)"
+    package_version=$(jq -r ".version" <"${package_dir}/package.json")
+
+    e2e_verify_predicate_subject_name "$provenance" "$(name_to_purl "${package_name}")@${package_version}"
     e2e_verify_predicate_builder_id "$provenance" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_buildType "$provenance" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
@@ -49,14 +50,12 @@ verify_provenance_content() {
 # ===== main execution starts =========
 # =====================================
 
-THIS_FILE=$(e2e_this_file)
-BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
+BRANCH=$(e2e_this_file | cut -d '.' -f4)
 echo "branch is $BRANCH"
 echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
-echo "DEBUG: file is $THIS_FILE"
-echo "BINARY: file is $BINARY"
+echo "DEBUG: file is $(e2e_this_file)"
 
 export SLSA_VERIFIER_TESTING="true"
 
