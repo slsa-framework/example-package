@@ -61,6 +61,7 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $(e2e_this_file)"
 
 export SLSA_VERIFIER_TESTING="true"
+export SLSA_VERIFIER_EXPERIMENTAL="1"
 
 # Verify the provenance content.
 verify_provenance_content
