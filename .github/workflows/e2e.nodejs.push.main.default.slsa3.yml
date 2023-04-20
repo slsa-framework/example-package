@@ -19,7 +19,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
-      - run: ./.github/workflows/scripts/e2e-push.sh
+      - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
 
   build:
     if: github.event_name == 'push' && github.event.head_commit.message == github.workflow

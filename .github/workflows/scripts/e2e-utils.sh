@@ -55,6 +55,16 @@ e2e_npm_package_name() {
     echo "${package_name}"
 }
 
+# e2e_npm_package_dir prints the subdirectory of the npm package.
+e2e_npm_package_dir() {
+    # Convert the test workflow file name to the package name.
+    # remove the file extension
+    package_name="$(e2e_this_file | rev | cut -d'.' -f2- | rev)"
+    # convert periods to hyphen
+    package_name="${package_name//./-}"
+    echo "nodejs/${package_name}"
+}
+
 # name_to_url takes a npm package name and outputs a purl for that package name.
 name_to_purl() {
     # Get the raw package name and scope from the output of `npm pack --json`
