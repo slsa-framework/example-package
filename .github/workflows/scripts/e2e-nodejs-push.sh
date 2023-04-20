@@ -25,6 +25,7 @@ package_dir="$(e2e_npm_package_dir)"
 
 cd "${package_dir}"
 npm version patch --no-git-tag-version
+cd -
 
 git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}/package-lock.json"
 git config --global user.name github-actions
