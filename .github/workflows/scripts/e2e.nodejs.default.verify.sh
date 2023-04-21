@@ -29,10 +29,9 @@ verify_provenance_content() {
     package_name="$(e2e_npm_package_name)@${package_version}"
 
     # Write the attestations file.
-    # TODO(github.com/slsa-framework/slsa-verifier/issues/563): fix file format
-    curl -Ss "$(npm view "${package_name}" --json | jq -r '.dist.attestations.url')" | jq '.attestations' >"${ATTESTATIONS}"
+    curl -Ss "$(npm view "${package_name}" --json | jq -r '.dist.attestations.url')" >"${ATTESTATIONS}"
 
-    PROVENANCE=$(jq -r '.[] | select(.predicateType=="https://slsa.dev/provenance/v0.2").bundle.dsseEnvelope.payload | @base64d' <"${ATTESTATIONS}")
+    PROVENANCE=$(jq -r '.attestations[] | select(.predicateType=="https://slsa.dev/provenance/v0.2").bundle.dsseEnvelope.payload | @base64d' <"${ATTESTATIONS}")
     export PROVENANCE
 
     # BINARY is the tarball.
