@@ -404,9 +404,7 @@ verify_provenance_authenticity() {
         read -ra badProvenanceArg <<<"$($argr "provenance") ${BAD_PROV}"
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${badProvenanceArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "wrong payload"
-    fi
-
-    if [[ "$build_type" != "nodejs" ]]; then
+    elif [[ "$build_type" == "nodejs" ]]; then
         echo "  **** Wrong payload *****"
         local BAD_PROV
         BAD_PROV="$(mktemp -t slsa-e2e.XXXXXXXX)"
