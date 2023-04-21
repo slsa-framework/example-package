@@ -519,13 +519,13 @@ verify_provenance_authenticity() {
 # $1: The minimum verifier version to check. The minimum version can be "HEAD".
 # $2: The maximum verifier version to check.
 e2e_run_verifier_all_releases() {
-    local VERIFIER_REPOSITORY="slsa-framework/slsa-verifier"
-    local VERIFIER_BINARY="slsa-verifier-linux-amd64"
+    local verifier_repository="slsa-framework/slsa-verifier"
+    local verifier_binary="slsa-verifier-linux-amd64"
 
     # First, verify provenance with the verifier at HEAD.
     # TODO: Verify provenance with verifier at v1 HEAD?
     go env -w GOFLAGS=-mod=mod
-    go install "github.com/$VERIFIER_REPOSITORY/v2/cli/slsa-verifier@main"
+    go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
     verify_provenance_authenticity "slsa-verifier" "HEAD"
 
@@ -536,10 +536,10 @@ e2e_run_verifier_all_releases() {
 
     # Second, retrieve all previous versions of the verifier,
     # and verify the provenance. This is essentially regression tests.
-    local RELEASE_LIST
-    RELEASE_LIST=$(gh release -R "$VERIFIER_REPOSITORY" -L 100 list)
+    local release_list
+    release_list=$(gh release -R "${verifier_repository}" -L 100 list)
     echo "Releases found:"
-    echo "$RELEASE_LIST"
+    echo "${release_list}"
     echo
 
     while read -r line; do
@@ -568,37 +568,37 @@ e2e_run_verifier_all_releases() {
         MINOR=$(version_minor "$TAG")
         PATCH=$(version_patch "$TAG")
         PATCH_PLUS_ONE=$((${PATCH:-0} + 1))
-        if grep -q "v$MAJOR.$MINOR.$PATCH_PLUS_ONE" <<<"$RELEASE_LIST"; then
+        if grep -q "v$MAJOR.$MINOR.$PATCH_PLUS_ONE" <<<"${release_list}"; then
             continue
         fi
 
         echo "  *** Starting with verifier at $TAG ****"
 
         # Always remove the binary, because `gh release download` fails if the file already exists.
-        if [[ -f "$VERIFIER_BINARY" ]]; then
+        if [[ -f "${verifier_binary}" ]]; then
             # Note: Don't quote `$VERIFIER_BINARY*`, as it will cause new lines to be inserted and
             # deletion will fail.
-            rm $VERIFIER_BINARY*
+            rm ${verifier_binary}*
         fi
 
-        gh release -R "$VERIFIER_REPOSITORY" download "$TAG" -p "$VERIFIER_BINARY*" || exit 10
+        gh release -R "${verifier_repository}" download "$TAG" -p "${verifier_binary}*" || exit 10
 
         # Use the compiled verifier at main to verify the provenance (Optional)
-        slsa-verifier verify-artifact "$VERIFIER_BINARY" \
+        slsa-verifier verify-artifact "${verifier_binary}" \
             --source-branch "main" \
             --source-tag "$TAG" \
-            iiprovenance-path "$VERIFIER_BINARY.intoto.jsonl" \
-            --source-uri "github.com/$VERIFIER_REPOSITORY" ||
-            slsa-verifier verify-artifact "$VERIFIER_BINARY" \
+            --provenance-path "${verifier_binary}.intoto.jsonl" \
+            --source-uri "github.com/${verifier_repository}" ||
+            slsa-verifier verify-artifact "${verifier_binary}" \
                 --source-branch "release/v$MAJOR.$MINOR" \
                 --source-tag "$TAG" \
-                --provenance-path "$VERIFIER_BINARY.intoto.jsonl" \
-                --source-uri "github.com/$VERIFIER_REPOSITORY" || exit 6
+                --provenance-path "${verifier_binary}.intoto.jsonl" \
+                --source-uri "github.com/${verifier_repository}" || exit 6
 
         echo "**** Verifying provenance authenticity with verifier at $TAG ****"
-        chmod a+x "./$VERIFIER_BINARY"
-        verify_provenance_authenticity "./$VERIFIER_BINARY" "$TAG"
-    done <<<"$RELEASE_LIST"
+        chmod a+x "./${verifier_binary}"
+        verify_provenance_authenticity "./${verifier_binary}" "$TAG"
+    done <<<"${release_list}"
 }
 
 # e2e_verifier_arg_transformer returns an argument transformer
