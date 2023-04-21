@@ -21,6 +21,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      # Bumps the package version and pushes to main.
       - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
 
   build:

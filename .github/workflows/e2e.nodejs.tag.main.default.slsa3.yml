@@ -13,8 +13,6 @@ concurrency: "e2e-nodejs-tag-main-default-slsa3"
 env:
   GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
-  # NOTE: Not used. Just here for informational purposes.
-  # See: nodejs/<test package>/package.json for version info.
   DEFAULT_VERSION: v36.0.0
 
 jobs:
@@ -25,10 +23,21 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      # Bumps the package version pushes, creates a git tag, and pushes the tag.
       - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
 
+  shim:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    outputs:
+      continue: ${{ steps.verify.outputs.continue }}
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - id: verify
+        run: ./.github/workflows/scripts/e2e-verify-release.sh
+
   build:
-    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
@@ -46,7 +55,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - name: Set up Node environment
@@ -62,7 +71,7 @@ jobs:
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [build, verify]
-    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow && needs.build.result == 'success' && needs.verify.result == 'success'
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
@@ -70,7 +79,7 @@ jobs:
   if-failed:
     runs-on: ubuntu-latest
     needs: [build, verify]
-    if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
