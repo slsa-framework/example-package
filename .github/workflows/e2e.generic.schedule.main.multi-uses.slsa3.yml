@@ -153,7 +153,9 @@ jobs:
         provenance-two,
         verify-two,
       ]
-    if: needs.build-one.result == 'success' && needs.provenance-one.result == 'success' && needs.verify-one.result == 'success' && needs.build-two.result == 'success' && needs.provenance-two.result == 'success' && needs.verify-two.result == 'success'
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: github.event_name == 'schedule' && needs.build-one.result == 'success' && needs.provenance-one.result == 'success' && needs.verify-one.result == 'success' && needs.build-two.result == 'success' && needs.provenance-two.result == 'success' && needs.verify-two.result == 'success'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
@@ -169,7 +171,9 @@ jobs:
         provenance-two,
         verify-two,
       ]
-    if: always() && (needs.build-one.result == 'failure' || needs.provenance-one.result == 'failure' || needs.verify-one.result == 'failure' || needs.build-two.result == 'failure' || needs.provenance-two.result == 'failure' || needs.verify-two.result == 'failure')
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: always() && github.event_name == 'schedule' && (needs.build-one.result == 'failure' || needs.provenance-one.result == 'failure' || needs.verify-one.result == 'failure' || needs.build-two.result == 'failure' || needs.provenance-two.result == 'failure' || needs.verify-two.result == 'failure')
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

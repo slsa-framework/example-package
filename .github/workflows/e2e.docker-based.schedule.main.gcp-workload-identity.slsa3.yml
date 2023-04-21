@@ -163,7 +163,9 @@ jobs:
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [build, verify]
-    if: needs.build.result == 'success' && needs.verify.result == 'success'
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: github.event_name == 'schedule' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
@@ -171,7 +173,9 @@ jobs:
   if-failed:
     runs-on: ubuntu-latest
     needs: [build, verify]
-    if: always() && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: always() && github.event_name == 'schedule' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

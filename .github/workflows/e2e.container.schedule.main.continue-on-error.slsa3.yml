@@ -181,7 +181,9 @@ jobs:
   if-succeeded-continue-on-error:
     runs-on: ubuntu-latest
     needs: [verify-continue-on-error]
-    if: needs.provenance-continue-on-error.result == 'success' && needs.verify-continue-on-error.result == 'success'
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: github.event_name == 'schedule' && needs.provenance-continue-on-error.result == 'success' && needs.verify-continue-on-error.result == 'success'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
@@ -189,7 +191,9 @@ jobs:
   if-failed-continue-on-error:
     runs-on: ubuntu-latest
     needs: [provenance-continue-on-error, verify-continue-on-error]
-    if: always() && (needs.provenance-continue-on-error.result == 'failure' || needs.verify-continue-on-error.result == 'failure')
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: always() && github.event_name == 'schedule' && (needs.provenance-continue-on-error.result == 'failure' || needs.verify-continue-on-error.result == 'failure')
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
