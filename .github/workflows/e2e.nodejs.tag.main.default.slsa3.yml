@@ -41,8 +41,8 @@ jobs:
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     permissions:
       id-token: write # For signing.
-      contents: write # For asset uploads.
-      packages: write # Not used
+      contents: read # For repo checkout of private repos.
+      actions: read # For getting workflow run on private repos.
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
     with:
       directory: nodejs/e2e-nodejs-tag-main-default-slsa3
