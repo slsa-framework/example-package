@@ -26,24 +26,29 @@ verify_provenance_content() {
 
     package_dir="$(e2e_npm_package_dir)"
     package_version=$(jq -r ".version" <"${package_dir}/package.json")
-    package_name="$(e2e_npm_package_name)@${package_version}"
+
+    # PACKAGE_NAME is used by verification.
+    PACKAGE_NAME="$(e2e_npm_package_name)"
+    export PACKAGE_NAME
+
+    package_name_and_version="${PACKAGE_NAME}@${package_version}"
 
     # Write the attestations file.
-    curl -Ss "$(npm view "${package_name}" --json | jq -r '.dist.attestations.url')" >"${ATTESTATIONS}"
+    curl -Ss "$(npm view "${package_name_and_version}" --json | jq -r '.dist.attestations.url')" >"${ATTESTATIONS}"
 
     PROVENANCE=$(jq -r '.attestations[] | select(.predicateType=="https://slsa.dev/provenance/v0.2").bundle.dsseEnvelope.payload | @base64d' <"${ATTESTATIONS}")
     export PROVENANCE
 
     # BINARY is the tarball.
     BINARY=$(mktemp)
-    curl -Sso "${BINARY}" "$(npm view "${package_name}" --json | jq -r '.dist.tarball')"
+    curl -Sso "${BINARY}" "$(npm view "${package_name_and_version}" --json | jq -r '.dist.tarball')"
 
     echo "  **** Provenance content verification *****"
 
     # Verify all common provenance fields.
     e2e_verify_common_all_v02 "$PROVENANCE"
 
-    e2e_verify_predicate_subject_name "$PROVENANCE" "$(name_to_purl "${package_name}")"
+    e2e_verify_predicate_subject_name "$PROVENANCE" "$(name_to_purl "${package_name_and_version}")"
     e2e_verify_predicate_builder_id "$PROVENANCE" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_buildType "$PROVENANCE" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
