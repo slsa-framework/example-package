@@ -271,7 +271,7 @@ verify_provenance_authenticity() {
     packageArg=()
     if [[ "$build_type" == "nodejs" ]]; then
         packageArg+=("--package-name" "${PACKAGE_NAME}")
-        packageArg+=("--package-version" "$(version_major "$GITHUB_REF_NAME").$(version_minor "$GITHUB_REF_NAME").$(version_patch "$GITHUB_REF_NAME")")
+        packageArg+=("--package-version" "$(version_major "$PACKAGE_VERSION").$(version_minor "$PACKAGE_VERSION").$(version_patch "$PACKAGE_VERSION")")
     fi
 
     # Assemble the builder arguments.

@@ -25,13 +25,16 @@ verify_provenance_content() {
     export ATTESTATIONS
 
     package_dir="$(e2e_npm_package_dir)"
-    package_version=$(jq -r ".version" <"${package_dir}/package.json")
+
+    # PACKAGE_VERSION is used by verification.
+    PACKAGE_VERSION=$(jq -r ".version" <"${package_dir}/package.json")
+    export PACKAGE_VERSION
 
     # PACKAGE_NAME is used by verification.
     PACKAGE_NAME="$(e2e_npm_package_name)"
     export PACKAGE_NAME
 
-    package_name_and_version="${PACKAGE_NAME}@${package_version}"
+    package_name_and_version="${PACKAGE_NAME}@${PACKAGE_VERSION}"
 
     # Write the attestations file.
     curl -Ss "$(npm view "${package_name_and_version}" --json | jq -r '.dist.attestations.url')" >"${ATTESTATIONS}"
