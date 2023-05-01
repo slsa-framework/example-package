@@ -261,18 +261,17 @@ verify_provenance_authenticity() {
     fi
 
     # Assemble the provenance args: for container builds it is attached.
+    provenanceArg=()
     if [[ "$build_type" == "nodejs" ]]; then
         read -ra provenanceArg <<<"--attestations-path ${ATTESTATIONS}"
     elif [[ "$build_type" != "container" ]]; then
         read -ra provenanceArg <<<"$($argr "provenance") ${PROVENANCE}"
-    else
-        read -ra provenanceArg <<<""
     fi
 
-    read -ra packageArg <<<""
+    packageArg=()
     if [[ "$build_type" == "nodejs" ]]; then
-        read -ra packageArg <<<"--package-name ${PACKAGE_NAME}"
-        read -ra packageArg <<<"--package-version ${MAJOR}.${MINOR}.${PATCH}"
+        packageArg+=("--package-name" "${PACKAGE_NAME}")
+        packageArg+=("--package-version" "$(version_major "$GITHUB_REF_NAME").$(version_minor "$GITHUB_REF_NAME").$(version_patch "$GITHUB_REF_NAME")")
     fi
 
     # Assemble the builder arguments.
