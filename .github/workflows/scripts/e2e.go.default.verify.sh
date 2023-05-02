@@ -25,12 +25,12 @@ verify_provenance_content() {
     ATTESTATION=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
     #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
     #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-    LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags)
+    LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags || true)
     #DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
-    has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets)
-    is_prerelease=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep prerelease)
-    is_draft=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep draft)
-    TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag)
+    has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets || true)
+    is_prerelease=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep prerelease || true)
+    is_draft=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep draft || true)
+    TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag || true)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
     DIR="$PWD/__PROJECT_CHECKOUT_DIR__"
     if [[ -n "$GO_DIR" ]]; then
@@ -116,11 +116,11 @@ verify_provenance_content() {
             e2e_assert_eq "$assets" "[\"$BINARY\",\"$BINARY.intoto.jsonl\"]" "there should be assets"
         fi
 
-        if [[ "$is_prerelease" == "true" ]]; then
+        if [[ -n "$is_prerelease" ]]; then
             assert_true "$isPrerelease" "expected prerelease"
         fi
-        
-        if [[ "$is_draft" == "true" ]]; then
+
+        if [[ -n "$is_draft" ]]; then
             assert_true "$isDraft" "expected draft"
         fi
     fi
