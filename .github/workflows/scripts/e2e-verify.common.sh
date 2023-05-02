@@ -424,6 +424,7 @@ verify_provenance_authenticity() {
         read -ra badPackageNameArg <<<"--package-name bad-package-name"
         read -ra badPackageNameArg <<<"--package-version ${MAJOR}.${MINOR}.${PATCH}"
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${badProvenanceArg[@]}" "${sourceArg[@]}" "${badPackageNameArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        e2e_assert_not_eq "$?" "0" "wrong package-name"
 
         # Bad Package version
         # TODO: Test more bad versions.
@@ -431,6 +432,7 @@ verify_provenance_authenticity() {
         read -ra badPackageVersionArg <<<"--package-version 0.0.0"
         echo "  **** Wrong package-version *****"
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${badProvenanceArg[@]}" "${sourceArg[@]}" "${badPackageVersionArg[@]}" "github.com/$GITHUB_REPOSITORY"
+        e2e_assert_not_eq "$?" "0" "wrong package-version"
     fi
 
     if [[ "${#vTagArg[@]}" != "0" ]] && [[ "${#branchOpts[@]}" != "0" ]]; then
