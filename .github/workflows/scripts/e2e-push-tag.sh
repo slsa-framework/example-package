@@ -73,6 +73,7 @@ git remote set-url origin "https://github-actions:${push_token}@github.com/${GIT
 text_file=e2e/$(e2e_this_file).txt
 date --utc >"${text_file}"
 
+git add "${text_file}"
 git commit -m "${GITHUB_WORKFLOW}" "${text_file}"
 
 git tag "${new_tag}"
