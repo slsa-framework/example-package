@@ -18,7 +18,8 @@ cd ./"$repo_name"
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
 push_token=${PAT_TOKEN+$PAT_TOKEN}
 if [[ -z "$push_token" ]]; then
-    push_token=$GH_TOKEN
+    echo "Push events cannot be triggered with GH_TOKEN. PAT token is required."
+    exit 1
 fi
 
 package_dir="$(e2e_npm_package_dir)"
