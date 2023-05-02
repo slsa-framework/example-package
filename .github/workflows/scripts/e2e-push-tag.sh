@@ -29,6 +29,8 @@ if [[ -z "$default_major" ]]; then
     exit 1
 fi
 
+latest_tag=$DEFAULT_VERSION
+
 echo "Listing tags"
 while read -r line; do
     tag=$(echo "$line" | cut -f1)
