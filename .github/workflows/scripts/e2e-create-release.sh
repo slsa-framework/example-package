@@ -24,6 +24,8 @@ fi
 
 prerelease=$(echo "$this_file" | cut -d '.' -f5 | grep prerelease || true)
 echo "prerelease: $prerelease"
+draft=$(echo "$this_file" | cut -d '.' -f5 | grep draft || true)
+echo "draft: $draft"
 
 # Here we find the latest version with the major version equal to that of
 # DEFAULT_VERSION.
@@ -100,6 +102,8 @@ else
     # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
     if [[ -n "$prerelease" ]]; then
         GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" --prerelease
+    elif [[ -n "$draft" ]]; then
+        GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" --draft
     else
         GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
     fi

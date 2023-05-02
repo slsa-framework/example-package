@@ -1,3 +1,4 @@
+// main package
 package main
 
 import (
@@ -46,7 +47,7 @@ func main() {
 
 	for _, filename := range filenameFlags {
 		fmt.Println("Writing to filename: ", filename)
-		if err := os.WriteFile(filename, []byte(*content), 0644); err != nil {
+		if err := os.WriteFile(filename, []byte(*content), 0o600); err != nil {
 			fmt.Println("error writing to file: %w", err)
 			panic(err)
 		}

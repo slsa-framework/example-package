@@ -24,7 +24,7 @@ env:
 
 jobs:
   # This should trigger the GCB build.
-  # This does not run on workflow_dispatch - we may use an input here to allow 
+  # This does not run on workflow_dispatch - we may use an input here to allow
   # retriggering the build by workflow_dispatch.
   # This was removed to avoid retriggering the build when intending to reverify provenance.
   release:

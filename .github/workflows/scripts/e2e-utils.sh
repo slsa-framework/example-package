@@ -435,6 +435,13 @@ e2e_is_prerelease() {
     echo "$prerelease"
 }
 
+# Checks if tag is a draft
+e2e_is_draft() {
+    local tag="$1"
+    draft=$(gh release view "$tag" --json isDraft | jq -r '.isDraft')
+    echo "$draft"
+}
+
 e2e_verify_predicate_v1_buildDefinition_externalParameters_source() {
     _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.externalParameters.source'
 }
