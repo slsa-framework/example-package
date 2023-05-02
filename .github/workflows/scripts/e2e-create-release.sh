@@ -109,6 +109,8 @@ else
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         git tag "$tag"
         git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        # Force push the tag since it may have already been created by a
+        # previous failed run of the test.
         git push origin "$tag" -f
     else
         GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
