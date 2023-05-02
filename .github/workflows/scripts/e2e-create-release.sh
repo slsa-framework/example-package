@@ -109,7 +109,7 @@ else
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         git tag "$tag"
         git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-        git push origin "$tag"
+        git push origin "$tag" -f
     else
         GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
     fi
