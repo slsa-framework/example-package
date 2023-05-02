@@ -103,10 +103,16 @@ else
     if [[ -n "$prerelease" ]]; then
         GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" --prerelease
     elif [[ -n "$draft" ]]; then
-        GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" --draft
+        # Creating a draft release does not create a tag so we need to create
+        # the tag instead to trigger the e2e workflow.
+        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        git tag "$tag"
+        git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git push origin "$tag"
     else
         GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
     fi
 fi
 
-echo "tag=$tag" >> "$GITHUB_OUTPUT"
+echo "tag=$tag" >>"$GITHUB_OUTPUT"
