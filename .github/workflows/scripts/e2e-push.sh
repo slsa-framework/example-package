@@ -21,7 +21,8 @@ cd ./"$REPOSITORY_NAME"
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
 push_token=${PAT_TOKEN+$PAT_TOKEN}
 if [[ -z "$push_token" ]]; then
-    push_token=$GH_TOKEN
+    echo "Push events cannot be triggered with GH_TOKEN. PAT token is required."
+    exit 1
 fi
 
 if [ -f "$FILE" ]; then
