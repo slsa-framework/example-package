@@ -10,7 +10,7 @@ RUN CGO_ENABLED=0 go build -ldflags="-w -s" -v -o app .
 
 # A distroless container image with some basics like SSL certificates
 # https://github.com/GoogleContainerTools/distroless
-FROM gcr.io/distroless/static@sha256:a01d47d4036cae5a67a9619e3d06fa14a6811a2247b4da72b4233ece4efebd57
+FROM gcr.io/distroless/static@sha256:7198a357ff3a8ef750b041324873960cf2153c11cc50abb9d8d5f8bb089f6b4e
 
 COPY --from=builder /app/app /app
 
