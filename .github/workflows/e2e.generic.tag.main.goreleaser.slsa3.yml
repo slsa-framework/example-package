@@ -21,7 +21,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - id: create
         run: ./.github/workflows/scripts/e2e-create-release.sh
 
@@ -31,7 +31,7 @@ jobs:
     outputs:
       continue: ${{ steps.verify.outputs.continue }}
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - id: verify
         run: ./.github/workflows/scripts/e2e-verify-release.sh
 
@@ -57,7 +57,7 @@ jobs:
 
       - name: Run GoReleaser
         id: run-goreleaser
-        uses: goreleaser/goreleaser-action@f82d6c1c344bcacabba2c841718984797f664a6b # v2.5.0
+        uses: goreleaser/goreleaser-action@b953231f81b8dfd023c58e0854a721e35037f28b # v2.9.1
         with:
           version: latest
           args: release --rm-dist
@@ -93,7 +93,7 @@ jobs:
     needs: [shim, build, provenance]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - name: Download assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -119,7 +119,7 @@ jobs:
     needs: [shim, build, provenance, verify]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -127,5 +127,5 @@ jobs:
     needs: [shim, build, provenance, verify]
     if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
