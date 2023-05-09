@@ -54,15 +54,12 @@ jobs:
           SOURCE_DATE_EPOCH=$(git log --date=iso8601-strict -1 --pretty=%ct)
           GIT_TREESTATE=$(if git diff --quiet; then echo "clean"; else echo "dirty"; fi)
 
-          delim="ghadelimiter_$(uuidgen)"
-          (
-            echo "version_flags<<${delim}"
-            echo "-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=${BRANCH} -X main.gitTreeState=${GIT_TREESTATE} -X main.buildDate=${SOURCE_DATE_EPOCH} -w"
-            echo "${delim}"
-          ) >> "$GITHUB_OUTPUT"
+          echo "version_flags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=${BRANCH} -X main.gitTreeState=${GIT_TREESTATE} -X main.buildDate=${SOURCE_DATE_EPOCH} -w" >> "${GITHUB_OUTPUT}"
 
       - name: Run GoReleaser
         id: run-goreleaser
+        permisions:
+          contents: write # For uploading assets to release
         uses: goreleaser/goreleaser-action@f82d6c1c344bcacabba2c841718984797f664a6b # v4.2.0
         with:
           version: latest
