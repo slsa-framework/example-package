@@ -12,6 +12,7 @@ concurrency: "e2e-nodejs-tag-main-default-slsa3"
 
 env:
   PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   DEFAULT_VERSION: v36.0.0
 
