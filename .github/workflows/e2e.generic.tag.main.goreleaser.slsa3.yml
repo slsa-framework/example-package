@@ -73,6 +73,7 @@ jobs:
         id: hash
         env:
           ARTIFACTS: "${{ steps.run-goreleaser.outputs.artifacts }}"
+        working-directory: ./e2e/goreleaser
         run: |
           set -euo pipefail
 
