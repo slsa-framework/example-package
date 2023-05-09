@@ -48,14 +48,33 @@ jobs:
       directory: nodejs/e2e-nodejs-tag-main-default-slsa3
       node-version: 16
       run-scripts: "ci, build"
-      npm-publish: true
-      access: "public"
-    secrets:
-      node-auth-token: ${{ secrets.E2E_NODE_ACCESS_TOKEN }}
+
+  publish:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node environment
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        with:
+          node-version: 18
+          registry-url: "https://registry.npmjs.org"
+
+      - name: publish
+        id: publish
+        uses: slsa-framework/slsa-github-generator/actions/nodejs/publish@main
+        with:
+          access: public
+          node-auth-token: ${{ secrets.E2E_NODE_ACCESS_TOKEN }}
+          package-name: ${{ needs.build.outputs.package-name }}
+          package-download-name: ${{ needs.build.outputs.package-download-name }}
+          package-download-sha256: ${{ needs.build.outputs.package-download-sha256 }}
+          provenance-name: ${{ needs.build.outputs.provenance-name }}
+          provenance-download-name: ${{ needs.build.outputs.provenance-download-name }}
+          provenance-download-sha256: ${{ needs.build.outputs.provenance-download-sha256 }}
 
   verify:
     runs-on: ubuntu-latest
-    needs: [shim, build]
+    needs: [shim, build, publish]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
@@ -71,16 +90,16 @@ jobs:
 
   if-succeeded:
     runs-on: ubuntu-latest
-    needs: [shim, build, verify]
-    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
+    needs: [shim, build, publish, verify]
+    if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.publish.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
     runs-on: ubuntu-latest
-    needs: [shim, build, verify]
-    if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    needs: [shim, build, publish, verify]
+    if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.publish.result == 'failure' || needs.verify.result == 'failure')
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
