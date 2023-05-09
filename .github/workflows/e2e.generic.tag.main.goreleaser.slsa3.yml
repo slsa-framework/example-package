@@ -89,7 +89,7 @@ jobs:
       actions: read # For the entrypoint.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
     with:
-      base64-subjects: "${{ needs.goreleaser.outputs.hashes }}"
+      base64-subjects: "${{ needs.build.outputs.hashes }}"
       compile-generator: true
       upload-assets: true
 
