@@ -53,7 +53,7 @@ jobs:
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
           SOURCE_DATE_EPOCH=$(git log --date=iso8601-strict -1 --pretty=%ct)
           GIT_TREESTATE=$(if git diff --quiet; then echo "clean"; else echo "dirty"; fi)
-          echo "version_flags='-X main.gitVersion=v1.2.3-X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitTreeState=$GIT_TREESTATE -X main.buildDate=$SOURCE_DATE_EPOCH -w'" >> "$GITHUB_OUTPUT"
+          echo "version_flags='-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitTreeState=$GIT_TREESTATE -X main.buildDate=$SOURCE_DATE_EPOCH -w'" >> "$GITHUB_OUTPUT"
 
       - name: Run GoReleaser
         id: run-goreleaser
