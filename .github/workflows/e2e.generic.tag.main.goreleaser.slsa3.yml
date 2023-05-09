@@ -111,7 +111,7 @@ jobs:
         with:
           go-version: "1.18"
       - env:
-          CHECKSUMS: ${{ needs.goreleaser.outputs.hashes }}
+          CHECKSUMS: ${{ needs.build.outputs.hashes }}
           PROVENANCE: ${{ needs.provenance.outputs.provenance-name }}
         run: |
           set -euo pipefail
