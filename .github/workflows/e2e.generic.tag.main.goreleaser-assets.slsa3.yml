@@ -102,11 +102,7 @@ jobs:
       - name: Download assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PROVENANCE: "${{ needs.provenance.outputs.provenance-name }}"
-        run: |
-          set -euo pipefail
-          gh -R "$GITHUB_REPOSITORY" release download "$GITHUB_REF_NAME" -p "*.tar.gz"
-          gh -R "$GITHUB_REPOSITORY" release download "$GITHUB_REF_NAME" -p "$PROVENANCE"
+        run: gh -R "$GITHUB_REPOSITORY" release download "$GITHUB_REF_NAME"
       - uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9 # v4.0.0
         with:
           go-version: "1.18"
