@@ -9,6 +9,7 @@ go env -w GOFLAGS=-mod=mod
 verify_provenance_content() {
     ATTESTATION=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
     has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep assets)
+    is_goreleaser=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep goreleaser)
     annotated_tags=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep annotated || true)
 
     echo "  **** Provenance content verification *****"
@@ -30,7 +31,13 @@ verify_provenance_content() {
             if [[ -n "$multi_subjects" ]]; then
                 e2e_assert_eq "$assets" "[\"multiple.intoto.jsonl\",\"null\"]" "there should be assets"
             else
-                e2e_assert_eq "$assets" "[\"hello.intoto.jsonl\",\"null\"]" "there should be assets"
+                if [[ -n "$is_goreleaser" ]]; then
+                    if ! assert_not_empty "$assets" "there should be assets"; then
+                        exit 1
+                    fi
+                else
+                    e2e_assert_eq "$assets" "[\"hello.intoto.jsonl\",\"null\"]" "there should be assets"
+                fi
             fi
         fi
     fi
