@@ -107,6 +107,9 @@ jobs:
           set -euo pipefail
           gh -R "$GITHUB_REPOSITORY" release download "$GITHUB_REF_NAME" -p "*.tar.gz"
           gh -R "$GITHUB_REPOSITORY" release download "$GITHUB_REF_NAME" -p "$PROVENANCE"
+      - uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9 # v4.0.0
+        with:
+          go-version: "1.18"
       - env:
           CHECKSUMS: ${{ needs.goreleaser.outputs.hashes }}
           PROVENANCE: ${{ needs.provenance.outputs.provenance-name }}
