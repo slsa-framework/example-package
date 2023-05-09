@@ -10,7 +10,7 @@ permissions: read-all
 concurrency: "e2e-nodejs-push-main-default-slsa3"
 
 env:
-  GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
+  PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
 jobs:
