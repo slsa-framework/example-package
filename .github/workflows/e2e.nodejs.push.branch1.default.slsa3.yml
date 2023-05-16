@@ -41,7 +41,7 @@ jobs:
           this_file=$(e2e_this_file)
           branch=$(echo "${this_file}" | cut -d '.' -f4)
           if [[ "${branch}" == "$GITHUB_REF_NAME" ]]; then
-            echo "::set-output name=continue::yes"
+            echo "continue=yes" >>"$GITHUB_OUTPUT"
           fi
 
   build:
