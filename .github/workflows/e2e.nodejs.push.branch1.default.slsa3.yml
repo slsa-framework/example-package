@@ -53,7 +53,7 @@ jobs:
       actions: read # For getting workflow run on private repos.
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
     with:
-      directory: nodejs/e2e-nodejs-push-main-default-slsa3
+      directory: nodejs/e2e-nodejs-push-branch1-default-slsa3
       node-version: 16
       run-scripts: "ci, build"
 
