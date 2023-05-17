@@ -115,10 +115,10 @@ jobs:
           repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' $image_name:main)
           echo $repo_digest
 
-          echo "::set-output name=image::$image_name"
-          echo "::set-output name=digest::${repo_digest#*@}"
-          echo "::set-output name=service_account::${SERVICE_ACCOUNT}"
-          echo "::set-output name=provider_name::${PROVIDER_NAME}"
+          echo "image=$image_name" >> $GITHUB_OUTPUT
+          echo "digest=${repo_digest#*@}" >> $GITHUB_OUTPUT
+          echo "service_account=${SERVICE_ACCOUNT}" >> $GITHUB_OUTPUT
+          echo "provider_name=${PROVIDER_NAME}" >> $GITHUB_OUTPUT
 
   build:
     permissions:

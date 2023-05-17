@@ -65,7 +65,7 @@ jobs:
           echo "Found build with build id ${BUILD_ID}..."
 
           export IMAGE_DIGEST=$(gcloud builds describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
-          echo "::set-output name=image::${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}"
+          echo "image=${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
           echo "Retrieved image digest ${IMAGE_DIGEST}..."
 
           # Get latest builds provenance
