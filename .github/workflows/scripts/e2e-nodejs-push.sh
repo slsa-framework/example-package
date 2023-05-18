@@ -50,7 +50,7 @@ fi
 
 if [ "${branch}" != "main" ]; then
     # Reset branch1 and push the new version.
-    git branch -D "$branch"
+    git branch -Df "$branch"
     git checkout -b "$branch"
     git push --set-upstream origin "$branch" -f
     git checkout main
