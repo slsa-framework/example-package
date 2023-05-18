@@ -60,7 +60,7 @@ if [ "${branch}" != "main" ]; then
     # Update a dummy file to avoid https://github.com/slsa-framework/example-package/issues/44
     date >./e2e/dummy
     git add ./e2e/dummy
-    git commit -m "sync'ing branch1 - $DATE"
+    git commit -m "sync'ing branch1 - $(cat ./e2e/dummy)"
 fi
 
 git push origin main
