@@ -94,8 +94,8 @@ jobs:
           repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' $image_name:main)
           echo $repo_digest
 
-          echo "::set-output name=image::$image_name"
-          echo "::set-output name=digest::${repo_digest#*@}"
+          echo "image=$image_name" >> "${GITHUB_OUTPUT}"
+          echo "digest=${repo_digest#*@}" >> "${GITHUB_OUTPUT}"
 
           # try a docker pull
           docker pull "$image_name@${repo_digest#*@}"
@@ -131,7 +131,7 @@ jobs:
         run: |
           name=$(find outputs/ -type f | head -1)
           cp $name .
-          echo "name=$(basename $name)" >> $GITHUB_OUTPUT
+          echo "name=$(basename $name)" >> "${GITHUB_OUTPUT}"
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build.outputs.attestations-download-name }}

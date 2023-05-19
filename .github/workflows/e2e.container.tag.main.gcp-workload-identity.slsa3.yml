@@ -107,9 +107,9 @@ jobs:
           # NOTE: The digest output from docker/build-push-action is of the
           # form "sha256:<digest>"
           image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
-          echo "::set-output name=image::$image_name"
-          echo "::set-output name=service_account::${SERVICE_ACCOUNT}"
-          echo "::set-output name=provider_name::${PROVIDER_NAME}"
+          echo "image=$image_name" >> "${GITHUB_OUTPUT}"
+          echo "service_account=${SERVICE_ACCOUNT}" >> "${GITHUB_OUTPUT}"
+          echo "provider_name=${PROVIDER_NAME}" >> "${GITHUB_OUTPUT}"
 
   # Generate SLSA provenance for the image
   # Upload the provenance to ghcr.io

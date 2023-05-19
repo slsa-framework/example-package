@@ -78,7 +78,7 @@ jobs:
           set -euo pipefail
 
           checksum_file=$(echo "$ARTIFACTS" | jq -r '.[] | select (.type=="Checksum") | .path')
-          echo "hashes=$(cat $checksum_file | base64 -w0)" >> "$GITHUB_OUTPUT"
+          echo "hashes=$(cat $checksum_file | base64 -w0)" >> ""${GITHUB_OUTPUT}""
 
   provenance:
     needs: [shim, build]

@@ -65,11 +65,11 @@ jobs:
           echo "Found build with build id ${BUILD_ID}..."
 
           export IMAGE_DIGEST=$(gcloud builds describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
-          echo "::set-output name=image::${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}"
+          echo "image=${IMAGE_REGISTRY}/${IMAGE_NAME}@${IMAGE_DIGEST}" >> "${GITHUB_OUTPUT}"
           echo "Retrieved image digest ${IMAGE_DIGEST}..."
 
           # Get latest builds provenance
-          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${IMAGE_NAME}@${IMAGE_DIGEST}" --show-provenance --format json > provenance.json
+          gcloud artifacts docker images describe "${IMAGE_REGISTRY}/${IMAGE_NAME}@${IMAGE_DIGEST}" --show-provenance --format json > provenance.json
           echo "::set-output name=provenance-name::provenance.json"
       - name: Upload provenance
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2

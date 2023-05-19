@@ -41,7 +41,7 @@ jobs:
           THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
           if [[ "$BRANCH" == "${{ github.ref_name }}" ]]; then
-            echo "::set-output name=continue::yes"
+            echo "continue=yes" >> "${GITHUB_OUTPUT}"
           fi
 
   args:
@@ -63,9 +63,9 @@ jobs:
 
           THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-          echo "::set-output name=version::-X main.gitVersion=v1.2.3"
-          echo "::set-output name=commit::-X main.gitCommit=abcdef"
-          echo "::set-output name=branch::-X main.gitBranch=$BRANCH"
+          echo "version=-X main.gitVersion=v1.2.3" >> "${GITHUB_OUTPUT}"
+          echo "commit=-X main.gitCommit=abcdef" >> "${GITHUB_OUTPUT}"
+          echo "branch=-X main.gitBranch=$BRANCH" >> "${GITHUB_OUTPUT}"
 
   build:
     needs: [shim, args]
