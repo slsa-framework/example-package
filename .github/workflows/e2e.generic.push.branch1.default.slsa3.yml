@@ -38,7 +38,7 @@ jobs:
           THIS_FILE=$(e2e_this_file)
           BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
           if [[ "$BRANCH" == "$GITHUB_REF_NAME" ]]; then
-            echo "continue=yes" >> $GITHUB_OUTPUT
+            echo "continue=yes" >> "${GITHUB_OUTPUT}"
           fi
 
   build:
@@ -75,7 +75,7 @@ jobs:
           BINARY_NAME: ${{ steps.build.outputs.binary-name }}
         run: |
           set -euo pipefail
-          echo "digest=$(sha256sum $BINARY_NAME | base64 -w0)" >> $GITHUB_OUTPUT
+          echo "digest=$(sha256sum $BINARY_NAME | base64 -w0)" >> "${GITHUB_OUTPUT}"
 
   provenance:
     needs: [shim, build]
