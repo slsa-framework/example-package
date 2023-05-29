@@ -1,0 +1,164 @@
+on:
+  schedule:
+    # Twice a month scheduled cron for rebuilding the base builder image.
+    - cron: "0 3 1,15 * *"
+    # Verify container-based workflow with the base builder image daily.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      trigger_build:
+        description: "Trigger a build"
+        required: false
+        default: false
+        type: boolean
+
+permissions: read-all
+
+env:
+  # TODO: Replace this token.
+  PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+  PROVENANCE_NAME: attestation.intoto
+
+  IMAGE_REGISTRY: ghcr.io
+  # NOTE: This pushes a container image to a "package" under the
+  # slsa-framework GitHub org.
+  # The image name should be of the form: slsa-framework/example-package.<test name>
+  IMAGE_NAME: slsa-framework/example-package.e2e.container-based.schedule.main.registry-username.slsa3
+
+  REGISTRY_USERNAME: asraa
+  REGISTRY_PASSWORD: ${{ secrets.E2E_DOCKER_TOKEN }}
+
+jobs:
+  # Rebuild the base image
+  base-build:
+    runs-on: ubuntu-latest
+    if: inputs.trigger_build || (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *')
+    permissions:
+      contents: read # For reading repository contents.
+      packages: write # For writing container images.
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4b4e9c3e2d4531116a6f8ba8e71fc6e2cb6e6c8c # v2.5.0
+
+      - name: Authenticate Docker
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # v2.1.0
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@c4ee3adeed93b1fa6a762f209fb01608c1a22f1e # v4.4.0
+        with:
+          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671 # v4.0.0
+        id: build
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  base:
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.trigger_build }}
+    permissions:
+      contents: read # For reading repository contents.
+      packages: write # For writing container images.
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      digest: ${{ steps.image.outputs.digest }}
+    steps:
+      - name: Authenticate Docker
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # v2.1.0
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Output image
+        id: image
+        run: |
+          # NOTE: We need to use the image and digest in order to make sure
+          # that the image we attest has not been modified.
+          image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
+          docker pull "$image_name:main"
+          repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' $image_name:main)
+          echo $repo_digest
+
+          echo "image=$image_name" >> "${GITHUB_OUTPUT}"
+          echo "digest=${repo_digest#*@}" >> "${GITHUB_OUTPUT}"
+
+          # try a docker pull
+          docker pull "$image_name@${repo_digest#*@}"
+
+  build:
+    permissions:
+      id-token: write # For signing
+      actions: read
+      contents: write # For asset uploads
+    needs: [base]
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@main
+    with:
+      builder-image: ${{ needs.base.outputs.image }}
+      builder-digest: ${{ needs.base.outputs.digest }}
+      config-path: ".github/configs-docker/app-config.toml"
+      provenance-name: attestation.intoto
+      compile-builder: true
+      registry-username: ${REGISTRY_USERNAME}
+    secrets:
+      registry-password: ${{ secrets.E2E_DOCKER_TOKEN }}
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: [base, build]
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
+        with:
+          name: ${{ needs.build.outputs.build-outputs-name }}
+          path: outputs
+      - name: Get build artifact
+        id: build
+        run: |
+          name=$(find outputs/ -type f | head -1)
+          cp $name .
+          echo "name=$(basename $name)" >> "${GITHUB_OUTPUT}"
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
+        with:
+          name: ${{ needs.build.outputs.attestations-download-name }}
+      - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+        with:
+          go-version: "1.18"
+      - env:
+          BINARY: ${{ steps.build.outputs.name }}
+          PROVENANCE: attestation.intoto.sigstore
+        run: ./.github/workflows/scripts/e2e.container-based.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: github.event_name == 'schedule' && needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: always() && github.event_name == 'schedule' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh

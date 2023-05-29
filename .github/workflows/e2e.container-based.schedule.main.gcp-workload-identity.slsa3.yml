@@ -2,7 +2,7 @@ on:
   schedule:
     # Twice a month scheduled cron for rebuilding the base builder image.
     - cron: "0 3 1,15 * *"
-    # Verify docker-based workflow with the base builder image daily.
+    # Verify container-based workflow with the base builder image daily.
     - cron: "0 3 * * *"
   workflow_dispatch:
     inputs:
@@ -22,7 +22,7 @@ env:
 
   PROVENANCE_NAME: attestation.intoto
 
-  IMAGE_NAME: slsa-tooling/example-package-repo/e2e.docker-based.schedule.main.gcp-workload-identity.slsa3
+  IMAGE_NAME: slsa-tooling/example-package-repo/e2e.container-based.schedule.main.gcp-workload-identity.slsa3
   IMAGE_REGISTRY: us-west2-docker.pkg.dev
   SERVICE_ACCOUNT: container-generator-user@slsa-tooling.iam.gserviceaccount.com
   PROVIDER_NAME: projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider
@@ -126,7 +126,7 @@ jobs:
       actions: read
       contents: write # For asset uploads
     needs: [base]
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@main
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@main
     with:
       builder-image: ${{ needs.base.outputs.image }}
       builder-digest: ${{ needs.base.outputs.digest }}
@@ -158,7 +158,7 @@ jobs:
       - env:
           BINARY: ${{ steps.build.outputs.name }}
           PROVENANCE: attestation.intoto.sigstore
-        run: ./.github/workflows/scripts/e2e.docker-based.default.verify.sh
+        run: ./.github/workflows/scripts/e2e.container-based.default.verify.sh
 
   if-succeeded:
     runs-on: ubuntu-latest

@@ -39,7 +39,7 @@ func main() {
 	fmt.Println("GitCommit:", gitCommit)
 	fmt.Println("Hello world:", uuidWithoutHyphen)
 
-	// To test the docker-based builder workflows, this App may also create a file with
+	// To test the container-based builder workflows, this App may also create a file with
 	// specified contents if provided any filename arguments.
 	flag.Var(&filenameFlags, "filename", "a filename to write out")
 	content := flag.String("content", "default", "content to write to the file")

@@ -153,8 +153,8 @@ get_builder_id() {
     "container")
         builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/heads/main"
         ;;
-    "docker-based")
-        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_docker-based_slsa3.yml@refs/heads/main"
+    "container-based")
+        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@refs/heads/main"
         ;;
     "nodejs")
         builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
