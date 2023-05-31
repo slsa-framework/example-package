@@ -164,6 +164,22 @@ jobs:
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
 
+  gha_containter-based:
+    needs: container-based_build
+    permissions:
+      id-token: write # For signing.
+      actions: read # For reading workflow info.
+      packages: write # For uploading attestations.
+    # FIXME: Update to v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@main
+    with:
+      builder-image: "bash"
+      builder-digest: "sha256:9e2ba52487d945504d250de186cb4fe2e3ba023ed2921dd6ac8b97ed43e76af9"
+      config-path: ".github/configs-docker/config.toml"
+      compile-generator: true
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
+
   # Delete existing tags before triggering new ones.
   delete-tags:
     if: github.event_name == 'workflow_dispatch'
