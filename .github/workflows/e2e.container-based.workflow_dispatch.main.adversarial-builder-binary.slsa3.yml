@@ -1,0 +1,33 @@
+on:
+  # Only triggered manually for pre-release.
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  provenance:
+    needs: [build]
+    permissions:
+      id-token: write # For signing.
+      contents: write # For asset uploads.
+      actions: read # For the entrypoint.
+    # Update the reference in this line with the builder's version to test.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@v1.6.0
+    with:
+      builder-image: "bash"
+      builder-digest: "sha256:9e2ba52487d945504d250de186cb4fe2e3ba023ed2921dd6ac8b97ed43e76af9"
+      config-path: ".github/configs-docker/config.toml"
+      provenance-name: attestation.intoto
+      compile-builder: true
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [provenance]
+    if: needs.provenance.result == 'success'
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: |
+          set -euo pipefail
+
+          echo "This test should fail"
+          exit 1
