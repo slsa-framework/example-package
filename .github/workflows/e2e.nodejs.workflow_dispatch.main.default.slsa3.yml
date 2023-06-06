@@ -21,7 +21,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
-      - run: ./.github/workflows/scripts/e2e-dispatch.sh
+      # Bumps the package version and calls workflow_dispatch.
+      - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
 
   build:
     if: github.event_name == 'workflow_dispatch'

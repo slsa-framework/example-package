@@ -87,3 +87,10 @@ EOF
 
     GH_TOKEN="${token}" gh release create "${tag}" --notes-file ./DATA --target "${branch}"
 fi
+
+if [ "${this_event}" == "workflow_dispatch" ]; then
+    curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${this_file}/dispatches" \
+        -d "{\"ref\":\"${branch}\"}" \
+        -H "Authorization: token ${token}"
+fi
