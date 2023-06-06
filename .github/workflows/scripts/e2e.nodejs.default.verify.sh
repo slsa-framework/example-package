@@ -74,4 +74,4 @@ export SLSA_VERIFIER_EXPERIMENTAL="1"
 verify_provenance_content
 
 # Verify provenance authenticity with min version at HEAD
-e2e_run_verifier_all_releases "HEAD"
+e2e_run_verifier_all_releases "v2.3.0"
