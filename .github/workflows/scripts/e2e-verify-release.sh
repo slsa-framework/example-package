@@ -23,7 +23,8 @@ if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
 fi
 
 # We allow no branch for annotated tags. We only run them on main branch.
-if [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]] && [[ -z "$annotated_tags" ]]; then
+# NOTE: 'create' event do not have a branch so don't validate.
+if [[ "$GITHUB_EVENT_NAME" != "create" ]] && [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]] && [[ -z "$annotated_tags" ]]; then
     echo "mismatch branch: file contains refs/heads/$BRANCH; GitHub env contains $ENV_BRANCH"
     echo "GITHUB_EVENT_PATH:"
     cat "$GITHUB_EVENT_PATH"
@@ -43,7 +44,7 @@ fi
 major=$(version_major "$tag")
 if [ "$major" == "$default_major" ]; then
     echo "match: continue"
-    echo "continue=yes" >> "$GITHUB_OUTPUT"
+    echo "continue=yes" >>"$GITHUB_OUTPUT"
     exit 0
 fi
 
