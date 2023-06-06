@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
+      # NOTE: this must match the DEFAULT_VERSION.
+      - "v36.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
 
 permissions: read-all
 
@@ -14,6 +15,7 @@ env:
   PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  # NOTE: this must match the on.push.tags trigger.
   DEFAULT_VERSION: v36.0.0
 
 jobs:
