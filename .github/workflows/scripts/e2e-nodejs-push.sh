@@ -54,19 +54,24 @@ if [ "${branch}" != "main" ]; then
     # Reset branch1 and push the new version.
     # git branch -D "$branch"
     git checkout -b "$branch"
-    git push --set-upstream origin "$branch" -f
+    if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
+        git push --set-upstream origin "${branch}" "${tag}" -f
+    else
+        git push --set-upstream origin "$branch" -f
+    fi
     git checkout main
 
     # Update a dummy file to avoid https://github.com/slsa-framework/example-package/issues/44
     date >./e2e/dummy
     git add ./e2e/dummy
     git commit -m "sync'ing branch1 - $(cat ./e2e/dummy)"
-fi
-
-if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
-    git push origin main "${tag}"
-else
     git push origin main
+else
+    if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
+        git push origin main "${tag}"
+    else
+        git push origin main
+    fi
 fi
 
 # If this is a test for a release event, create the release.
