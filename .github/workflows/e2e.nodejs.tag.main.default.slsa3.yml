@@ -5,7 +5,7 @@ on:
   push:
     tags:
       # NOTE: this must match the DEFAULT_VERSION.
-      - "v36.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
+      - "[0-9]+.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
 
 permissions: read-all
 
