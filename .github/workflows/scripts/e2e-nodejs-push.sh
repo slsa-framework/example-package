@@ -39,8 +39,6 @@ cd "${package_dir}"
 # NOTE: npm version patch will not create a git tag if current directory does
 # not have a .git directory.
 tag=$(npm version patch)
-package_name="$(npm run env | grep "npm_package_name=" | cut -d'=' -f2)"
-echo "Updating package ${package_name} version to ${tag}..."
 cd -
 
 # Commit the new version.
@@ -49,15 +47,10 @@ git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}
 # If this is an e2e test for a tag, then tag the commit and push it.
 this_event=$(e2e_this_event)
 if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
-    echo "Pushing tag ${tag}..."
-
     git tag "${tag}"
-    git push origin "${tag}"
 fi
 
 if [ "${branch}" != "main" ]; then
-    echo "Resetting branch ${branch}..."
-
     # Reset branch1 and push the new version.
     # git branch -D "$branch"
     git checkout -b "$branch"
@@ -70,12 +63,14 @@ if [ "${branch}" != "main" ]; then
     git commit -m "sync'ing branch1 - $(cat ./e2e/dummy)"
 fi
 
-git push origin main
+if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
+    git push origin main "${tag}"
+else
+    git push origin main
+fi
 
 # If this is a test for a release event, create the release.
 if [ "${this_event}" == "release" ]; then
-    echo "Creating release for ${tag}..."
-
     this_file=$(e2e_this_file)
     cat <<EOF >DATA
 **E2E release creation**:
