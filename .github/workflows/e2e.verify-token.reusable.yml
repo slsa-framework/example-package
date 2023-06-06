@@ -175,8 +175,8 @@ jobs:
           CHECKOUT_SHA1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           BUILDER_INTERFACE_TYPE: "generator"
         run: |
-          if [[ ${STATUS} != 'failure' ]]; then
-            echo "Generator predicate generation is not supported"
+          if [[ ${STATUS} != "failure" ]]; then
+            echo "Generator predicate generation is not supported, got ${STATUS}"
             exit 1
           fi
 
