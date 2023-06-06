@@ -166,7 +166,7 @@ jobs:
 
       # For now, generator predicate generation should throw an error.
       - env:
-          STATUS: ${{ steps.verify-generator.result }}
+          STATUS: ${{ steps.verify-generator.outcome }}
           VERIFIED_TOKEN: ${{ steps.verify-generator.outputs.slsa-verified-token }}
           TOOL_REPOSITORY: ${{ steps.verify-generator.outputs.tool-repository }}
           TOOL_REF: ${{ steps.verify-generator.outputs.tool-ref }}
