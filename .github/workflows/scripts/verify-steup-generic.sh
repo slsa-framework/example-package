@@ -1,3 +1,5 @@
+#!/bin/bash -eu
+#
 # Copyright 2023 SLSA Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,26 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: schedule verify-token wrapper
+set -euo pipefail
 
-on:
-  # Daily run.
-  schedule:
-    - cron: "0 4 * * *"
-  workflow_dispatch:
+source "./.github/workflows/scripts/e2e-verify.common.sh"
 
-permissions: read-all
+# TODO(#1709): Add more token verification.
+if [[ "$SLSA_TOKEN" == "" ]]; then
+    echo "SLSA_TOKEN is empty."
+    exit 1
+fi
 
-env:
-  GH_TOKEN: ${{ github.token }}
-  ISSUE_REPOSITORY: ${{ github.repository }}
+b64_token=$(echo -n "$SLSA_TOKEN" | cut -d '.' -f2)
+decoded_token=$(echo "$b64_token" | base64 -d)
 
-jobs:
-  verify-token-e2e:
-    permissions:
-      contents: read
-      id-token: write
-      issues: write
-    # NOTE: must call @main is required rather than using a "same repo" call so
-    #       that the job_workflow_ref is correctly set to the reusable workflow.
-    uses: slsa-framework/example-package/.github/workflows/e2e.verify-token.reusable.yml@main
+e2e_verify_decoded_token "$decoded_token"

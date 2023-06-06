@@ -461,3 +461,20 @@ e2e_verify_predicate_v1_runDetails_builder_id() {
 e2e_verify_predicate_v1_runDetails_metadata_invocationId() {
     _e2e_verify_query "$1" "$2" '.predicate.runDetails.metadata.invocationId'
 }
+
+e2e_verify_predicate_v1_buildDefinition_externalParameters_workflow() {
+    if [[ -z "${BUILDER_INTERFACE_TYPE:-}" ]]; then
+        return 0
+    fi
+    if [[ "${BUILDER_INTERFACE_TYPE}" == "builder" ]]; then
+        return 0
+    fi
+
+    _e2e_verify_query "$1" "$2" ".buildDefinition.externalParameters.workflow.path"
+    _e2e_verify_query "$1" "$3" ".buildDefinition.externalParameters.workflow.ref"
+    _e2e_verify_query "$1" "$4" ".buildDefinition.externalParameters.workflow.repository"
+}
+
+e2e_verify_predicate_v1_buildDefinition_externalParameters_inputs() {
+    _e2e_verify_query "$1" "$2" '.buildDefinition.externalParameters.inputs'
+}

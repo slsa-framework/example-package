@@ -658,3 +658,34 @@ _new_verifier_args() {
     branch) echo '--source-branch' ;;
     esac
 }
+
+# Verifies the content of a decoded slsa token.
+# $1: The decoded token
+# $2: A boolean whether masked inputs are used
+e2e_verify_decoded_token() {
+    local decoded_token="$1"
+
+    # Non-GitHub's information.
+    _e2e_verify_query "$decoded_token" "delegator_generic_slsa3.yml" '.builder.audience'
+    _e2e_verify_query "$decoded_token" "ubuntu-latest" '.builder.runner_label'
+    _e2e_verify_query "$decoded_token" "true" '.builder.rekor_log_public'
+    _e2e_verify_query "$decoded_token" "./actions/build-artifacts-composite" '.tool.actions.build_artifacts.path'
+    _e2e_verify_query "$decoded_token" "${CHECKOUT_FETCH_DEPTH}" '.source.checkout.fetch_depth'
+    _e2e_verify_query "$decoded_token" "${CHECKOUT_SHA1}" '.source.checkout.sha1'
+    _e2e_verify_query "$decoded_token" '{"name1":"value1","name2":"value2","name3":"value3","name4":"","name5":"value5","name6":"value6","private-repository":true}' '.tool.inputs'
+
+    # GitHub's information.
+    _e2e_verify_query "$decoded_token" "$GITHUB_ACTOR_ID" '.github.actor_id'
+    _e2e_verify_query "$decoded_token" "$GITHUB_EVENT_NAME" '.github.event_name'
+    _e2e_verify_query "$decoded_token" "$GITHUB_REF" '.github.ref'
+    _e2e_verify_query "$decoded_token" "$GITHUB_REF_TYPE" '.github.ref_type'
+    _e2e_verify_query "$decoded_token" "$GITHUB_REPOSITORY" '.github.repository'
+    _e2e_verify_query "$decoded_token" "$GITHUB_REPOSITORY_ID" '.github.repository_id'
+    _e2e_verify_query "$decoded_token" "$GITHUB_REPOSITORY_OWNER_ID" '.github.repository_owner_id'
+    _e2e_verify_query "$decoded_token" "$GITHUB_RUN_ATTEMPT" '.github.run_attempt'
+    _e2e_verify_query "$decoded_token" "$GITHUB_RUN_ID" '.github.run_id'
+    _e2e_verify_query "$decoded_token" "$GITHUB_RUN_NUMBER" '.github.run_number'
+    _e2e_verify_query "$decoded_token" "$GITHUB_SHA" '.github.sha'
+    _e2e_verify_query "$decoded_token" "$GITHUB_WORKFLOW_REF" '.github.workflow_ref'
+    _e2e_verify_query "$decoded_token" "$GITHUB_WORKFLOW_SHA" '.github.workflow_sha'
+}
