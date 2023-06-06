@@ -21,8 +21,8 @@ cd ./"$repo_name"
 
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-push_token=${PAT_TOKEN+$PAT_TOKEN}
-if [[ -z "$push_token" ]]; then
+token=${PAT_TOKEN+$PAT_TOKEN}
+if [[ -z "$token" ]]; then
     echo "Push events cannot be triggered with GH_TOKEN. PAT token is required."
     exit 1
 fi
@@ -31,7 +31,7 @@ git config --global user.name github-actions
 git config --global user.email github-actions@github.com
 
 # Set the remote url to authenticate using the token.
-git remote set-url origin "https://github-actions:${push_token}@github.com/${GITHUB_REPOSITORY}.git"
+git remote set-url origin "https://github-actions:${token}@github.com/${GITHUB_REPOSITORY}.git"
 
 package_dir="$(e2e_npm_package_dir)"
 
@@ -41,6 +41,7 @@ cd "${package_dir}"
 tag=$(npm version patch)
 cd -
 
+# Commit the new version.
 git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}/package-lock.json"
 
 # If this is an e2e test for a tag, then tag the commit and push it.
@@ -64,3 +65,17 @@ if [ "${branch}" != "main" ]; then
 fi
 
 git push origin main
+
+# If this is a test for a release event, create the release.
+if [ "${this_event}" == "release" ]; then
+    this_file=$(e2e_this_file)
+    cat <<EOF >DATA
+**E2E release creation**:
+Tag: ${tag}
+Branch: ${branch}
+Commit: ${GITHUB_SHA}
+Caller file: ${this_file}
+EOF
+
+    GH_TOKEN="${token}" gh release create "${tag}" --notes-file ./DATA --target "${branch}"
+fi
