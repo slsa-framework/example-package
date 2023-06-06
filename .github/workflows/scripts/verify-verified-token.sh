@@ -39,6 +39,8 @@ e2e_verify_predicate_v1_buildDefinition_buildType "$PREDICATE_CONTENT" "https://
 e2e_verify_predicate_v1_runDetails_builder_id "$PREDICATE_CONTENT" "https://github.com/$GITHUB_REPOSITORY/.github/workflows/e2e.verify-token.schedule.yml@$GITHUB_REF"
 e2e_verify_predicate_v1_buildDefinition_externalParameters_workflow "$PREDICATE_CONTENT" "$(e2e_this_file_full_path)" "$GITHUB_REF" "git+https://github.com/$GITHUB_REPOSITORY"
 
-# Verify external parameters source
-e2e_verify_predicate_v1_buildDefinition_externalParameters_source "$PREDICATE_CONTENT" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
+# Verify external parameters inputs
 e2e_verify_predicate_v1_buildDefinition_externalParameters_inputs "$PREDICATE_CONTENT" '{"name1":"value1","name2":"***","name3":"value3","name4":"***","name5":"value5","name6":"***","private-repository":true}'
+
+# Verify resolved dependencies source.
+e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}]"
