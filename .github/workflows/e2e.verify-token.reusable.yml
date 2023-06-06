@@ -157,22 +157,28 @@ jobs:
 
       - id: verify-generator
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
+        continue-on-error: true
         with:
           slsa-unverified-token: ${{ needs.setup-generic.outputs.valid-token }}
           slsa-workflow-recipient: "delegator_generic_slsa3.yml"
           output-predicate: predicate.json
           builder-interface-type: "generator" # Test the generator predicate generation.
 
+      # For now, generator predicate generation should throw an error.
       - env:
-          VERIFIED_TOKEN: ${{ steps.verify-builder.outputs.slsa-verified-token }}
-          TOOL_REPOSITORY: ${{ steps.verify-builder.outputs.tool-repository }}
-          TOOL_REF: ${{ steps.verify-builder.outputs.tool-ref }}
+          STATUS: ${{ steps.verify-generator.result }}
+          VERIFIED_TOKEN: ${{ steps.verify-generator.outputs.slsa-verified-token }}
+          TOOL_REPOSITORY: ${{ steps.verify-generator.outputs.tool-repository }}
+          TOOL_REF: ${{ steps.verify-generator.outputs.tool-ref }}
           PREDICATE: predicate.json
           CHECKOUT_FETCH_DEPTH: 4
           CHECKOUT_SHA1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           BUILDER_INTERFACE_TYPE: "generator"
         run: |
-         ./.github/workflows/scripts/verify-verified-token.sh
+          if [[ ${STATUS} != 'failure' ]]; then
+            echo "Generator predicate generation is not supported"
+            exit 1
+          fi
 
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
