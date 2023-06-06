@@ -150,7 +150,9 @@ jobs:
           CHECKOUT_FETCH_DEPTH: 4
           CHECKOUT_SHA1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           BUILDER_INTERFACE_TYPE: "builder"
-        run: ./.github/workflows/scripts/verify-verified-token.sh
+        run: |
+         ./.github/workflows/scripts/verify-verified-token.sh
+         rm predicate.json
 
       - id: verify-generator
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
@@ -168,7 +170,9 @@ jobs:
           CHECKOUT_FETCH_DEPTH: 4
           CHECKOUT_SHA1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           BUILDER_INTERFACE_TYPE: "generator"
-        run: ./.github/workflows/scripts/verify-verified-token.sh
+        run: |
+         ./.github/workflows/scripts/verify-verified-token.sh
+         rm predicate.json
 
       - id: verify-mismatch-recipient
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
