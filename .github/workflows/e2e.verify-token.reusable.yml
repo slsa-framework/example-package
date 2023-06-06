@@ -171,7 +171,7 @@ jobs:
         run: ./.github/workflows/scripts/verify-verified-token.sh
 
       - id: verify-mismatch-recipient
-        uses: slsa-framework/slsa-github-generator/actions/verify-token@main
+        uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
         continue-on-error: true
         with:
           slsa-unverified-token: ${{ steps.verify-builder.outputs.slsa-verified-token }}
