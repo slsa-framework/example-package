@@ -19,6 +19,8 @@ on:
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions: read-all
 
@@ -27,7 +29,17 @@ env:
   ISSUE_REPOSITORY: ${{ github.repository }}
 
 jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-push.sh
+
   verify-token-e2e:
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
     permissions:
       contents: read
       id-token: write
