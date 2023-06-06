@@ -152,7 +152,8 @@ jobs:
           BUILDER_INTERFACE_TYPE: "builder"
         run: |
          ./.github/workflows/scripts/verify-verified-token.sh
-         rm predicate.json
+
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
       - id: verify-generator
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
@@ -172,7 +173,8 @@ jobs:
           BUILDER_INTERFACE_TYPE: "generator"
         run: |
          ./.github/workflows/scripts/verify-verified-token.sh
-         rm predicate.json
+
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
       - id: verify-mismatch-recipient
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
@@ -183,6 +185,8 @@ jobs:
           output-predicate: mismatch-recipient-predicate.json
           builder-interface-type: "builder"
 
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+
       - id: verify-mismatch-token
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
         continue-on-error: true
@@ -191,6 +195,8 @@ jobs:
           slsa-workflow-recipient: "delegator_generic_slsa3.yml"
           output-predicate: mismatch-token-predicate.json
           builder-interface-type: "builder"
+
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
       - id: verify-invalid-mask
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
@@ -201,6 +207,8 @@ jobs:
           slsa-workflow-recipient: "delegator_generic_slsa3.yml"
           output-predicate: invalid-mask-predicate.json
           builder-interface-type: "builder"
+
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
       - id: verify-invalid-sha1
         uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
