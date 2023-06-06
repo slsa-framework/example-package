@@ -46,7 +46,7 @@ e2e_verify_predicate_v1_buildDefinition_externalParameters_inputs "$PREDICATE_CO
 # Verify resolved dependencies source.
 if [[ -n $CHECKOUT_SHA1 ]]; then
     # If the checkout sha was defined, then verify that there is no ref.
-    e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"sha1\":\"$CHECKOUT_SHA1\"}}]"
+    e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"gitCommit\":\"$CHECKOUT_SHA1\"}}]"
 else
-    e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_REF\"}}]"
+    e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"gitCommit\":\"$GITHUB_REF\"}}]"
 fi
