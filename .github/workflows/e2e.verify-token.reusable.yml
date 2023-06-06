@@ -135,7 +135,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
       - id: verify-builder
-        uses: slsa-framework/slsa-github-generator/actions/verify-token@main
+        uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
         with:
           slsa-unverified-token: ${{ needs.setup-generic.outputs.valid-token }}
           slsa-workflow-recipient: "delegator_generic_slsa3.yml"
@@ -150,10 +150,10 @@ jobs:
           CHECKOUT_FETCH_DEPTH: 4
           CHECKOUT_SHA1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           BUILDER_INTERFACE_TYPE: "builder"
-        run: ./.github/workflows/scripts/schedule.actions/verify-verified-token.sh
+        run: ./.github/workflows/scripts/verify-verified-token.sh
 
       - id: verify-generator
-        uses: slsa-framework/slsa-github-generator/actions/verify-token@main
+        uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
         with:
           slsa-unverified-token: ${{ needs.setup-generic.outputs.valid-token }}
           slsa-workflow-recipient: "delegator_generic_slsa3.yml"
@@ -168,7 +168,7 @@ jobs:
           CHECKOUT_FETCH_DEPTH: 4
           CHECKOUT_SHA1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           BUILDER_INTERFACE_TYPE: "generator"
-        run: ./.github/workflows/scripts/schedule.actions/verify-verified-token.sh
+        run: ./.github/workflows/scripts/verify-verified-token.sh
 
       - id: verify-mismatch-recipient
         uses: slsa-framework/slsa-github-generator/actions/verify-token@main
@@ -180,7 +180,7 @@ jobs:
           builder-interface-type: "builder"
 
       - id: verify-mismatch-token
-        uses: slsa-framework/slsa-github-generator/actions/verify-token@main
+        uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
         continue-on-error: true
         with:
           slsa-unverified-token: aGVsbG8K
@@ -189,7 +189,7 @@ jobs:
           builder-interface-type: "builder"
 
       - id: verify-invalid-mask
-        uses: slsa-framework/slsa-github-generator/actions/verify-token@main
+        uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
         continue-on-error: true
         with:
           # name7 does not exist in the inputs so it should trigger an error.
@@ -199,7 +199,7 @@ jobs:
           builder-interface-type: "builder"
 
       - id: verify-invalid-sha1
-        uses: slsa-framework/slsa-github-generator/actions/verify-token@main
+        uses: slsa-framework/slsa-github-generator/.github/actions/verify-token@main
         continue-on-error: true
         with:
           # sha1 is too short so it should trigger an error.
