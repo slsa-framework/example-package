@@ -470,15 +470,15 @@ e2e_verify_predicate_v1_buildDefinition_externalParameters_workflow() {
         return 0
     fi
 
-    _e2e_verify_query "$1" "$2" ".buildDefinition.externalParameters.workflow.path"
-    _e2e_verify_query "$1" "$3" ".buildDefinition.externalParameters.workflow.ref"
-    _e2e_verify_query "$1" "$4" ".buildDefinition.externalParameters.workflow.repository"
+    _e2e_verify_query "$1" "$2" ".predicate.buildDefinition.externalParameters.workflow.path"
+    _e2e_verify_query "$1" "$3" ".predicate.buildDefinition.externalParameters.workflow.ref"
+    _e2e_verify_query "$1" "$4" ".predicate.buildDefinition.externalParameters.workflow.repository"
 }
 
 e2e_verify_predicate_v1_buildDefinition_externalParameters_inputs() {
-    _e2e_verify_query "$1" "$2" '.buildDefinition.externalParameters.inputs'
+    _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.externalParameters.inputs'
 }
 
 e2e_verify_predicate_v1_buildDefinition_resolvedDependencies() {
-    _e2e_verify_query "$1" "$2" '.buildDefinition.resolvedDependencies'
+    _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.resolvedDependencies'
 }

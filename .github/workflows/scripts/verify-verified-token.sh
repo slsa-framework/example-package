@@ -31,7 +31,7 @@ e2e_assert_eq "$TOOL_REPOSITORY" "$GITHUB_REPOSITORY"
 e2e_assert_eq "$TOOL_REF" "$GITHUB_REF"
 
 PREDICATE_CONTENT=$(<"$PREDICATE")
-echo "PREDICATE_CONTENT: $PREDICATE_CONTENT"
+echo "PREDICATE_CONTENT: {\"predicate\": $PREDICATE_CONTENT}"
 
 # Verify common predicate fields.
 e2e_verify_common_all_v1 "$PREDICATE_CONTENT"
