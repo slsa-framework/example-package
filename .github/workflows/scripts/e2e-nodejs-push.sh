@@ -41,17 +41,24 @@ cd "${package_dir}"
 tag=$(npm version patch)
 cd -
 
+package_name="$(npm run env | grep "npm_package_name=" | cut -d'=' -f2)"
+echo "Updating package ${package_name} version to ${tag}..."
+
 # Commit the new version.
 git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}/package-lock.json"
 
 # If this is an e2e test for a tag, then tag the commit and push it.
 this_event=$(e2e_this_event)
 if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
+    echo "Pushing tag ${tag}..."
+
     git tag "${tag}"
     git push origin "${tag}"
 fi
 
 if [ "${branch}" != "main" ]; then
+    echo "Resetting branch ${branch}..."
+
     # Reset branch1 and push the new version.
     # git branch -D "$branch"
     git checkout -b "$branch"
@@ -68,6 +75,8 @@ git push origin main
 
 # If this is a test for a release event, create the release.
 if [ "${this_event}" == "release" ]; then
+    echo "Creating release for ${tag}..."
+
     this_file=$(e2e_this_file)
     cat <<EOF >DATA
 **E2E release creation**:
