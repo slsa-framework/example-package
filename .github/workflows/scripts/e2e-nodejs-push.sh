@@ -39,10 +39,9 @@ cd "${package_dir}"
 # NOTE: npm version patch will not create a git tag if current directory does
 # not have a .git directory.
 tag=$(npm version patch)
-cd -
-
 package_name="$(npm run env | grep "npm_package_name=" | cut -d'=' -f2)"
 echo "Updating package ${package_name} version to ${tag}..."
+cd -
 
 # Commit the new version.
 git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}/package-lock.json"
