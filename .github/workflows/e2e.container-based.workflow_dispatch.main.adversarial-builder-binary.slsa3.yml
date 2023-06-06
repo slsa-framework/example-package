@@ -6,7 +6,6 @@ permissions: read-all
 
 jobs:
   provenance:
-    needs: [build]
     permissions:
       id-token: write # For signing.
       contents: write # For asset uploads.
