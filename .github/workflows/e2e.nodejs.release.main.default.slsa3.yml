@@ -13,7 +13,7 @@ env:
   PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
-  DEFAULT_VERSION: v39.0.0
+  DEFAULT_VERSION: v40.0.0
 
 jobs:
   push:
