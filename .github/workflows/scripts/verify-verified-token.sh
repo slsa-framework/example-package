@@ -44,4 +44,9 @@ e2e_verify_predicate_v1_buildDefinition_externalParameters_workflow "$PREDICATE_
 e2e_verify_predicate_v1_buildDefinition_externalParameters_inputs "$PREDICATE_CONTENT" '{"name1":"value1","name2":"***","name3":"value3","name4":"***","name5":"value5","name6":"***","private-repository":true}'
 
 # Verify resolved dependencies source.
-e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$CHECKOUT_SHA1\"}}]"
+if [[ -n $CHECKOUT_SHA1 ]]; then
+    # If the checkout sha was defined, then verify that there is no ref.
+    e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"sha1\":\"$CHECKOUT_SHA1\"}}]"
+else
+    e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_REF\"}}]"
+fi
