@@ -25,7 +25,7 @@ fi
 if [[ "${ENV_BRANCH}" == "" ]] || [[ "${ENV_BRANCH}" == "null" ]]; then
     echo "Unable to detect branch: ${ENV_BRANCH}"
     exit 1
-if
+fi
 
 # NOTE: We allow no branch for annotated tags. We only run them on main branch.
 # NOTE: 'create' event do not have a branch so don't validate.
