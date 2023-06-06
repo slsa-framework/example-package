@@ -22,17 +22,16 @@ if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
     ENV_BRANCH="refs/heads/$(jq -r '.release.target_commitish' <"$GITHUB_EVENT_PATH")"
 fi
 
-if [[ "${ENV_BRANCH}" == "" ]] || [[ "${ENV_BRANCH}" == "null" ]]; then
-    echo "Unable to detect branch: ${ENV_BRANCH}"
-    exit 1
-fi
-
 # NOTE: We allow no branch for annotated tags. We only run them on main branch.
 # NOTE: 'create' event do not have a branch so don't validate.
 if [[ "$GITHUB_EVENT_NAME" != "create" ]] && [[ "$ENV_BRANCH" != "refs/heads/$BRANCH" ]] && [[ -z "$annotated_tags" ]]; then
     echo "mismatch branch: file contains refs/heads/$BRANCH; GitHub env contains $ENV_BRANCH"
     echo "GITHUB_EVENT_PATH:"
     cat "$GITHUB_EVENT_PATH"
+    if [[ "${ENV_BRANCH}" == "" ]] || [[ "${ENV_BRANCH}" == "null" ]]; then
+        echo "Unable to detect branch: ${ENV_BRANCH}"
+        exit 1
+    fi
     exit 0
 fi
 
