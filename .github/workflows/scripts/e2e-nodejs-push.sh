@@ -45,7 +45,7 @@ git commit -m "${GITHUB_WORKFLOW}" "${package_dir}/package.json" "${package_dir}
 
 # If this is an e2e test for a tag, then tag the commit and push it.
 this_event=$(e2e_this_event)
-if [ "${this_event}" == "tag" ]; then
+if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
     git tag "${tag}"
     git push origin "${tag}"
 fi
