@@ -92,6 +92,6 @@ if [ "${this_event}" == "workflow_dispatch" ]; then
     this_file=$(e2e_this_file)
     curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
         "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${this_file}/dispatches" \
-        -d "{\"ref\":\"${branch}\"}" \
+        -d "{\"ref\":\"${branch}\",\"inputs\":{\"trigger_build\": true}}" \
         -H "Authorization: token ${token}"
 fi
