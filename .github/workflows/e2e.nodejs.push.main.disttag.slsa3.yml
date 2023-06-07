@@ -84,6 +84,7 @@ jobs:
           cd nodejs/e2e-nodejs-push-main-disttag-slsa3
           pkg_version=$(npm version --json | jq -r ".\"${PACKAGE_NAME}\"")
           dist_tag=$(npm view --json | jq -r '."dist-tags"."test-tag"')
+          echo "${dist_tag} == ${pkg_version}"
           [[ "${dist_tag}" != "" ]] && [[ "${dist_tag}" != "null" ]] && [[ "${dist_tag}" == "${pkg_version}" ]]
 
   if-succeeded:
