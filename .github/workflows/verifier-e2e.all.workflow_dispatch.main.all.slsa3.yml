@@ -168,7 +168,7 @@ jobs:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   gha_container-based:
-    needs: [generate-name]
+    needs: [generate_name]
     permissions:
       id-token: write # For signing.
       actions: read # For reading workflow info.
