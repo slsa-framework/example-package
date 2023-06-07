@@ -10,7 +10,7 @@ e2e_update_badge() {
     color="$2"
 
     mkdir -p "$(dirname "${badge_file}")"
-    curl -s -o "${badge_file}" "https://img.shields.io/badge/${this_file//-/--}-${message//-/--}-${color}?logo=github&style=plastic"
+    curl -s -o "${badge_file}" "https://img.shields.io/badge/${this_file//-/--}-${message//-/--}-${color}?logo=github"
 
     if [ -n "$(git status --porcelain)" ]; then
         git config --global user.name github-actions
@@ -23,9 +23,9 @@ e2e_update_badge() {
 }
 
 e2e_update_badge_passing() {
-    e2e_update_badge "passing" "green"
+    e2e_update_badge "passing" "success"
 }
 
 e2e_update_badge_failing() {
-    e2e_update_badge "failing" "red"
+    e2e_update_badge "failing" "critical"
 }
