@@ -55,7 +55,7 @@ jobs:
         uses: slsa-framework/slsa-github-generator/actions/nodejs/publish@main
         with:
           access: public
-          # dist-tag: ${{ env.NPM_DIST_TAG }}
+          dist-tag: ${{ env.NPM_DIST_TAG }}
           node-auth-token: ${{ secrets.E2E_NODE_ACCESS_TOKEN }}
           package-name: ${{ needs.build.outputs.package-name }}
           package-download-name: ${{ needs.build.outputs.package-download-name }}
