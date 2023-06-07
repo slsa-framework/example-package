@@ -28,7 +28,13 @@ verify_dist_tag() {
 
     package_dir="$(e2e_npm_package_dir)"
     pkg_version=$(jq -r ".version" <"${package_dir}/package.json")
-    dist_tag=$(npm view "${package_dir}" --json | jq -r ".\"dist-tags\".\"${dist_tag}\"")
+
+    # NOTE: change directory to the package directory because npm has some weird
+    # detection git repository detection logic which often fails.
+    cd "${package_dir}" || exit 1
+    dist_tag=$(npm view --json | jq -r ".\"dist-tags\".\"${dist_tag}\"")
+    cd - || exit 1
+
     echo "Checking dist-tag: ${dist_tag} == ${pkg_version}"
 
     if ! assert_not_empty "${dist_tag}" "dist-tag version is empty"; then
