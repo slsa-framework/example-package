@@ -33,7 +33,7 @@ For GitHub Actions-based builds, the artifact is uploaded using
 
 ### Project health
 
-[![golangci-lint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.golangci-lint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.golangci-lint.yml) [![shellcheck](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.shellcheck.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.shellcheck.yml) [![yamllint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.yamllint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.yamllint.yml)
+[![golangci-lint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.golangci-lint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.golangci-lint.yml) [![shellcheck](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.shellcheck.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.shellcheck.yml) [![yamllint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.yamllint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.yamllint.yml) [![actionlint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.actionlint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.actionlint.yml)
 
 ### Node.js builder e2e tests
 
