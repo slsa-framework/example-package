@@ -21,7 +21,25 @@ help: ## Shows all targets and help from the Makefile (this message).
 #####################################################################
 
 lint: ## Run all linters.
-lint: golangci-lint shellcheck yamllint
+lint: golangci-lint shellcheck yamllint actionlint
+
+.PHONY: actionlint
+actionlint: ## Runs the actionlint linter.
+	@# NOTE: We need to ignore config files used in tests.
+	@set -e;\
+		files=$$( \
+			find .github/workflows/ -type f \
+				\( \
+					-name '*.yaml' -o \
+					-name '*.yml' \
+				\) \
+				-not -iwholename '*/configs-*/*' \
+		); \
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			actionlint -format '{{range $$err := .}}::error file={{$$err.Filepath}},line={{$$err.Line}},col={{$$err.Column}}::{{$$err.Message}}%0A```%0A{{replace $$err.Snippet "\\n" "%0A"}}%0A```\n{{end}}' -ignore 'SC2016:' $${files}; \
+		else \
+			actionlint $${files}; \
+		fi
 
 golangci-lint: ## Runs the golangci-lint linter.
 	@set -e;\
