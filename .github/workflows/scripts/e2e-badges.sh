@@ -12,32 +12,32 @@ e2e_update_badge() {
     message="$1"
     color="$2"
 
+    github_repo="${GITHUB_REPOSITORY:-}"
+
+    # XXX: Need to create a new checkout to authenticate for some reason.
+    gh repo clone "${github_repo}" -- -b main
+    repo_name=$(echo "${}" | cut -d '/' -f2)
+    cd "./${repo_name}"
+
     mkdir -p "$(dirname "${badge_file}")"
     curl -s -o "${badge_file}" "https://img.shields.io/badge/${this_file//-/--}-${message//-/--}-${color}?logo=github"
 
     if [ -n "$(git status --porcelain)" ]; then
-        # XXX: Need to create a new checkout to authenticate for some reason.
-        gh repo clone "$GITHUB_REPOSITORY" -- -b main
-        repo_name=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
-        cd "./${repo_name}"
-
-        token=${PAT_TOKEN+$PAT_TOKEN}
-        if [[ -z "$token" ]]; then
-            token=$GH_TOKEN
-        fi
+        token=${PAT_TOKEN:-${GH_TOKEN:-}}
 
         git config --global user.name github-actions
         git config --global user.email github-actions@github.com
 
         # Set the remote url to authenticate using the token.
-        git remote set-url origin "https://github-actions:${token}@github.com/${GITHUB_REPOSITORY}.git"
+        git remote set-url origin "https://github-actions:${token}@github.com/${github_repo}.git"
 
         git add "${badge_file}"
         git commit -m "Update badge: ${badge_file}" "${badge_file}"
         git push origin main
 
-        cd -
     fi
+
+    cd -
 }
 
 e2e_update_badge_passing() {
