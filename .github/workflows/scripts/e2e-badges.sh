@@ -24,7 +24,7 @@ e2e_update_badge() {
         git remote set-url origin "https://github-actions:${token}@github.com/${GITHUB_REPOSITORY}.git"
 
         git add "${badge_file}"
-        git commit -m "Update badge" "${badge_file}"
+        git commit -m "Update badge: ${badge_file}" "${badge_file}"
         git push origin main
     fi
 }
