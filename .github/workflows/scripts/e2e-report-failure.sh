@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -eo pipefail
+
+set -euo pipefail
 
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
@@ -9,28 +10,34 @@ source "./.github/workflows/scripts/e2e-badges.sh"
 this_file=$(e2e_this_file)
 body_file=$(e2e_create_issue_failure_body)
 
-# Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
-default_title=$(echo "${this_file}" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
-TITLE="${TITLE:-$default_title}"
+# TITLE
+title="${TITLE:-}"
+if [[ -z "${title}" ]]; then
+    # Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
+    title=$(echo "${this_file}" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
+fi
 
-default_workflow=$(echo "${this_file}" | cut -d '.' -f2)
-WORKFLOW="${WORKFLOW:-$default_workflow}"
+# WORKFLOW
+workflow="${WORKFLOW:-}"
+if [[ -z "${workflow}" ]]; then
+    workflow=$(echo "${this_file}" | cut -d '.' -f2)
+fi
 
-HEADER="${HEADER:-e2e}"
+# HEADER
+header="${HEADER:-e2e}"
 
-issue_id=$(gh -R "$ISSUE_REPOSITORY" issue list --label "$HEADER" --label "type:bug" --state open -S "${this_file}" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
+# ISSSE_REPOSITORY
+issue_repository="${ISSUE_REPOSITORY:-}"
+
+issue_id=$(gh -R "${issue_repository}" issue list --label "${header}" --label "type:bug" --state open -S "${this_file}" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
 
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-token=${PAT_TOKEN+$PAT_TOKEN}
-if [[ -z "${token}" ]]; then
-    token=$GH_TOKEN
-fi
-
+token=${PAT_TOKEN:-${GH_TOKEN:-}}
 if [[ -z "${issue_id}" ]]; then
-    GH_TOKEN="${token}" gh -R "$ISSUE_REPOSITORY" issue create -t "[$HEADER]: $TITLE" -F "${body_file}" --label "$HEADER" --label "type:bug" --label "area:$WORKFLOW"
+    GH_TOKEN="${token}" gh -R "${issue_repository}" issue create -t "[${header}]: ${title}" -F "${body_file}" --label "${header}" --label "type:bug" --label "area:${workflow}"
 else
-    GH_TOKEN="${token}" gh -R "$ISSUE_REPOSITORY" issue comment "${issue_id}" -F "${body_file}"
+    GH_TOKEN="${token}" gh -R "${issue_repository}" issue comment "${issue_id}" -F "${body_file}"
 fi
 
 e2e_update_badge_failing

@@ -74,7 +74,7 @@ shellcheck: ## Runs the shellcheck linter.
 				esac; \
 			done; \
 		else \
-			echo -n $$FILES | xargs shellcheck --external-sources; \
+			echo -n $$FILES | xargs shellcheck -o check-unassigned-uppercase --external-sources; \
 		fi
 
 yamllint: ## Runs the yamllint linter.
