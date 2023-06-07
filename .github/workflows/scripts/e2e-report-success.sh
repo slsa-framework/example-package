@@ -3,8 +3,6 @@ set -euo pipefail
 
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
-# shellcheck source=/dev/null
-source "./.github/workflows/scripts/e2e-badges.sh"
 
 # HEADER
 header="${HEADER:-e2e}"

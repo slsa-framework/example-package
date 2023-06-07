@@ -4,8 +4,6 @@ set -euo pipefail
 
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
-# shellcheck source=/dev/null
-source "./.github/workflows/scripts/e2e-badges.sh"
 
 this_file=$(e2e_this_file)
 body_file=$(e2e_create_issue_failure_body)
