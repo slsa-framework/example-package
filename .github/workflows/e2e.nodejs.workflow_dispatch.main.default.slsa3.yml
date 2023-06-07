@@ -95,6 +95,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.trigger_build && needs.build.result == 'success' && needs.publish.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+        with:
+          token: ${{ env.PAT_TOKEN }}
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -103,4 +105,6 @@ jobs:
     if: always() && github.event_name == 'workflow_dispatch' && inputs.trigger_build && (needs.build.result != 'success' || needs.publish.result != 'success' || needs.verify.result != 'success')
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+        with:
+          token: ${{ env.PAT_TOKEN }}
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
