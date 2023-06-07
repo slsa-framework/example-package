@@ -26,5 +26,3 @@ if [[ -n "${issue_id}" ]]; then
     echo gh -R "${issue_repository}" issue close "${issue_id}" -c "$(cat "${body_file}")"
     GH_TOKEN=${token} gh -R "${issue_repository}" issue close "${issue_id}" -c "$(cat "${body_file}")"
 fi
-
-e2e_update_badge_passing

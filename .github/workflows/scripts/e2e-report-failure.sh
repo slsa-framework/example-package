@@ -39,5 +39,3 @@ if [[ -z "${issue_id}" ]]; then
 else
     GH_TOKEN="${token}" gh -R "${issue_repository}" issue comment "${issue_id}" -F "${body_file}"
 fi
-
-e2e_update_badge_failing
