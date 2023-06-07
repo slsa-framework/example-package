@@ -30,14 +30,14 @@ jobs:
       # Bumps the package version and calls workflow_dispatch.
       - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
 
-  fail:
-    if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
-    runs-on: ubuntu-latest
-    steps:
-      - run: false
+  # fail:
+  #   if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: false
 
   build:
-    needs: [fail]
+    # needs: [fail]
     if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
     permissions:
       id-token: write # For signing.
