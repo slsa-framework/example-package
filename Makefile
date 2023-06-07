@@ -49,32 +49,38 @@ golangci-lint: ## Runs the golangci-lint linter.
 		fi; \
 		golangci-lint run -c .golangci.yml ./... $$extraargs
 
+SHELLCHECK_ARGS = -o check-unassigned-uppercase --severity=style --external-sources
+
+.PHONY: shellcheck
 shellcheck: ## Runs the shellcheck linter.
 	@set -e;\
-		FILES=$$(find . -type f -not -iwholename '*/.git/*' -not -iwholename '*/vendor/*' -not -iwholename '*/node_modules/*' -exec bash -c 'file "$$1" | cut -d':' -f2 | grep --quiet shell' _ {} \; -print); \
+		files=$$(find . -type f -not -iwholename '*/.git/*' -not -iwholename '*/vendor/*' -not -iwholename '*/node_modules/*' -exec bash -c 'file "$$1" | cut -d':' -f2 | grep --quiet shell' _ {} \; -print); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
-			echo -n $$FILES | xargs shellcheck -f json --external-sources | jq -c '.[]' | while IFS="" read -r p || [ -n "$$p" ]; do \
-				LEVEL=$$(echo "$$p" | jq -c '.level // empty' | tr -d '"'); \
-				FILE=$$(echo "$$p" | jq -c '.file // empty' | tr -d '"'); \
-				LINE=$$(echo "$$p" | jq -c '.line // empty' | tr -d '"'); \
-				ENDLINE=$$(echo "$$p" | jq -c '.endLine // empty' | tr -d '"'); \
-				COL=$$(echo "$$p" | jq -c '.column // empty' | tr -d '"'); \
-				ENDCOL=$$(echo "$$p" | jq -c '.endColumn // empty' | tr -d '"'); \
-				MESSAGE=$$(echo "$$p" | jq -c '.message // empty' | tr -d '"'); \
-				case $$LEVEL in \
+			exit_code=0; \
+			while IFS="" read -r p && [ -n "$$p" ]; do \
+				level=$$(echo "$$p" | jq -c '.level // empty' | tr -d '"'); \
+				file=$$(echo "$$p" | jq -c '.file // empty' | tr -d '"'); \
+				line=$$(echo "$$p" | jq -c '.line // empty' | tr -d '"'); \
+				endline=$$(echo "$$p" | jq -c '.endLine // empty' | tr -d '"'); \
+				col=$$(echo "$$p" | jq -c '.column // empty' | tr -d '"'); \
+				endcol=$$(echo "$$p" | jq -c '.endColumn // empty' | tr -d '"'); \
+				message=$$(echo "$$p" | jq -c '.message // empty' | tr -d '"'); \
+				exit_code=1; \
+				case $$level in \
 				"info") \
-					echo "::notice file=$${FILE},line=$${LINE},endLine=$${ENDLINE},col=$${COL},endColumn=$${ENDCOL}::$${MESSAGE}"; \
+					echo "::notice file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
 					;; \
 				"warning") \
-					echo "::warning file=$${FILE},line=$${LINE},endLine=$${ENDLINE},col=$${COL},endColumn=$${ENDCOL}::$${MESSAGE}"; \
+					echo "::warning file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
 					;; \
 				"error") \
-					echo "::error file=$${FILE},line=$${LINE},endLine=$${ENDLINE},col=$${COL},endColumn=$${ENDCOL}::$${MESSAGE}"; \
+					echo "::error file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
 					;; \
 				esac; \
-			done; \
+			done <<< "$$(echo -n "$$files" | xargs shellcheck -f json $(SHELLCHECK_ARGS) | jq -c '.[]')"; \
+			exit "$${exit_code}"; \
 		else \
-			echo -n $$FILES | xargs shellcheck -o check-unassigned-uppercase --external-sources; \
+			echo -n "$$files" | xargs shellcheck $(SHELLCHECK_ARGS); \
 		fi
 
 yamllint: ## Runs the yamllint linter.
