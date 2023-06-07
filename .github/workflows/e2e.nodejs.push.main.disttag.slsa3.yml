@@ -14,6 +14,8 @@ env:
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
+  NPM_DIST_TAG: test-tag
+
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -53,7 +55,7 @@ jobs:
         uses: slsa-framework/slsa-github-generator/actions/nodejs/publish@main
         with:
           access: public
-          # dist-tag: test-tag
+          # dist-tag: ${{ env.NPM_DIST_TAG }}
           node-auth-token: ${{ secrets.E2E_NODE_ACCESS_TOKEN }}
           package-name: ${{ needs.build.outputs.package-name }}
           package-download-name: ${{ needs.build.outputs.package-download-name }}
@@ -77,15 +79,6 @@ jobs:
         with:
           go-version: "1.18"
       - run: ./.github/workflows/scripts/e2e.nodejs.default.verify.sh
-      - name: verify dist-tag
-        env:
-          PACKAGE_NAME: ${{ needs.build.outputs.package-name }}
-        run: |
-          cd nodejs/e2e-nodejs-push-main-disttag-slsa3
-          pkg_version=$(npm version --json | jq -r ".\"${PACKAGE_NAME}\"")
-          dist_tag=$(npm view --json | jq -r '."dist-tags"."test-tag"')
-          echo "${dist_tag} == ${pkg_version}"
-          [[ "${dist_tag}" != "" ]] && [[ "${dist_tag}" != "null" ]] && [[ "${dist_tag}" == "${pkg_version}" ]]
 
   if-succeeded:
     needs: [build, publish, verify]

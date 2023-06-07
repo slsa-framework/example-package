@@ -19,6 +19,28 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
+verify_dist_tag() {
+    dist_tag="${NPM_DIST_TAG:-}"
+
+    if [ -z "${dist_tag}" ]; then
+        dist_tag="latest"
+    fi
+
+    package_dir="$(e2e_npm_package_dir)"
+    pkg_version=$(jq -r ".version" <"${package_dir}/package.json")
+    dist_tag=$(npm view "${package_dir}" --json | jq -r ".\"dist-tags\".\"${dist_tag}\"")
+    echo "Checking dist-tag: ${dist_tag} == ${pkg_version}"
+
+    if ! assert_not_empty "${dist_tag}" "dist-tag version is empty"; then
+        exit 1
+    fi
+    if ! assert_not_empty "${pkg_version}" "package version is empty"; then
+        exit 1
+    fi
+
+    e2e_assert_eq "${dist_tag}" "${pkg_version}" "dist-tag not set at the right version"
+}
+
 # Function used to verify the content of the provenance.
 verify_provenance_content() {
     ATTESTATIONS=$(mktemp)
