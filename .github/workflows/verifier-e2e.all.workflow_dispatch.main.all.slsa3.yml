@@ -172,7 +172,7 @@ jobs:
     permissions:
       id-token: write # For signing.
       actions: read # For reading workflow info.
-      contents: read # For asset upload.
+      contents: write # For asset upload.
     # FIXME: Update to v1.7.0
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@main
     with:
