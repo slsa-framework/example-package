@@ -34,7 +34,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
     runs-on: ubuntu-latest
     steps:
-      run: false
+      - run: false
 
   build:
     needs: [fail]
