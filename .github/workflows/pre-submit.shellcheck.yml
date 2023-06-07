@@ -1,0 +1,25 @@
+name: shellcheck
+
+on: [pull_request]
+
+permissions:
+  # Needed to check out the repo.
+  contents: read
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - env:
+          SHELLCHECK_VERSION: "0.8.0"
+        run: |
+          set -euo pipefail
+
+          # Install shellcheck
+          wget -qO- "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" | tar -xJf -
+          mv "shellcheck-v$SHELLCHECK_VERSION/shellcheck" /usr/local/bin
+
+          # Run shellcheck and output github actions commands.
+          # See: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+          make shellcheck
