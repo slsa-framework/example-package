@@ -16,7 +16,7 @@ e2e_update_badge() {
 
     # XXX: Need to create a new checkout to authenticate for some reason.
     gh repo clone "${github_repo}" -- -b main
-    repo_name=$(echo "${}" | cut -d '/' -f2)
+    repo_name=$(echo "${github_repo}" | cut -d '/' -f2)
     cd "./${repo_name}"
 
     mkdir -p "$(dirname "${badge_file}")"
