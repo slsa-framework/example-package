@@ -15,6 +15,7 @@ e2e_update_badge() {
     if [ -n "$(git status --porcelain)" ]; then
         token=${PAT_TOKEN+$PAT_TOKEN}
         if [[ -z "${token}" ]]; then
+            echo "using github token"
             token="${GH_TOKEN}"
         fi
 
