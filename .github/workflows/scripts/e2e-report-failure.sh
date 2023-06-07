@@ -9,16 +9,15 @@ source "./.github/workflows/scripts/e2e-badges.sh"
 this_file=$(e2e_this_file)
 body_file=$(e2e_create_issue_failure_body)
 
-if [[ -z "$TITLE" ]]; then
-    # Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
-    TITLE=$(echo "${this_file}" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
-fi
-if [[ -z "$WORKFLOW" ]]; then
-    WORKFLOW=$(echo "${this_file}" | cut -d '.' -f2)
-fi
-if [[ -z "$HEADER" ]]; then
-    HEADER="e2e"
-fi
+# Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
+default_title=$(echo "${this_file}" | sed -e 's/\./ /g' | rev | cut -c4- | rev | cut -c5-)
+TITLE="${TITLE:-$default_title}"
+
+default_workflow=$(echo "${this_file}" | cut -d '.' -f2)
+WORKFLOW="${WORKFLOW:-$default_workflow}"
+
+HEADER="${HEADER:-e2e}"
+
 issue_id=$(gh -R "$ISSUE_REPOSITORY" issue list --label "$HEADER" --label "type:bug" --state open -S "${this_file}" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
 
 # Use the PAT_TOKEN if one is specified.
