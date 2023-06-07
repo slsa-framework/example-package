@@ -82,7 +82,9 @@ echo "Target branch: $branch"
 
 is_annotated_tag=$([ -n "$annotated_tags" ] && echo "yes" || echo "no")
 
-cat <<EOF >DATA
+data_file=$(mktemp)
+
+cat <<EOF >"${data_file}"
 **E2E release creation**:
 Tag: $tag
 Branch: $branch
@@ -94,14 +96,14 @@ EOF
 if [[ -n "$annotated_tags" ]]; then
     git config user.name "${GITHUB_ACTOR}"
     git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-    git tag -a "$tag" -F ./DATA
+    git tag -a "$tag" -F "${data_file}"
     git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
     git push origin "$tag"
 else
     # We must use a PAT here in order to trigger subsequent workflows.
     # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
     if [[ -n "$prerelease" ]]; then
-        GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch" --prerelease
+        GH_TOKEN=$token gh release create "$tag" --notes-file "${data_file}" --target "$branch" --prerelease
     elif [[ -n "$draft" ]]; then
         # Creating a draft release does not create a tag so we need to create
         # the tag instead to trigger the e2e workflow.
@@ -113,7 +115,7 @@ else
         # previous failed run of the test.
         git push origin "$tag" -f
     else
-        GH_TOKEN=$token gh release create "$tag" --notes-file ./DATA --target "$branch"
+        GH_TOKEN=$token gh release create "$tag" --notes-file "${data_file}" --target "$branch"
     fi
 fi
 

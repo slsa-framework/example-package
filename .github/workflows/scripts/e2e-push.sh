@@ -37,7 +37,8 @@ if [ -f "$FILE" ]; then
     echo -n "$DATE" >"$FILE"
 
     # Add the file content's sha to the request.
-    cat <<EOF >DATA
+    data_file=$(mktemp)
+    cat <<EOF >"${data_file}"
 {"branch":"$BRANCH","message":"$COMMIT_MESSAGE","sha":"$SHA","committer":{"name":"github-actions","email":"github-actions@github.com"},"content":"$(echo -n "$DATE" | base64 --wrap=0)"}
 EOF
 
@@ -49,7 +50,7 @@ EOF
         -H "Accept: application/vnd.github.v3+json" \
         -H "Authorization: token $push_token" \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE" \
-        -d @DATA
+        -d "@${data_file}"
 else
     echo "$DATE" >"$FILE"
 

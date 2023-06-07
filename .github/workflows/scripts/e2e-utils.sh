@@ -35,10 +35,11 @@ e2e_this_event() {
 # File is BODY in current directory.
 _create_issue_body() {
     RUN_DATE=$(date --utc)
+    body_file=$(mktemp)
 
     # see https://docs.github.com/en/actions/learn-github-actions/environment-variables
     # https://docs.github.com/en/actions/learn-github-actions/contexts.
-    cat <<EOF >BODY
+    cat <<EOF >"${body_file}"
 Repo: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME
 Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 Workflow file: https://github.com/$GITHUB_REPOSITORY/tree/main/.github/workflows/$THIS_FILE
@@ -47,6 +48,7 @@ Trigger: $GITHUB_EVENT_NAME
 Branch: $GITHUB_REF_NAME
 Date: $RUN_DATE
 EOF
+    echo "${body_file}"
 }
 
 # e2e_npm_package_name outputs the package name for the currently running e2e test.
@@ -345,11 +347,11 @@ e2e_create_issue_failure_body() {
 }
 
 e2e_create_issue_success_body() {
-    _create_issue_body
+    body_file=$(_create_issue_body)
 
-    echo "" >>./BODY
-    echo "**Tests are passing now. Closing this issue.**" >>./BODY
-
+    echo "" >>"${body_file}"
+    echo "**Tests are passing now. Closing this issue.**" >>"${body_file}"
+    echo "${body_file}"
 }
 
 e2e_verify_predicate_subject_name() {

@@ -77,7 +77,8 @@ fi
 # If this is a test for a release event, create the release.
 if [ "${this_event}" == "release" ]; then
     this_file=$(e2e_this_file)
-    cat <<EOF >DATA
+    data_file=$(mktemp)
+    cat <<EOF >"${data_file}"
 **E2E release creation**:
 Tag: ${tag}
 Branch: ${branch}
@@ -85,7 +86,7 @@ Commit: ${GITHUB_SHA}
 Caller file: ${this_file}
 EOF
 
-    GH_TOKEN="${token}" gh release create "${tag}" --notes-file ./DATA --target "${branch}"
+    GH_TOKEN="${token}" gh release create "${tag}" --notes-file "${data_file}" --target "${branch}"
 fi
 
 if [ "${this_event}" == "workflow_dispatch" ]; then

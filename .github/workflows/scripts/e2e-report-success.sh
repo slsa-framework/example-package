@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+# shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
+# shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-badges.sh"
 
 THIS_FILE=$(e2e_this_file)
 
-e2e_create_issue_success_body
+body_file=$(e2e_create_issue_success_body)
 
 if [[ -z "$HEADER" ]]; then
     HEADER="e2e"
@@ -22,8 +24,8 @@ if [[ -z "$TOKEN" ]]; then
 fi
 
 if [[ -n "$ISSUE_ID" ]]; then
-    echo gh -R "$ISSUE_REPOSITORY" issue close "$ISSUE_ID" -c "$(cat ./BODY)"
-    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue close "$ISSUE_ID" -c "$(cat ./BODY)"
+    echo gh -R "$ISSUE_REPOSITORY" issue close "$ISSUE_ID" -c "$(cat "${body_file}")"
+    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue close "$ISSUE_ID" -c "$(cat "${body_file}")"
 fi
 
 e2e_update_badge_passing

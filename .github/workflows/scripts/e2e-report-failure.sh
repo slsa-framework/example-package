@@ -6,7 +6,7 @@ source "./.github/workflows/scripts/e2e-badges.sh"
 
 THIS_FILE=$(e2e_this_file)
 
-e2e_create_issue_failure_body
+body_file$(e2e_create_issue_failure_body)
 
 if [[ -z "$TITLE" ]]; then
     # Replace `.`` by ` `, remove the last 3 characters `yml` and remove the e2e prefix
@@ -28,9 +28,9 @@ if [[ -z "$TOKEN" ]]; then
 fi
 
 if [[ -z "$ISSUE_ID" ]]; then
-    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue create -t "[$HEADER]: $TITLE" -F ./BODY --label "$HEADER" --label "type:bug" --label "area:$WORKFLOW"
+    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue create -t "[$HEADER]: $TITLE" -F "${body_file}" --label "$HEADER" --label "type:bug" --label "area:$WORKFLOW"
 else
-    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
+    GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F "${body_file}"
 fi
 
 e2e_update_badge_failing

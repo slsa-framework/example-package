@@ -8,7 +8,6 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 # DEFAULT_VERSION enviornment variable, bumps the version and pushes a new tag.
 
 branch=$(e2e_this_branch)
-this_file=$(e2e_this_file)
 
 # Check presence of file in the correct branch.
 gh repo clone "$GITHUB_REPOSITORY" -- -b "$branch"
@@ -55,14 +54,6 @@ new_tag="v${release_major:-$default_major}.${release_minor:-0}.$new_patch"
 
 echo "New release tag used: $new_tag"
 echo "Target branch: $branch"
-
-cat <<EOF >DATA
-**E2E tag creation**:
-Tag: $new_tag
-Branch: $branch
-Commit: $GITHUB_SHA
-Caller file: $this_file
-EOF
 
 git config --global user.name github-actions
 git config --global user.email github-actions@github.com
