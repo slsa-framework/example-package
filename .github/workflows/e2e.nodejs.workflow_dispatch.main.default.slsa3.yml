@@ -21,7 +21,7 @@ env:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.trigger_build)
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.trigger_build)
     permissions:
       actions: write
       contents: write
