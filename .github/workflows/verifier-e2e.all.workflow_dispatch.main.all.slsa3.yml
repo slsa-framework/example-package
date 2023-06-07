@@ -28,6 +28,7 @@ jobs:
     outputs:
       binary-name: ${{ steps.create_name.outputs.binary-name }}
       config-file: ${{ steps.create_name.outputs.config-file }}
+      config-path: ${{ steps.create_name.outputs.config-path }}
     runs-on: ubuntu-latest
     steps:
       - name: Creates the output name
@@ -36,11 +37,13 @@ jobs:
           if [ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]; then
             echo "binary-name=gha_generic-binary-linux-amd64-workflow_dispatch" >> "${GITHUB_OUTPUT}"
             echo "config-file=.github/configs-go/config-ldflags-workflow_dispatch.yml" >> "${GITHUB_OUTPUT}"
+            echo "config-path=.github/configs-docker/config-workflow_dispatch.toml" >> "${GITHUB_OUTPUT}"
             exit 0
           fi
           # This must be a tag event.
           echo "binary-name=gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}" >> "${GITHUB_OUTPUT}"
           echo "config-file=.github/configs-go/config-ldflags-tag-name.yml" >> "${GITHUB_OUTPUT}"
+          echo "config-path=.github/configs-docker/config-tag-${GITHUB_REF_NAME}.toml" >> "${GITHUB_OUTPUT}"
 
   build:
     needs: [generate_name]
@@ -164,8 +167,8 @@ jobs:
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
 
-  gha_containter-based:
-    needs: container_build
+  gha_container-based:
+    needs: [generate-name]
     permissions:
       id-token: write # For signing.
       actions: read # For reading workflow info.
@@ -175,7 +178,7 @@ jobs:
     with:
       builder-image: "bash"
       builder-digest: "sha256:9e2ba52487d945504d250de186cb4fe2e3ba023ed2921dd6ac8b97ed43e76af9"
-      config-path: ".github/configs-docker/config.toml"
+      config-path: ${{ needs.generate_name.outputs.config-path }}
       compile-generator: true
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
