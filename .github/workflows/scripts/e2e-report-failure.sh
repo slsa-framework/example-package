@@ -23,7 +23,7 @@ issue_id=$(gh -R "$ISSUE_REPOSITORY" issue list --label "$HEADER" --label "type:
 # Use the PAT_TOKEN if one is specified.
 # TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
 token=${PAT_TOKEN+$PAT_TOKEN}
-if [[ -z "$token" ]]; then
+if [[ -z "${token}" ]]; then
     token=$GH_TOKEN
 fi
 
