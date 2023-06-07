@@ -37,6 +37,6 @@ For GitHub Actions-based builds, the artifact is uploaded using
 
 ### Node.js builder e2e tests
 
-| Name   | Status |
-| ------ | ------ |
-| create |        |
+| Name              | Status                                                                                                                                                                                                                                                                                                                  |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| workflow_dispatch | [![e2e.nodejs.workflow_dispatch.main.default.slsa3.yml](https://raw.githubusercontent.com/slsa-framework/example-package/main/badges/e2e.nodejs.workflow_dispatch.main.default.slsa3.yml.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.workflow_dispatch.main.default.slsa3.yml) |

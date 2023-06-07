@@ -13,15 +13,8 @@ e2e_update_badge() {
     curl -s -o "${badge_file}" "https://img.shields.io/badge/${this_file//-/--}-${message//-/--}-${color}?logo=github&style=plastic"
 
     if [ -n "$(git status --porcelain)" ]; then
-        token=${PAT_TOKEN+$PAT_TOKEN}
-        if [[ -z "${token}" ]]; then
-            token="${GH_TOKEN}"
-        fi
-
         git config --global user.name github-actions
         git config --global user.email github-actions@github.com
-        # Set the remote url to authenticate using the token.
-        # git remote set-url origin "https://github-actions:${token}@github.com/${GITHUB_REPOSITORY}.git"
 
         git add "${badge_file}"
         git commit -m "Update badge: ${badge_file}" "${badge_file}"
