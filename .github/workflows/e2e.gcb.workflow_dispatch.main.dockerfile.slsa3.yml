@@ -37,9 +37,6 @@ jobs:
       id-token: write # For auth.
       contents: read # For reading repository contents.
       packages: write # For writing container images.
-    outputs:
-      image: ${{ steps.image.outputs.image }}
-      digest: ${{ steps.build.outputs.digest }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -55,15 +52,15 @@ jobs:
       - name: Trigger build via manual invocation
         id: build
         run: |
-          gcloud builds submit --region=us-west2 --project slsa-tooling --suppress-logs --tag ${IMAGE_REGISTRY}/${IMAGE_PROJECT}/${IMAGE_NAME} --gcs-log-dir:gs://slsa-tooling_coudbuild/
+          gcloud builds submit --region=us-west2 --project slsa-tooling --suppress-logs --tag "${IMAGE_REGISTRY}/${IMAGE_PROJECT}/${IMAGE_NAME}" --gcs-log-dir:gs://slsa-tooling_coudbuild/
 
           # Retrieve the latest build ID
           # TODO: How do we avoid races? Can we directly get the output of builds submit?
-          export BUILD_ID=$(gcloud builds --verbosity debug list --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
-          echo "Created build with build id ${BUILD_ID}..."
+          build_id=$(gcloud builds --verbosity debug list --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
+          echo "Created build with build id ${build_id}..."
 
-          export IMAGE_DIGEST=$(gcloud builds --verbosity debug describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
-          echo "Retrieved image digest ${IMAGE_DIGEST}..."
+          image_digest=$(gcloud builds --verbosity debug describe "${build_id}" --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
+          echo "Retrieved image digest ${image_digest}..."
 
-          export ESCAPED_IMAGE_NAME=$(echo $IMAGE_NAME | sed "s/\//%2F/g")
-          gcloud artifacts docker images describe "${IMAGE_REGISTRY}"/"${ESCAPED_IMAGE_NAME}@${IMAGE_DIGEST}" --verbosity debug --show-provenance
+          escaped_image_name=$(echo "${image_name}" | sed "s/\//%2F/g")
+          gcloud artifacts docker images describe "${IMAGE_REGISTRY}/${escaped_image_name}@${image_digest}" --verbosity debug --show-provenance
