@@ -151,7 +151,7 @@ jobs:
           CHECKOUT_SHA1: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           BUILDER_INTERFACE_TYPE: "builder"
         run: |
-         ./.github/workflows/scripts/verify-verified-token.sh
+          ./.github/workflows/scripts/verify-verified-token.sh
 
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 

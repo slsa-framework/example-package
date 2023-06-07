@@ -29,7 +29,7 @@ For GitHub Actions-based builds, the artifact is uploaded using
   SLSA 2 provenance generated on GitHub Actions using
   https://github.com/slsa-framework/slsa-github-generator.
 
-## slsa-github-generators e2e test status
+## slsa-github-generator e2e test status
 
 ### Project health
 
