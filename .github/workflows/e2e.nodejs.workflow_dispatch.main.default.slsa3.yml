@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       trigger_build:
-        description: "Trigger a build"
+        description: "internal: do not check"
         required: false
         default: false
         type: boolean
