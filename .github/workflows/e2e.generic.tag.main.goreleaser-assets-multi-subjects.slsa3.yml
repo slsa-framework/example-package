@@ -78,7 +78,7 @@ jobs:
           set -euo pipefail
 
           checksum_file=$(echo "$ARTIFACTS" | jq -r '.[] | select (.type=="Checksum") | .path')
-          echo "hashes=$(cat $checksum_file | base64 -w0)" >> ""${GITHUB_OUTPUT}""
+          echo "hashes=$(base64 -w0 <"$checksum_file")" >> "${GITHUB_OUTPUT}"
 
   provenance:
     needs: [shim, build]
@@ -107,15 +107,15 @@ jobs:
         with:
           go-version: "1.18"
       - env:
-          CHECKSUMS: ${{ needs.build.outputs.hashes }}
+          CHECKSUMS_B64: ${{ needs.build.outputs.hashes }}
           PROVENANCE: ${{ needs.provenance.outputs.provenance-name }}
         run: |
           set -euo pipefail
-          checksums=$(echo "$CHECKSUMS" | base64 -d)
+          checksums=$(echo "${CHECKSUMS_B64}" | base64 -d)
           while read -r line; do
-              fn=$(echo $line | cut -d ' ' -f2)
+              fn=$(echo "$line" | cut -d ' ' -f2)
               echo "Verifying $fn"
-              BINARY=$fn ./.github/workflows/scripts/e2e.generic.default.verify.sh
+              BINARY="$fn" ./.github/workflows/scripts/e2e.generic.default.verify.sh
           done <<<"$checksums"
 
   if-succeeded:

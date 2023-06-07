@@ -36,11 +36,6 @@ jobs:
       contents: read # For reading repository contents.
       packages: write # For writing container images.
       id-token: write # For authenticating to Google Cloud Workload Identity
-    outputs:
-      image: ${{ steps.image.outputs.image }}
-      digest: ${{ steps.build.outputs.digest }}
-      service_account: ${{ steps.image.outputs.service_account }}
-      provider_name: ${{ steps.image.outputs.provider_name }}
     steps:
       - id: auth
         name: "Authenticate to Google Cloud"
@@ -87,8 +82,6 @@ jobs:
     outputs:
       image: ${{ steps.image.outputs.image }}
       digest: ${{ steps.image.outputs.digest }}
-      service_account: ${{ steps.image.outputs.service_account }}
-      provider_name: ${{ steps.image.outputs.provider_name }}
     steps:
       - id: auth
         name: "Authenticate to Google Cloud"
@@ -110,15 +103,17 @@ jobs:
         run: |
           # NOTE: We need to use the image and digest in order to make sure
           # that the image we attest has not been modified.
-          image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
-          docker pull "$image_name:main"
-          repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' $image_name:main)
-          echo $repo_digest
+          full_image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
+          docker pull "${full_image_name}:main"
+          repo_digest=$(docker inspect --format='{{index .RepoDigests 0}}' "${full_image_name}:main")
+          echo "$repo_digest"
 
-          echo "image=$image_name" >> "${GITHUB_OUTPUT}"
-          echo "digest=${repo_digest#*@}" >> "${GITHUB_OUTPUT}"
-          echo "service_account=${SERVICE_ACCOUNT}" >> "${GITHUB_OUTPUT}"
-          echo "provider_name=${PROVIDER_NAME}" >> "${GITHUB_OUTPUT}"
+          {
+            echo "image=$image_name"
+            echo "digest=${repo_digest#*@}"
+            echo "service_account=${SERVICE_ACCOUNT}"
+            echo "provider_name=${PROVIDER_NAME}"
+          } >> "${GITHUB_OUTPUT}"
 
   build:
     permissions:
@@ -147,8 +142,8 @@ jobs:
         id: build
         run: |
           name=$(find outputs/ -type f | head -1)
-          cp $name .
-          echo "name=$(basename $name)" >> "${GITHUB_OUTPUT}"
+          cp "${name}" .
+          echo "name=$(basename "${name}")" >> "${GITHUB_OUTPUT}"
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build.outputs.attestations-download-name }}
