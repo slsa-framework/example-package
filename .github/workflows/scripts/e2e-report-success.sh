@@ -2,6 +2,7 @@
 set -eo pipefail
 
 source "./.github/workflows/scripts/e2e-utils.sh"
+source "./.github/workflows/scripts/e2e-badges.sh"
 
 THIS_FILE=$(e2e_this_file)
 
@@ -24,3 +25,5 @@ if [[ -n "$ISSUE_ID" ]]; then
     echo gh -R "$ISSUE_REPOSITORY" issue close "$ISSUE_ID" -c "$(cat ./BODY)"
     GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue close "$ISSUE_ID" -c "$(cat ./BODY)"
 fi
+
+e2e_update_badge_passing

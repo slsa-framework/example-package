@@ -2,6 +2,7 @@
 set -eo pipefail
 
 source "./.github/workflows/scripts/e2e-utils.sh"
+source "./.github/workflows/scripts/e2e-badges.sh"
 
 THIS_FILE=$(e2e_this_file)
 
@@ -31,3 +32,5 @@ if [[ -z "$ISSUE_ID" ]]; then
 else
     GH_TOKEN=$TOKEN gh -R "$ISSUE_REPOSITORY" issue comment "$ISSUE_ID" -F ./BODY
 fi
+
+e2e_update_badge_failing
