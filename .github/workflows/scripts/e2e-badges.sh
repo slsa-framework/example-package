@@ -10,7 +10,7 @@ e2e_update_badge() {
     color="$2"
 
     mkdir -p "$(dirname "${badge_file}")"
-    curl -s -O "${badge_file}" "https://img.shields.io/badge/${this_file//-/--}-${message//-/--}-${color}?logo=github&style=plastic"
+    curl -s -o "${badge_file}" "https://img.shields.io/badge/${this_file//-/--}-${message//-/--}-${color}?logo=github&style=plastic"
 
     if [ -n "$(git status --porcelain)" ]; then
         token=${PAT_TOKEN+$PAT_TOKEN}
@@ -23,6 +23,7 @@ e2e_update_badge() {
         # Set the remote url to authenticate using the token.
         git remote set-url origin "https://github-actions:${token}@github.com/${GITHUB_REPOSITORY}.git"
 
+        git add "${badge_file}"
         git commit -m "Update badge" "${badge_file}"
         git push origin main
     fi

@@ -33,8 +33,10 @@ For GitHub Actions-based builds, the artifact is uploaded using
 
 ### Project health
 
-| Name          | Status                                                                                                                                                                                                                           |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| golangci-lint | [![golangci-lint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.golangci-lint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.golangci-lint.yml) |
-| shellcheck    | [![shellcheck](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.shellcheck.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.shellcheck.yml)          |
-| yamllint      | [![yamllint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.yamllint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.yamllint.yml)                |
+[![golangci-lint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.golangci-lint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.golangci-lint.yml) [![shellcheck](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.shellcheck.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.shellcheck.yml) [![yamllint](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.yamllint.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/pre-submit.yamllint.yml)
+
+### Node.js builder e2e tests
+
+| Name   | Status |
+| ------ | ------ |
+| create |        |
