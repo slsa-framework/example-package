@@ -19,8 +19,8 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
-ACTIONS_RUNNER_DEBUG=${ACTIONS_RUNNER_DEBUG:-}
-if [[ "${ACTIONS_RUNNER_DEBUG}" == "true" ]]; then
+RUNNER_DEBUG=${RUNNER_DEBUG:-}
+if [[ -n "${RUNNER_DEBUG}" ]]; then
     set -x
 fi
 
@@ -115,6 +115,7 @@ verify_provenance_content() {
         assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
         isPrerelease=$(e2e_is_prerelease "$GITHUB_REF_NAME")
         isDraft=$(e2e_is_draft "$GITHUB_REF_NAME")
+        echo "assets: \"$assets\""
         if [[ -z "$has_assets" ]]; then
             e2e_assert_eq "$assets" "[\"null\",\"null\"]" "there should be no assets"
         else

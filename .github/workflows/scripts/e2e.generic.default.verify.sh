@@ -3,8 +3,8 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
-ACTIONS_RUNNER_DEBUG=${ACTIONS_RUNNER_DEBUG:-}
-if [[ "${ACTIONS_RUNNER_DEBUG}" == "true" ]]; then
+RUNNER_DEBUG=${RUNNER_DEBUG:-}
+if [[ -n "${RUNNER_DEBUG}" ]]; then
     set -x
 fi
 
