@@ -17,6 +17,8 @@ on:
 
 permissions: {}
 
+concurrency: "e2e.container.workflow_dispatch.main.workflow_inputs.slsa3"
+
 env:
   PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   GH_TOKEN: ${{ github.token }}

@@ -5,6 +5,8 @@ on:
 
 permissions: read-all
 
+concurrency: "e2e.container-based.workflow_dispatch.main.default.slsa3"
+
 env:
   # TODO: Replace this token.
   PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}

@@ -24,6 +24,8 @@ on:
 
 permissions: read-all
 
+concurrency: "e2e.verify-token.push.main"
+
 env:
   PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
   GH_TOKEN: ${{ github.token }}

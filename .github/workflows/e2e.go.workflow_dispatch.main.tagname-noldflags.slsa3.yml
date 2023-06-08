@@ -5,6 +5,8 @@ on:
 
 permissions: read-all
 
+concurrency: "e2e.go.workflow_dispatch.main.tagname-noldflags.slsa3"
+
 env:
   PAT_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   GH_TOKEN: ${{ github.token }}

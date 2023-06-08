@@ -8,6 +8,8 @@ on:
 
 permissions: {}
 
+concurrency: "e2e.container.schedule.main.continue-on-error.slsa3"
+
 env:
   PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   GH_TOKEN: ${{ github.token }}

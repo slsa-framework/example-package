@@ -37,6 +37,8 @@ on:
 
 permissions: {}
 
+concurrency: "e2e.verify-token.reusable"
+
 env:
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: ${{ github.repository }}

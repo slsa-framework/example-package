@@ -7,6 +7,8 @@ on:
 
 permissions: read-all
 
+concurrency: "e2e.go.release.main.config-ldflags-assets.slsa3"
+
 env:
   PAT_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   GH_TOKEN: ${{ github.token }}

@@ -15,6 +15,8 @@ on:
 
 permissions: {}
 
+concurrency: "e2e.container.tag.main.gcp-workload-identity.slsa3"
+
 env:
   PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   GH_TOKEN: ${{ github.token }}

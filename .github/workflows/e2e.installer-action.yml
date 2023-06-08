@@ -5,6 +5,8 @@ on:
 
 permissions: read-all
 
+concurrency: "e2e.installer-action"
+
 env:
   # UPDATE ON RELEASE: version.
   LATEST_VERSION: v2.1.0

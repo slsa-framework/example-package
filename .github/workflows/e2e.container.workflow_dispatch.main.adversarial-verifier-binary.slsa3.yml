@@ -4,6 +4,8 @@ on:
 
 permissions: read-all
 
+concurrency: "e2e.container.workflow_dispatch.main.adversarial-verifier-binary.slsa3"
+
 env:
   PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   GH_TOKEN: ${{ github.token }}
