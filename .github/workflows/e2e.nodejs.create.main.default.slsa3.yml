@@ -16,6 +16,9 @@ env:
   DEFAULT_VERSION: v39.0.0
 
 jobs:
+  # Bootstrap
+  ################################################################################
+
   bootstrap:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -33,6 +36,9 @@ jobs:
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  # Main workflow
+  ################################################################################
 
   # Shim determines if the rest of the workflow should run.
   # NOTE: it should only use the `if` to determine this and all downstream jobs
