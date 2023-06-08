@@ -113,6 +113,8 @@ verify_provenance_content() {
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
         echo "getting release info: $GITHUB_REF_NAME"
+        gh repo view --json owner,name
+
         assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
         isPrerelease=$(e2e_is_prerelease "$GITHUB_REF_NAME")
         isDraft=$(e2e_is_draft "$GITHUB_REF_NAME")
