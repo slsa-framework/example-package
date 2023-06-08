@@ -249,7 +249,6 @@ jobs:
           repository: slsa-framework/example-package
           ref: main
       - run: ./.github/workflows/scripts/e2e-report-success.sh
-      - run: ./.github/workflows/scripts/badges/update-passing.sh
 
   if-failed:
     needs: [setup-generic, verify-token]
@@ -264,4 +263,3 @@ jobs:
           repository: slsa-framework/example-package
           ref: main
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
-      - run: ./.github/workflows/scripts/badges/update-failing.sh
