@@ -19,26 +19,44 @@ env:
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
 jobs:
-  dispatch:
+  # Bootstrap
+  ################################################################################
+
+  bootstrap:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.trigger_build)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' && !inputs.trigger_build
     permissions:
-      actions: write
       contents: write
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
-      # Bumps the package version and calls workflow_dispatch.
+      # Bumps the package version pushes, creates a git tag, and pushes the tag.
       - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
 
-  # fail:
-  #   if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: false
+  if-bootstrap-failed:
+    runs-on: ubuntu-latest
+    needs: [bootstrap]
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.bootstrap.result != 'success'
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  # Main workflow
+  ################################################################################
+
+  # Shim determines if the rest of the workflow should run.
+  # NOTE: it should only use the `if` to determine this and all downstream jobs
+  #      should depend on this job.
+  shim:
+    # NOTE: this must be kept in sync with the if-failed job.
+    if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "event: ${GITHUB_EVENT_NAME}"
+          echo "ref: ${GITHUB_REF}"
 
   build:
-    # needs: [fail]
-    if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
+    needs: [shim]
     permissions:
       id-token: write # For signing.
       contents: read # For repo checkout of private repos.
@@ -52,7 +70,6 @@ jobs:
   publish:
     needs: [build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
     steps:
       - name: Set up Node environment
         uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
@@ -76,7 +93,6 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     needs: [build, publish]
-    if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - name: Set up Node environment
@@ -92,7 +108,7 @@ jobs:
   if-succeeded:
     runs-on: ubuntu-latest
     needs: [build, publish, verify]
-    if: github.event_name == 'workflow_dispatch' && inputs.trigger_build && needs.build.result == 'success' && needs.publish.result == 'success' && needs.verify.result == 'success'
+    if: needs.build.result == 'success' && needs.publish.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
