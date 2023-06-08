@@ -12,7 +12,7 @@ env:
   PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
-  # NOTE: must be kept in sync with 'if' expressions.
+  # NOTE: must be kept in sync with shim 'if' expressions.
   DEFAULT_VERSION: v39.0.0
 
 jobs:
