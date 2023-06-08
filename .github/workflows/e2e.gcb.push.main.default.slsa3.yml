@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       trigger_build:
-        description: 'Trigger a build'
+        description: "Trigger a build"
         required: false
         default: false
         type: boolean
@@ -61,16 +61,16 @@ jobs:
         id: describe
         run: |
           # Retrieve the build ID filtering by image name
-          export BUILD_ID=$(gcloud builds list --filter "results.images.name=${IMAGE_REGISTRY}"/${IMAGE_NAME} --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
-          echo "Found build with build id ${BUILD_ID}..."
+          build_id=$(gcloud builds list --filter "results.images.name=${IMAGE_REGISTRY}/${IMAGE_NAME}" --region=us-west2 --project slsa-tooling --limit=1 --format="value(id)")
+          echo "Found build with build id ${build_id}..."
 
-          export IMAGE_DIGEST=$(gcloud builds describe ${BUILD_ID} --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
-          echo "image=${IMAGE_REGISTRY}/${IMAGE_NAME}@${IMAGE_DIGEST}" >> "${GITHUB_OUTPUT}"
-          echo "Retrieved image digest ${IMAGE_DIGEST}..."
+          image_digest=$(gcloud builds describe "${build_id}" --project=slsa-tooling --region=us-west2 --format="value(results.images[0].digest)")
+          echo "image=${IMAGE_REGISTRY}/${IMAGE_NAME}@${image_digest}" >> "${GITHUB_OUTPUT}"
+          echo "Retrieved image digest ${image_digest}..."
 
           # Get latest builds provenance
-          gcloud artifacts docker images describe "${IMAGE_REGISTRY}/${IMAGE_NAME}@${IMAGE_DIGEST}" --show-provenance --format json > provenance.json
-          echo "::set-output name=provenance-name::provenance.json"
+          gcloud artifacts docker images describe "${IMAGE_REGISTRY}/${IMAGE_NAME}@${image_digest}" --show-provenance --format json > provenance.json
+          echo "provenance-name=provenance.json" >> "${GITHUB_OUTPUT}"
       - name: Upload provenance
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:

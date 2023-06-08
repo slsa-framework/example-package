@@ -40,7 +40,6 @@ jobs:
     needs: [shim]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     outputs:
-      binary-name: ${{ steps.build.outputs.binary-name }}
       digest: ${{ steps.hash.outputs.digest }}
     steps:
       - name: Build artifacts

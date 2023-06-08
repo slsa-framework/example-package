@@ -35,15 +35,19 @@ jobs:
         id: create_name
         run: |
           if [ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]; then
-            echo "binary-name=gha_generic-binary-linux-amd64-workflow_dispatch" >> "${GITHUB_OUTPUT}"
-            echo "config-file=.github/configs-go/config-ldflags-workflow_dispatch.yml" >> "${GITHUB_OUTPUT}"
-            echo "config-path=.github/configs-docker/config-workflow_dispatch.toml" >> "${GITHUB_OUTPUT}"
+            {
+              echo "binary-name=gha_generic-binary-linux-amd64-workflow_dispatch"
+              echo "config-file=.github/configs-go/config-ldflags-workflow_dispatch.yml"
+              echo "config-path=.github/configs-docker/config-workflow_dispatch.toml"
+            } >> "${GITHUB_OUTPUT}"
             exit 0
           fi
           # This must be a tag event.
-          echo "binary-name=gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}" >> "${GITHUB_OUTPUT}"
-          echo "config-file=.github/configs-go/config-ldflags-tag-name.yml" >> "${GITHUB_OUTPUT}"
-          echo "config-path=.github/configs-docker/config-tag-${GITHUB_REF_NAME}.toml" >> "${GITHUB_OUTPUT}"
+          {
+            echo "binary-name=gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}"
+            echo "config-file=.github/configs-go/config-ldflags-tag-name.yml"
+            echo "config-path=.github/configs-docker/config-tag-${GITHUB_REF_NAME}.toml"
+          } >> "${GITHUB_OUTPUT}"
 
   build:
     needs: [generate_name]
