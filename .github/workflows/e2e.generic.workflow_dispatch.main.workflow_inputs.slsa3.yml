@@ -44,7 +44,7 @@ jobs:
         run: |
           bazelisk build //:hello
           cp bazel-bin/hello_/hello . # Copy binary from Bazel path to root
-          echo "::set-output name=binary-name::hello"
+          echo "binary-name=hello" >> "${GITHUB_OUTPUT}"
       - name: Upload binary
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:

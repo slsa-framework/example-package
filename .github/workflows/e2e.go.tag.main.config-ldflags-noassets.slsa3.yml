@@ -54,11 +54,13 @@ jobs:
         run: |
           set -euo pipefail
 
-          THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
-          BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-          echo "version=-X main.gitVersion=v1.2.3" >> "${GITHUB_OUTPUT}"
-          echo "commit=-X main.gitCommit=abcdef" >> "${GITHUB_OUTPUT}"
-          echo "branch=-X main.gitBranch=$BRANCH" >> "${GITHUB_OUTPUT}"
+          this_file=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" | jq -r '.path' | cut -d '/' -f3)
+          branch=$(echo "${this_file}" | cut -d '.' -f4)
+          {
+          echo "version=-X main.gitVersion=v1.2.3"
+          echo "commit=-X main.gitCommit=abcdef"
+          echo "branch=-X main.gitBranch=${branch}"
+          } >> "${GITHUB_OUTPUT}"
   build:
     needs: [shim, args]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
