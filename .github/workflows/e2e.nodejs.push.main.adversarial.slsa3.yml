@@ -1,0 +1,80 @@
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+concurrency: "e2e-nodejs-push-main-adversarial-slsa3"
+
+env:
+  PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+jobs:
+  # Bootstrap
+  ################################################################################
+
+  bootstrap:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      # Bumps the package version pushes, creates a git tag, and pushes the tag.
+      - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
+
+  if-bootstrap-failed:
+    runs-on: ubuntu-latest
+    needs: [bootstrap]
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.bootstrap.result != 'success'
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  # Main workflow
+  ################################################################################
+
+  # Shim determines if the rest of the workflow should run.
+  # NOTE: it should only use the `if` to determine this and all downstream jobs
+  #      should depend on this job.
+  shim:
+    # NOTE: this must be kept in sync with the if-failed job.
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "event: ${GITHUB_EVENT_NAME}"
+          echo "ref: ${GITHUB_REF}"
+
+  adversarial-cmd:
+    needs: [shim]
+    permissions:
+      id-token: write # For signing.
+      contents: read # For repo checkout of private repos.
+      actions: read # For getting workflow run on private repos.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
+    with:
+      directory: nodejs/e2e-nodejs-push-main-adversarial-slsa3
+      node-version: 16
+      run-scripts: "ci;pwd"
+
+  if-succeeded:
+    needs: [adversarial-cmd]
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && needs.adversarial-cmd.result == 'failure'
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    needs: [adversarial-cmd]
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && needs.adversarial-cmd.result != 'failure'
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
