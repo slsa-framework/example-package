@@ -34,19 +34,20 @@ e2e_this_event() {
 
 # File is BODY in current directory.
 _create_issue_body() {
-    RUN_DATE=$(date --utc)
+    run_date=$(date --utc)
     body_file=$(mktemp)
+    this_file=$(e2e_this_file)
 
     # see https://docs.github.com/en/actions/learn-github-actions/environment-variables
     # https://docs.github.com/en/actions/learn-github-actions/contexts.
     cat <<EOF >"${body_file}"
-Repo: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_REF_NAME
-Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
-Workflow file: https://github.com/$GITHUB_REPOSITORY/tree/main/.github/workflows/$THIS_FILE
-Workflow runs: https://github.com/$GITHUB_REPOSITORY/actions/workflows/$THIS_FILE
-Trigger: $GITHUB_EVENT_NAME
-Branch: $GITHUB_REF_NAME
-Date: $RUN_DATE
+Repo: https://github.com/${GITHUB_REPOSITORY}/tree/${GITHUB_REF_NAME}
+Run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+Workflow file: https://github.com/${GITHUB_REPOSITORY}/tree/main/.github/workflows/${this_file}
+Workflow runs: https://github.com/${GITHUB_REPOSITORY}/actions/workflows/${this_file}
+Trigger: ${GITHUB_EVENT_NAME}
+Branch: ${GITHUB_REF_NAME}
+Date: ${run_date}
 EOF
     echo "${body_file}"
 }
