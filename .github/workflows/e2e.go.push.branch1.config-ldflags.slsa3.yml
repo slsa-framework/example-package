@@ -8,7 +8,8 @@ on:
 permissions: read-all
 
 env:
-  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  PAT_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   # ISSUE_REPOSITORY: laurentsimon/slsa-on-github-test
   # NOTE: update build job if CONFIG_FILE changes.
