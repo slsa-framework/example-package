@@ -16,7 +16,7 @@ env:
   DEFAULT_VERSION: v39.0.0
 
 jobs:
-  push:
+  bootstrap:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     permissions:
@@ -26,10 +26,10 @@ jobs:
       # Bumps the package version pushes, creates a git tag, and pushes the tag.
       - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
 
-  if-push-failed:
+  if-bootstrap-failed:
     runs-on: ubuntu-latest
-    needs: [push]
-    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.push.result != 'success'
+    needs: [bootstrap]
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.bootstrap.result != 'success'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
