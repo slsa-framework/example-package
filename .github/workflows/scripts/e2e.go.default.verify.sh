@@ -19,6 +19,11 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
+ACTIONS_RUNNER_DEBUG=${ACTIONS_RUNNER_DEBUG:-}
+if [[ "${ACTIONS_RUNNER_DEBUG}" == "true" ]]; then
+    set -x
+fi
+
 # Function used to verify the content of the provenance.
 verify_provenance_content() {
 

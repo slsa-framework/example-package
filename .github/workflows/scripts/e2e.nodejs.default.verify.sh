@@ -19,6 +19,11 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
+ACTIONS_RUNNER_DEBUG=${ACTIONS_RUNNER_DEBUG:-}
+if [[ "${ACTIONS_RUNNER_DEBUG}" == "true" ]]; then
+    set -x
+fi
+
 verify_dist_tag() {
     dist_tag="${NPM_DIST_TAG:-}"
 
