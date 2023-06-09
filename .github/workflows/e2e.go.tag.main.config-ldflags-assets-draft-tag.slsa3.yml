@@ -89,6 +89,8 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     needs: [shim, build]
+    permissions:
+      contents: write # Allows github token to read draft releases.
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
