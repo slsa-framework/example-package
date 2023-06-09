@@ -112,10 +112,11 @@ verify_provenance_content() {
     fi
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+        gh release view -R slsa-framework/example-package "${GITHUB_REF_NAME}"
+
         assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
         isPrerelease=$(e2e_is_prerelease "$GITHUB_REF_NAME")
         isDraft=$(e2e_is_draft "$GITHUB_REF_NAME")
-        echo "assets: \"$assets\""
         if [[ -z "$has_assets" ]]; then
             e2e_assert_eq "$assets" "[\"null\",\"null\"]" "there should be no assets"
         else
