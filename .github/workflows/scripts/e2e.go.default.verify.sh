@@ -112,7 +112,8 @@ verify_provenance_content() {
     fi
 
     if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-        gh release view -R slsa-framework/example-package "${GITHUB_REF_NAME}"
+        echo "waiting..."
+        sleep 30
 
         assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
         isPrerelease=$(e2e_is_prerelease "$GITHUB_REF_NAME")
