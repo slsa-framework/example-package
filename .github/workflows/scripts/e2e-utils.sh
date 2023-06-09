@@ -427,22 +427,24 @@ _e2e_verify_query() {
 # Returns the first 2 asset in a release.
 e2e_get_release_assets_filenames() {
     local tag="$1"
-    assets=$(gh release view --json assets "$tag" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
-    echo "$assets"
+    pwd >&2
+    gh repo view --json owner,name >&2
+    assets=$(gh release view --json assets "${tag}" | jq -r '.assets | .[0].name, .[1].name' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+    echo "${assets}"
 }
 
 # Checks if tag is a prerelease
 e2e_is_prerelease() {
     local tag="$1"
-    prerelease=$(gh release view "$tag" --json isPrerelease | jq -r '.isPrerelease')
-    echo "$prerelease"
+    prerelease=$(gh release view "${tag}" --json isPrerelease | jq -r '.isPrerelease')
+    echo "${prerelease}"
 }
 
 # Checks if tag is a draft
 e2e_is_draft() {
     local tag="$1"
-    draft=$(gh release view "$tag" --json isDraft | jq -r '.isDraft')
-    echo "$draft"
+    draft=$(gh release view "${tag}" --json isDraft | jq -r '.isDraft')
+    echo "${draft}"
 }
 
 e2e_verify_predicate_v1_buildDefinition_externalParameters_source() {
