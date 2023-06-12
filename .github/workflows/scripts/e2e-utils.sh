@@ -12,7 +12,7 @@ export THIS_FILE=""
 e2e_this_file() {
     # NOTE: Cache the file name so we don't make repeated calls to the API.
     if [ "${THIS_FILE}" == "" ]; then
-        THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | cut -d '/' -f3)
+        THIS_FILE=$(gh api -H "Accept: application/vnd.github.v3+json" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.path' | xargs basename)
         export THIS_FILE
     fi
 
