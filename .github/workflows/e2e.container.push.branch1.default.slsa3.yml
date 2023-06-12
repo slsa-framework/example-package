@@ -28,7 +28,10 @@ env:
   IMAGE_NAME: slsa-framework/example-package.e2e.container.push.branch1.default.slsa3
 
 jobs:
-  push:
+  # Bootstrap
+  ################################################################################
+
+  bootstrap:
     runs-on: ubuntu-latest
     if: github.ref_name == 'main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     permissions:
@@ -37,29 +40,33 @@ jobs:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - run: ./.github/workflows/scripts/e2e-push.sh
 
-  shim:
+  if-bootstrap-failed:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
-    outputs:
-      continue: ${{ steps.verify.outputs.continue }}
+    needs: [bootstrap]
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.bootstrap.result != 'success'
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - id: verify
-        run: |
-          set -euo pipefail
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
-          source "./.github/workflows/scripts/e2e-utils.sh"
+  # Main workflow
+  ################################################################################
 
-          BRANCH=$(e2e_this_branch)
-          if [[ "$BRANCH" == "$GITHUB_REF_NAME" ]]; then
-            echo "continue=yes" >> "${GITHUB_OUTPUT}"
-          fi
+  # Shim determines if the rest of the workflow should run.
+  # NOTE: it should only use the `if` to determine this and all downstream jobs
+  #      should depend on this job.
+  shim:
+    # NOTE: this must be kept in sync with the if-failed job.
+    if: github.ref_type == 'branch' && github.ref_name == "branch1" && github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "event: ${GITHUB_EVENT_NAME}"
+          echo "ref: ${GITHUB_REF}"
 
   # Build the Go application into a Docker image
   # Push the image to ghcr.io
   build:
     needs: [shim]
-    if: needs.shim.outputs.continue == 'yes'
     permissions:
       contents: read # For reading repository contents.
       packages: write # For writing container images.
@@ -109,7 +116,6 @@ jobs:
   # Upload the provenance to ghcr.io
   provenance:
     needs: [shim, build]
-    if: needs.shim.outputs.continue == 'yes'
     permissions:
       id-token: write # For signing.
       actions: read # For reading workflow info.
@@ -129,7 +135,6 @@ jobs:
     # branches for required status checks. It should have a unique name among
     # other pre-submits.
     needs: [shim, build, provenance]
-    if: needs.shim.outputs.continue == 'yes'
     permissions:
       packages: read # For reading attestations.
     runs-on: ubuntu-latest
@@ -165,16 +170,16 @@ jobs:
 
   if-succeeded:
     runs-on: ubuntu-latest
-    needs: [shim, build, provenance, verify]
-    if: needs.shim.outputs.continue == 'yes' && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
+    needs: [build, provenance, verify]
+    if: needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
     runs-on: ubuntu-latest
-    needs: [shim, build, provenance, verify]
-    if: always() && (needs.shim.result == 'failure' || (needs.shim.outputs.continue == 'yes' && (needs.build.result != 'success' || needs.provenance.result != 'success' || needs.verify.result != 'success')))
+    needs: [build, provenance, verify]
+    if: always() && github.ref_type == 'branch' && github.ref_name == "branch1" && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result != 'success' || needs.provenance.result != 'success' || needs.verify.result != 'success')
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
