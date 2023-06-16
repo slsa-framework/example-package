@@ -60,12 +60,20 @@ jobs:
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build.outputs.attestations-download-name }}
+      - name: Get attestation
+        id: att
+        env:
+          FOLDER: ${{ needs.build.outputs.attestations-download-name }}
+        run: |
+          name=$(find $FOLDER -type f | head -1)
+          cp "${name}" .
+          echo "name=$(basename "${name}")" >> "${GITHUB_OUTPUT}"
       - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
           go-version: "1.18"
       - env:
           BINARY: ${{ steps.build.outputs.name }}
-          PROVENANCE: attestation.intoto.sigstore
+          PROVENANCE: ${{ steps.att.outputs.name }}
         run: ./.github/workflows/scripts/e2e.container-based.default.verify.sh
 
   if-succeeded:
