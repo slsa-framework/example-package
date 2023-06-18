@@ -26,7 +26,7 @@ verify_provenance_content() {
     e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/generic@v1"
 
-    # Ignore tha annotated tags, because they are not part of a release.
+    # Ignore the annotated tags, because they are not part of a release.
     if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -z "$annotated_tags" ]]; then
         assets=$(e2e_get_release_assets_filenames "$GITHUB_REF_NAME")
         if [[ -z "$has_assets" ]]; then
