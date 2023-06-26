@@ -137,10 +137,11 @@ jobs:
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build.outputs.attestations-download-name }}
+          path: attestations
       - name: Get attestation
         id: att
         env:
-          FOLDER: ${{ needs.build.outputs.attestations-download-name }}
+          FOLDER: attestations
         run: |
           ls
           name=$(find "${FOLDER}"/ -type f | head -1)
