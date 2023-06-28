@@ -111,7 +111,7 @@ jobs:
           echo "$repo_digest"
 
           {
-            echo "image=$image_name"
+            echo "image=$full_image_name"
             echo "digest=${repo_digest#*@}"
             echo "service_account=${SERVICE_ACCOUNT}"
             echo "provider_name=${PROVIDER_NAME}"
