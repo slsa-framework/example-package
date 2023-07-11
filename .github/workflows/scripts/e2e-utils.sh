@@ -57,10 +57,10 @@ e2e_npm_package_name() {
     # Convert the test workflow file name to the package name.
     # remove the file extension
     package_name="$(e2e_this_file | rev | cut -d'.' -f2- | rev)"
-    has_scope=$(e2e_this_file | cut -d '.' -f5 | grep -v unscoped || true)
+    has_scope=$(e2e_this_file | cut -d '.' -f5 | grep unscoped || true)
     # convert periods to hyphen
     package_name="${package_name//./-}"
-    if [[ -z "$has_scope" ]]; then
+    if [[ -n "$has_scope" ]]; then
         package_name="@slsa-framework/${package_name}"
     fi
     echo "${package_name}"
