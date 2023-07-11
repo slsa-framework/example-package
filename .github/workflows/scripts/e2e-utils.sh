@@ -80,15 +80,16 @@ e2e_npm_package_dir() {
 name_to_purl() {
     # Get the raw package name and scope from the output of `npm pack --json`
     # This name is of the form '<scope>/<package name>'
-    raw_package_scope=$(echo "$1" | cut -d'/' -f1)
-    raw_package_name_and_version=$(echo "$1" | cut -d'/' -f2)
+    raw_package_scope=$(echo "$1" | cut -s -d'/' -f1)
+    raw_package_name_and_version=$(echo "$1" | cut -s -d'/' -f2)
+    if [ "${raw_package_name_and_version}" == "" ]; then
+        raw_package_scope=""
+        raw_package_name_and_version="$1"
+    fi
+
     raw_package_version=$(echo "${raw_package_name_and_version}" | cut -d'@' -f2)
     raw_package_name=$(echo "${raw_package_name_and_version}" | cut -d'@' -f1)
 
-    if [ "${raw_package_name}" == "" ]; then
-        raw_package_name="${raw_package_scope}"
-        raw_package_scope=""
-    fi
     # package scope (namespace) is URL(percent) encoded.
     package_scope=$(echo "\"${raw_package_scope}\"" | jq -r '. | @uri')
     # package name is URL(percent) encoded.
