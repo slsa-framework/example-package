@@ -57,7 +57,7 @@ e2e_npm_package_name() {
     # Convert the test workflow file name to the package name.
     # remove the file extension
     package_name="$(e2e_this_file | rev | cut -d'.' -f2- | rev)"
-    has_scope=$(e2e_this_file | cut -d '.' -f5 | grep unscoped || true)
+    has_scope=$(e2e_this_file | cut -d '.' -f5 | grep -v unscoped || true)
     # convert periods to hyphen
     package_name="${package_name//./-}"
     if [[ -n "$has_scope" ]]; then
