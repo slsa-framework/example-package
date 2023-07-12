@@ -14,14 +14,6 @@ gh repo clone "$GITHUB_REPOSITORY" -- -b "$branch"
 repo_name=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
 cd ./"$repo_name"
 
-# Use the PAT_TOKEN if one is specified.
-# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-push_token=${PAT_TOKEN+$PAT_TOKEN}
-if [[ -z "$push_token" ]]; then
-    echo "Push events cannot be triggered with GH_TOKEN. PAT token is required."
-    exit 1
-fi
-
 default_major=$(version_major "$DEFAULT_VERSION")
 if [[ -z "$default_major" ]]; then
     echo "Invalid DEFAULT_VERSION: $DEFAULT_VERSION"
@@ -42,7 +34,7 @@ while read -r line; do
             latest_tag="$tag"
         fi
     fi
-done <<<"$(GH_TOKEN=$push_token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/$GITHUB_REPOSITORY/git/refs/tags" --paginate | jq -r '.[].ref' | cut -d'/' -f3)"
+done <<<"$(gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/$GITHUB_REPOSITORY/git/refs/tags" --paginate | jq -r '.[].ref' | cut -d'/' -f3)"
 
 echo "Latest tag found is $latest_tag"
 
@@ -59,7 +51,7 @@ git config --global user.name github-actions
 git config --global user.email github-actions@github.com
 
 # Set the remote url to authenticate using the token.
-git remote set-url origin "https://github-actions:${push_token}@github.com/${GITHUB_REPOSITORY}.git"
+git remote set-url origin "https://github-actions:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
 text_file=e2e/$(e2e_this_file).txt
 date --utc >"${text_file}"

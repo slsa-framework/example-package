@@ -40,6 +40,7 @@ permissions: {}
 concurrency: "e2e.verify-token.reusable"
 
 env:
+  # TODO: Use a PAT token.
   GH_TOKEN: ${{ github.token }}
   ISSUE_REPOSITORY: ${{ github.repository }}
 

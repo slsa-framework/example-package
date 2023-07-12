@@ -18,8 +18,7 @@ concurrency: "e2e.container-based.schedule.main.gcp-workload-identity.slsa3"
 
 env:
   # TODO: Replace this token.
-  PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
   PROVENANCE_NAME: attestation.intoto

@@ -9,8 +9,7 @@ permissions: read-all
 concurrency: "e2e-nodejs-create-main-default-slsa3"
 
 env:
-  PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   # NOTE: must be kept in sync with shim 'if' expressions.
   DEFAULT_VERSION: v39.0.0

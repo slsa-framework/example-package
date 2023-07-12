@@ -11,8 +11,7 @@ permissions: read-all
 concurrency: "e2e.go.tag.branch1.config-ldflags-assets.slsa3"
 
 env:
-  PAT_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   # WARNING: update build job if CONFIG_FILE changes.
   CONFIG_FILE: .github/configs-go/config-ldflags.yml

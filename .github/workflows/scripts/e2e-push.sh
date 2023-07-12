@@ -17,18 +17,10 @@ gh repo clone "$GITHUB_REPOSITORY" -- -b "$BRANCH"
 REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
 cd ./"$REPOSITORY_NAME"
 
-# Use the PAT_TOKEN if one is specified.
-# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-push_token=${PAT_TOKEN+$PAT_TOKEN}
-if [[ -z "$push_token" ]]; then
-    echo "Push events cannot be triggered with GH_TOKEN. PAT token is required."
-    exit 1
-fi
-
 if [ -f "$FILE" ]; then
     echo "DEBUG: file $FILE exists on branch $BRANCH"
 
-    SHA=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $push_token" -X GET "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE?ref=$BRANCH" | jq -r '.sha')
+    SHA=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${GH_TOKEN}" -X GET "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE?ref=$BRANCH" | jq -r '.sha')
     if [[ -z "$SHA" ]]; then
         echo "SHA is empty"
         exit 4
@@ -48,7 +40,7 @@ EOF
     curl -s \
         -X PUT \
         -H "Accept: application/vnd.github.v3+json" \
-        -H "Authorization: token $push_token" \
+        -H "Authorization: token ${GH_TOKEN}" \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE" \
         -d "@${data_file}"
 else
@@ -62,7 +54,7 @@ else
     curl -s \
         -X PUT \
         -H "Accept: application/vnd.github.v3+json" \
-        -H "Authorization: token $push_token" \
+        -H "Authorization: token ${GH_TOKEN}" \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/contents/$FILE" \
         -d "{\"branch\":\"$BRANCH\",\"message\":\"$COMMIT_MESSAGE\",\"committer\":{\"name\":\"github-actions\",\"email\":\"github-actions@github.com\"},\"content\":\"$(echo -n "$DATE" | base64 --wrap=0)\"}"
 fi

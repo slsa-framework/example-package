@@ -19,19 +19,11 @@ gh repo clone "$GITHUB_REPOSITORY" -- -b main
 repo_name=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
 cd ./"$repo_name"
 
-# Use the PAT_TOKEN if one is specified.
-# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-token=${PAT_TOKEN+$PAT_TOKEN}
-if [[ -z "$token" ]]; then
-    echo "Push events cannot be triggered with GH_TOKEN. PAT token is required."
-    exit 1
-fi
-
 git config --global user.name github-actions
 git config --global user.email github-actions@github.com
 
 # Set the remote url to authenticate using the token.
-git remote set-url origin "https://github-actions:${token}@github.com/${GITHUB_REPOSITORY}.git"
+git remote set-url origin "https://github-actions:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
 package_dir="$(e2e_npm_package_dir)"
 
@@ -86,7 +78,7 @@ Commit: ${GITHUB_SHA}
 Caller file: ${this_file}
 EOF
 
-    GH_TOKEN="${token}" gh release create "${tag}" --notes-file "${data_file}" --target "${branch}"
+    gh release create "${tag}" --notes-file "${data_file}" --target "${branch}"
 fi
 
 if [ "${this_event}" == "workflow_dispatch" ]; then
@@ -94,5 +86,5 @@ if [ "${this_event}" == "workflow_dispatch" ]; then
     curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
         "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${this_file}/dispatches" \
         -d "{\"ref\":\"${branch}\",\"inputs\":{\"trigger_build\": true}}" \
-        -H "Authorization: token ${token}"
+        -H "Authorization: token ${GH_TOKEN}"
 fi

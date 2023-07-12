@@ -8,13 +8,6 @@ this_file=$(e2e_this_file)
 annotated_tags=$(echo "$this_file" | cut -d '.' -f5 | grep annotated || true)
 echo "annotated_tags: $annotated_tags"
 
-# Use the PAT_TOKEN if one is specified.
-# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-token=${PAT_TOKEN+$PAT_TOKEN}
-if [[ -z "$token" ]]; then
-    token=$GH_TOKEN
-fi
-
 # List the releases and find the latest for THIS_FILE.
 default_major=$(version_major "$DEFAULT_VERSION")
 if [[ -z "$default_major" ]]; then
@@ -35,7 +28,7 @@ if [[ -n "$annotated_tags" ]]; then
     # Check the annotated tags.
     echo "Listing annotated tags"
     repository_name=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f2)
-    git clone "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+    git clone "https://${GITHUB_ACTOR}:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
     cd "${repository_name}" || exit 2
     tag_list=$(git tag -l "v$default_major*")
     while read -r line; do
@@ -64,7 +57,7 @@ else
                 latest_tag="$tag"
             fi
         fi
-    done <<<"$(GH_TOKEN=$token gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/$GITHUB_REPOSITORY/releases" --paginate | jq -r '.[].tag_name')"
+    done <<<"$(gh api --header 'Accept: application/vnd.github.v3+json' --method GET "/repos/$GITHUB_REPOSITORY/releases" --paginate | jq -r '.[].tag_name')"
 fi
 
 echo "Latest tag found is $latest_tag"
@@ -97,25 +90,25 @@ if [[ -n "$annotated_tags" ]]; then
     git config user.name "${GITHUB_ACTOR}"
     git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
     git tag -a "$tag" -F "${data_file}"
-    git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+    git remote set-url origin "https://${GITHUB_ACTOR}:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
     git push origin "$tag"
 else
     # We must use a PAT here in order to trigger subsequent workflows.
     # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
     if [[ -n "$prerelease" ]]; then
-        GH_TOKEN=$token gh release create "$tag" --notes-file "${data_file}" --target "$branch" --prerelease
+        gh release create "$tag" --notes-file "${data_file}" --target "$branch" --prerelease
     elif [[ -n "$draft" ]]; then
         # Creating a draft release does not create a tag so we need to create
         # the tag instead to trigger the e2e workflow.
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
         git tag "$tag"
-        git remote set-url origin "https://${GITHUB_ACTOR}:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git remote set-url origin "https://${GITHUB_ACTOR}:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
         # Force push the tag since it may have already been created by a
         # previous failed run of the test.
         git push origin "$tag" -f
     else
-        GH_TOKEN=$token gh release create "$tag" --notes-file "${data_file}" --target "$branch"
+        gh release create "$tag" --notes-file "${data_file}" --target "$branch"
     fi
 fi
 

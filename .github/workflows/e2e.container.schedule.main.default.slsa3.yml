@@ -15,8 +15,7 @@ permissions: {}
 concurrency: "e2e.container.schedule.main.default.slsa3"
 
 env:
-  PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
   IMAGE_REGISTRY: ghcr.io

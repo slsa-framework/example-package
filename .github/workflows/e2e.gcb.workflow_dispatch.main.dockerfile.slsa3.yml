@@ -14,8 +14,7 @@ permissions: {}
 concurrency: "e2e.gcb.workflow_dispatch.main.dockerfile.slsa3"
 
 env:
-  PAT_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
   IMAGE_REGISTRY: us-west2-docker.pkg.dev

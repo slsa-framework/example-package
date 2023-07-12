@@ -29,11 +29,8 @@ issue_repository="${ISSUE_REPOSITORY:-}"
 
 issue_id=$(gh -R "${issue_repository}" issue list --label "${header}" --label "type:bug" --state open -S "${this_file}" --json number | jq '.[0]' | jq -r '.number' | jq 'select (.!=null)')
 
-# Use the PAT_TOKEN if one is specified.
-# TODO(github.com/slsa-framework/example-package/issues/52): Always use PAT_TOKEN
-token=${PAT_TOKEN:-${GH_TOKEN:-}}
 if [[ -z "${issue_id}" ]]; then
-    GH_TOKEN="${token}" gh -R "${issue_repository}" issue create -t "[${header}]: ${title}" -F "${body_file}" --label "${header}" --label "type:bug" --label "area:${workflow}"
+    gh -R "${issue_repository}" issue create -t "[${header}]: ${title}" -F "${body_file}" --label "${header}" --label "type:bug" --label "area:${workflow}"
 else
-    GH_TOKEN="${token}" gh -R "${issue_repository}" issue comment "${issue_id}" -F "${body_file}"
+    gh -R "${issue_repository}" issue comment "${issue_id}" -F "${body_file}"
 fi

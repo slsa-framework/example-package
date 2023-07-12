@@ -9,8 +9,7 @@ concurrency: "e2e.container-based.schedule.main.default.slsa3"
 
 env:
   # TODO: Replace this token.
-  PAT_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
   PROVENANCE_NAME: attestation.intoto

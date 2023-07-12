@@ -27,8 +27,7 @@ permissions: read-all
 concurrency: "e2e.verify-token.push.main"
 
 env:
-  PAT_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
-  GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
 jobs:
