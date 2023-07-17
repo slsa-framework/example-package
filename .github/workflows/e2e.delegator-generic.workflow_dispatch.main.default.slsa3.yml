@@ -5,7 +5,7 @@ on:
 
 permissions: read-all
 
-concurrency: "e2e.delegator.workflow_dispatch.main.default.slsa3"
+concurrency: "e2e.delegator-generic.workflow_dispatch.main.default.slsa3"
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
@@ -59,6 +59,7 @@ jobs:
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
           PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
+          BUILDER_ID: https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
   # if-succeeded:
