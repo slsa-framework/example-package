@@ -65,7 +65,8 @@ jobs:
           go-version: "1.18"
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
-          PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
+          # TODO: Remove .intoto part of the extension.
+          PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.intoto.build.slsa" # This is defined by the builder.
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
   # if-succeeded:
