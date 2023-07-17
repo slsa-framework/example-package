@@ -53,19 +53,11 @@ jobs:
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
-      - env:
-          ATTESTATIONS_FOLDER: "${{ needs.build.outputs.provenance-download-name }}"
-          PROVENANCE: "${{ needs.build.outputs.artifact }}.build.slsa"
-        run: |
-          set -euo pipefail
-          tree
-          echo "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa"
       - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
           go-version: "1.18"
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
-          # TODO: Remove .intoto part of the extension.
           PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
