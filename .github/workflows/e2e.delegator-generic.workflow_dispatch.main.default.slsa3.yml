@@ -60,7 +60,7 @@ jobs:
           BINARY: "${{ needs.build.outputs.artifact }}"
           PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
           BUILDER_ID: "https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml@v1.0.0"
-        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
+        run: ./.github/workflows/scripts/e2e.delegator.default.verify.sh
 
   # if-succeeded:
   #   runs-on: ubuntu-latest
