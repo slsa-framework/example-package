@@ -58,14 +58,14 @@ jobs:
           PROVENANCE: "${{ needs.build.outputs.artifact }}.build.slsa"
         run: |
           set -euo pipefail
-          mv "${ATTESTATIONS_FOLDER}/${PROVENANCE}" .
-          rm -rf "${ATTESTATIONS_FOLDER}"
+          tree
+          echo "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa"
       - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
         with:
           go-version: "1.18"
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
-          PROVENANCE: "${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
+          PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
         run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
   # if-succeeded:
