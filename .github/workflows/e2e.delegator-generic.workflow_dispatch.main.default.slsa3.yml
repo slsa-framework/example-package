@@ -40,25 +40,26 @@ jobs:
       # NOTE: this password is set to 'delegator-password'.
       password: ${{ secrets.DELEGATOR_PASSWORD }}
 
-  # verify:
-  #   runs-on: ubuntu-latest
-  #   needs: [build]
-  #   if: github.event_name == 'workflow_dispatch'
-  #   steps:
-  #     - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
-  #     - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
-  #       with:
-  #         name: hello.txt
-  #     - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
-  #       with:
-  #         name: ${{ needs.provenance.outputs.attestation-name }}
-  #     - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
-  #       with:
-  #         go-version: "1.18"
-  #     - env:
-  #         BINARY: ${{ needs.build.outputs.binary-name }}
-  #         PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
-  #       run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
+  verify:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
+        with:
+          name: my-artifact
+      - uses: slsa-framework/example-trw/download/attestation@v1.0.0 # Use same version as the builder
+        with:
+          name: "${{ needs.build.outputs.provenance-download-name }}"
+          sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
+      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+        with:
+          go-version: "1.18"
+      - env:
+          BINARY: ${{ needs.build.outputs.binary-name }}
+          PROVENANCE: ${{ needs.provenance.outputs.attestation-name }}
+        run: ./.github/workflows/scripts/e2e.generic.default.verify.sh
 
   # if-succeeded:
   #   runs-on: ubuntu-latest
