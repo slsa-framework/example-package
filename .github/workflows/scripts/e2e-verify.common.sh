@@ -110,7 +110,7 @@ e2e_verify_common_buildDefinition_v1() {
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
     TRIGGERING_ACTOR_ID=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.actor.id')
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_TRIGGERING_ACTOR_ID" "$TRIGGERING_ACTOR_ID"
-    if [[ -n $CHECKOUT_SHA1 ]]; then
+    if [[ -n ${CHECKOUT_SHA1:-} ]]; then
         # If the checkout sha was defined, then verify that there is no ref.
         e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"gitCommit\":\"$CHECKOUT_SHA1\"}}]"
     else

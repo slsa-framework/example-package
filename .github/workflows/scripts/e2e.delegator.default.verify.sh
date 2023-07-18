@@ -33,7 +33,6 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 
 export SLSA_VERIFIER_TESTING="true"
-export SLSA_SPECS_V1="1"
 
 # Verify provenance authenticity.
 # TODO(233): Update to v1.8.0 tag.
