@@ -192,7 +192,7 @@ assemble_minimum_builder_args() {
         echo "--builder-id=$builder_id"
     elif [[ "$build_type" == "delegator-generic" ]]; then
         echo "--builder-id=$builder_id"
-    elif [[ "$build_type" == "delegator-low-perms" ]]; then
+    elif [[ "$build_type" == "delegator-lowperms" ]]; then
         echo "--builder-id=$builder_id" 
     fi
 }
