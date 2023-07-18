@@ -35,7 +35,7 @@ jobs:
     uses: slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml@v2.0.0
     with:
       artifact: my-artifact
-      content: "hello world delegator_generic_slsa3"
+      content: "hello world delegator_lowperms_slsa3"
     secrets:
       # NOTE: this password is set to 'delegator-password'.
       password: ${{ secrets.DELEGATOR_PASSWORD }}
