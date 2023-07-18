@@ -110,7 +110,12 @@ e2e_verify_common_buildDefinition_v1() {
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
     TRIGGERING_ACTOR_ID=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.actor.id')
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_TRIGGERING_ACTOR_ID" "$TRIGGERING_ACTOR_ID"
-    e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"gitCommit\":\"$GITHUB_SHA\"}}]"
+    if [[ -n $CHECKOUT_SHA1 ]]; then
+        # If the checkout sha was defined, then verify that there is no ref.
+        e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"gitCommit\":\"$CHECKOUT_SHA1\"}}]"
+    else
+        e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$PREDICATE_CONTENT" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"gitCommit\":\"$GITHUB_SHA\"}}]"
+    fi
 }
 
 # Verifies common fields of the SLSA v1.0 predicate runDetails.
@@ -563,16 +568,16 @@ e2e_run_verifier_all_releases() {
 
     # First, verify provenance with the verifier at HEAD.
     # TODO: Verify provenance with verifier at v1 HEAD?
-    # go env -w GOFLAGS=-mod=mod
+    go env -w GOFLAGS=-mod=mod
 
-    # # NOTE: clean the cache to avoid "module github.com/slsa-framework/slsa-verifier@main found" errors.
-    # # See: https://stackoverflow.com/questions/62974985/go-module-latest-found-but-does-not-contain-package
-    # go clean -cache
-    # go clean -modcache
+    # NOTE: clean the cache to avoid "module github.com/slsa-framework/slsa-verifier@main found" errors.
+    # See: https://stackoverflow.com/questions/62974985/go-module-latest-found-but-does-not-contain-package
+    go clean -cache
+    go clean -modcache
 
-    #go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
+    go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
-    verify_provenance_authenticity "/usr/local/google/home/laurentsimon/slsa/slsa-verifier/slsa-verifier" "HEAD"
+    verify_provenance_authenticity "slsa-verifier" "HEAD"
 
     # If the minimum version is HEAD then we are done.
     if [ "$1" == "HEAD" ]; then
