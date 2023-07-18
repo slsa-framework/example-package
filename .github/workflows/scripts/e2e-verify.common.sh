@@ -162,7 +162,7 @@ get_builder_id() {
         # The builder ID is set by the workflow.
         # NOTE: the TRW is referenced at a tag, but the BYOB is referenced at HEAD.
         # shellcheck disable=SC2153 # We intend to alter the builder ID.
-        builder_id="${BUILDER_ID}"
+        builder_id="${BUILDER_ID}@refs/tags/${BUILDER_TAG}"
         ;;
     *)
         echo "unknown build_type: $build_type"

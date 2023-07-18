@@ -365,11 +365,19 @@ e2e_verify_predicate_subject_name() {
 }
 
 e2e_verify_predicate_builder_id() {
-    _e2e_verify_query "$1" "$2" '.predicate.builder.id'
+    if [[ -n "${SLSA_SPECS_V1:-}" ]]; then
+        _e2e_verify_query "$1" "$2" '.predicate.runDetails.builder.id'
+    else
+        _e2e_verify_query "$1" "$2" '.predicate.builder.id'
+    fi
 }
 
 e2e_verify_predicate_buildType() {
-    _e2e_verify_query "$1" "$2" '.predicate.buildType'
+    if [[ -n "${SLSA_SPECS_V1:-}" ]]; then
+        _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.buildType'
+    else
+        _e2e_verify_query "$1" "$2" '.predicate.buildType'
+    fi
 }
 
 e2e_verify_predicate_invocation_configSource() {
