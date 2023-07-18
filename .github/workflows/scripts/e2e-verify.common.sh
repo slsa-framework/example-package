@@ -366,6 +366,12 @@ verify_provenance_authenticity() {
         echo "TODO(234)"
     fi
 
+    # TODO(#661): Add support for branch verification in v1 format.
+    if [[ -n "${SLSA_SPEC_V1:-}" ]]; then
+        branchArg=()
+        branchOpts=()
+    fi
+
     # Workflow inputs
     workflow_inputs=$(e2e_this_file | cut -d '.' -f5 | grep workflow_inputs)
     if [[ -n "$workflow_inputs" ]] && (version_ge "$tag" "v1.3" || [[ "$tag" == "HEAD" ]]); then
@@ -380,6 +386,7 @@ verify_provenance_authenticity() {
 
     # Correct branch.
     echo "  **** Correct branch *****"
+    # NOTE: v1 spec does not support branch verification yet.
     if [[ "${#branchOpts[@]}" != "0" ]]; then
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "should be branch $BRANCH"
