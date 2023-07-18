@@ -60,7 +60,11 @@ if [ "${branch}" != "main" ]; then
     git push origin main
 else
     if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
-        git push origin main "${tag}"
+        # TODO(#213): push tag separately until bug is fixed.
+        # NOTE: If there is a concurrent update to main we want it to fail here
+        # without pushing the tag because we will lose the changes to main.
+        git push origin main
+        git push origin "${tag}"
     else
         git push origin main
     fi
