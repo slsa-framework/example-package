@@ -7,7 +7,7 @@ source "./.github/workflows/scripts/e2e-assert.sh"
 
 # Gets the name of the currently running workflow file.
 # Note: this requires GH_TOKEN to be set in the workflows.
-export THIS_FILE=""
+export THIS_FILE="e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml"
 
 e2e_this_file() {
     # NOTE: Cache the file name so we don't make repeated calls to the API.

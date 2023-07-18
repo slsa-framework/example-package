@@ -21,7 +21,7 @@ verify_provenance_content() {
 
     SUBJECT=$(echo "${CONTAINER}" | cut -f1 -d"@")
     e2e_verify_predicate_subject_name "$ATTESTATION" "$SUBJECT"
-    e2e_verify_predicate_builder_id "$ATTESTATION" "$BUILDER_ID@refs/heads/main"
+    e2e_verify_predicate_builder_id "$ATTESTATION" "$BUILDER_ID"
     e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
 
@@ -36,6 +36,7 @@ echo "DEBUG: file is $THIS_FILE"
 export SLSA_VERIFIER_TESTING="true"
 
 # Verify provenance authenticity.
+# TODO(233): Update to v1.8.0 tag.
 e2e_run_verifier_all_releases "HEAD"
 
 # Verify provenance content.

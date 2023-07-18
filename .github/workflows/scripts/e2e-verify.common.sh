@@ -158,6 +158,12 @@ get_builder_id() {
     "nodejs")
         builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
         ;;
+    "delegator-generic"|"delegator-low-perms")
+        # The builder ID is set by the workflow.
+        # NOTE: the TRW is referenced at a tag, but the BYOB is referenced at HEAD.
+        # shellcheck disable=SC2153 # We intend to alter the builder ID.
+        builder_id="${BUILDER_ID}"
+        ;;
     *)
         echo "unknown build_type: $build_type"
         exit 1
@@ -175,6 +181,10 @@ assemble_minimum_builder_args() {
         echo "--builder-id=$builder_id"
     elif [[ "$build_type" == "nodejs" ]]; then
         echo "--builder-id=$builder_id"
+    elif [[ "$build_type" == "delegator-generic" ]]; then
+        echo "--builder-id=$builder_id"
+    elif [[ "$build_type" == "delegator-low-perms" ]]; then
+        echo "--builder-id=$builder_id" 
     fi
 }
 
@@ -340,6 +350,11 @@ verify_provenance_authenticity() {
         branchOpts=()
         tagArg=()
         vTagArg=()
+    fi
+
+    if [[ "$build_type" == "delegator-generic" ]] || [[ "$build_type" == "delegator-low-perms" ]]; then
+        # TODO(234): Add support for checkout-sha1, i.e., tag / branch are not supported.
+        echo "TODO(234)"
     fi
 
     # Workflow inputs
@@ -544,16 +559,17 @@ e2e_run_verifier_all_releases() {
 
     # First, verify provenance with the verifier at HEAD.
     # TODO: Verify provenance with verifier at v1 HEAD?
-    go env -w GOFLAGS=-mod=mod
+    #go env -w GOFLAGS=-mod=mod
 
     # NOTE: clean the cache to avoid "module github.com/slsa-framework/slsa-verifier@main found" errors.
     # See: https://stackoverflow.com/questions/62974985/go-module-latest-found-but-does-not-contain-package
-    go clean -cache
-    go clean -modcache
+    #go clean -cache
+    #go clean -modcache
 
-    go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
+    #go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
-    verify_provenance_authenticity "slsa-verifier" "HEAD"
+    #verify_provenance_authenticity "slsa-verifier" "HEAD"
+    verify_provenance_authenticity "/usr/local/google/home/laurentsimon/slsa/slsa-verifier/slsa-verifier" "HEAD"
 
     # If the minimum version is HEAD then we are done.
     if [ "$1" == "HEAD" ]; then
