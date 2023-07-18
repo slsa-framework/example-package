@@ -583,17 +583,16 @@ e2e_run_verifier_all_releases() {
 
     # First, verify provenance with the verifier at HEAD.
     # TODO: Verify provenance with verifier at v1 HEAD?
-    #go env -w GOFLAGS=-mod=mod
+    go env -w GOFLAGS=-mod=mod
 
     # NOTE: clean the cache to avoid "module github.com/slsa-framework/slsa-verifier@main found" errors.
     # See: https://stackoverflow.com/questions/62974985/go-module-latest-found-but-does-not-contain-package
-    #go clean -cache
-    #go clean -modcache
+    go clean -cache
+    go clean -modcache
 
-    #go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
+    go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
-    #verify_provenance_authenticity "slsa-verifier" "HEAD"
-    verify_provenance_authenticity "/usr/local/google/home/laurentsimon/slsa/slsa-verifier/slsa-verifier" "HEAD"
+    verify_provenance_authenticity "slsa-verifier" "HEAD"
 
     # If the minimum version is HEAD then we are done.
     if [ "$1" == "HEAD" ]; then
