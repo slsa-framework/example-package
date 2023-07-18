@@ -386,7 +386,11 @@ e2e_verify_predicate_invocation_configSource() {
 
 # e2e_verify_predicate_invocation_environment(attestation, env_key, expected)
 e2e_verify_predicate_invocation_environment() {
-    _e2e_verify_query "$1" "$3" '.predicate.invocation.environment.'"$2"
+    if [[ -n "${SLSA_SPECS_V1:-}" ]]; then
+        _e2e_verify_query "$1" "$3" '.predicate.buildDefinition.internalParameters.'"$2"
+    else
+        _e2e_verify_query "$1" "$3" '.predicate.invocation.environment.'"$2"
+    fi
 }
 
 # $1: step number

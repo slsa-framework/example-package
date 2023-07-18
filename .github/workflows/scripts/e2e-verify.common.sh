@@ -14,6 +14,15 @@ e2e_verify_common_all() {
     e2e_verify_common_materials "$1"
 }
 
+# Runs all generic SLSA checks that shouldn't change on a per-builder basis for BYOB.
+# $1: the attestation content
+e2e_verify_common_byob_all() {
+    #e2e_verify_common_builder "$1"
+    e2e_verify_common_invocation_byob "$1"
+    #e2e_verify_common_metadata "$1"
+    #e2e_verify_common_materials "$1"
+}
+
 # Verifies the builder for generic provenance.
 # $1: the attestation content
 e2e_verify_common_builder() {
@@ -39,6 +48,21 @@ e2e_verify_common_invocation() {
     e2e_verify_predicate_invocation_environment "$1" "github_actor_id" "$ACTOR_ID"
     e2e_verify_predicate_invocation_environment "$1" "github_repository_owner_id" "$OWNER_ID"
     e2e_verify_predicate_invocation_environment "$1" "github_repository_id" "$REPO_ID"
+}
+
+e2e_verify_common_invocation_byob() {
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_SHA" "$GITHUB_SHA"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_EVENT_NAME" "$GITHUB_EVENT_NAME"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF" "$GITHUB_REF"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF_TYPE" "$GITHUB_REF_TYPE"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ID" "$GITHUB_RUN_ID"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "$GITHUB_RUN_NUMBER"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "$GITHUB_RUN_NUMBER"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_ACTOR_ID" "$GITHUB_ACTOR_ID"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_OWNER_ID" "$GITHUB_REPOSITORY_OWNER_ID"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_ID" "$GITHUB_REPOSITORY_ID"
+    TRIGGERING_ACTOR_ID=$($GH api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.actor.id')
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_TRIGGERING_ACTOR_ID" "$TRIGGERING_ACTOR_ID"
 }
 
 # Verifies the expected metadata.
@@ -161,7 +185,7 @@ get_builder_id() {
     "delegator-generic"|"delegator-low-perms")
         # The builder ID is set by the workflow.
         # NOTE: the TRW is referenced at a tag, but the BYOB is referenced at HEAD.
-        # shellcheck disable=SC2153 # We intend to alter the builder ID.
+        # shellcheck disable=SC2153 # BUILDER_ID is set in the workflow.
         builder_id="${BUILDER_ID}@refs/tags/${BUILDER_TAG}"
         ;;
     *)
