@@ -1,14 +1,16 @@
 on:
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "0 2 * * *"
   workflow_dispatch:
+  release:
+    types: [created]
 
 permissions: read-all
 
 concurrency: "e2e.delegator-generic.release.main.default.slsa3"
 
 env:
-  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   DEFAULT_VERSION: v42.0.0
 
