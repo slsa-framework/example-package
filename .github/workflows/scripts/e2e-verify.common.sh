@@ -361,7 +361,7 @@ verify_provenance_authenticity() {
         vTagArg=()
     fi
 
-    if [[ "$build_type" == "delegator-generic" ]] || [[ "$build_type" == "delegator-low-perms" ]]; then
+    if [[ "$build_type" == "delegator-generic" ]] || [[ "$build_type" == "delegator-lowperms" ]]; then
         # TODO(234): Add support for checkout-sha1, i.e., tag / branch are not supported.
         echo "TODO(234)"
     fi
