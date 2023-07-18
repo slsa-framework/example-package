@@ -17,11 +17,11 @@ verify_provenance_content() {
     echo "  **** Provenance content verification *****"
 
     # Verify all common provenance fields.
-    e2e_verify_common_byob_all "$ATTESTATION"
+    e2e_verify_common_all_v1 "$ATTESTATION"
 
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
-    e2e_verify_predicate_builder_id "$ATTESTATION" "${BUILDER_ID}@refs/tags/${BUILDER_TAG}"
-    e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
+    e2e_verify_predicate_v1_runDetails_builder_id "$ATTESTATION" "${BUILDER_ID}@refs/tags/${BUILDER_TAG}"
+    e2e_verify_predicate_v1_buildDefinition_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
 
 THIS_FILE=$(e2e_this_file)

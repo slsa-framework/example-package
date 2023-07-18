@@ -8,7 +8,6 @@ export THIS_FILE=e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml
 export BUILDER_ID=https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml
 export BUILDER_TAG=v1.0.0
 export SLSA_VERIFIER_TESTING=1
-export SLSA_SPECS_V1=1
 export GITHUB_SHA=17f38df12e574626a8be75efeed5fd41e721221e
 export GITHUB_ACTOR_ID=64505099
 export GITHUB_EVENT_NAME=workflow_dispatch

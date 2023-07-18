@@ -14,15 +14,6 @@ e2e_verify_common_all() {
     e2e_verify_common_materials "$1"
 }
 
-# Runs all generic SLSA checks that shouldn't change on a per-builder basis for BYOB.
-# $1: the attestation content
-e2e_verify_common_byob_all() {
-    #e2e_verify_common_builder "$1"
-    e2e_verify_common_invocation_byob "$1"
-    #e2e_verify_common_metadata "$1"
-    #e2e_verify_common_materials "$1"
-}
-
 # Verifies the builder for generic provenance.
 # $1: the attestation content
 e2e_verify_common_builder() {
@@ -50,25 +41,10 @@ e2e_verify_common_invocation() {
     e2e_verify_predicate_invocation_environment "$1" "github_repository_id" "$REPO_ID"
 }
 
-e2e_verify_common_invocation_byob() {
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_SHA" "$GITHUB_SHA"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_EVENT_NAME" "$GITHUB_EVENT_NAME"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF" "$GITHUB_REF"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF_TYPE" "$GITHUB_REF_TYPE"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ID" "$GITHUB_RUN_ID"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "$GITHUB_RUN_NUMBER"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "$GITHUB_RUN_NUMBER"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_ACTOR_ID" "$GITHUB_ACTOR_ID"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_OWNER_ID" "$GITHUB_REPOSITORY_OWNER_ID"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_ID" "$GITHUB_REPOSITORY_ID"
-    TRIGGERING_ACTOR_ID=$($GH api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.actor.id')
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_TRIGGERING_ACTOR_ID" "$TRIGGERING_ACTOR_ID"
-}
-
 # Verifies the expected metadata.
 # $1: the attestation content
 e2e_verify_common_metadata() {
-    e2e_verify_predicate_metadata "$1" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
+   e2e_verify_predicate_metadata "$1" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
 }
 
 # Verifies the materials include the GitHub repository.
@@ -112,6 +88,7 @@ e2e_verify_common_metadata_v02() {
 e2e_verify_common_all_v1() {
     e2e_verify_common_buildDefinition_v1 "$1"
     e2e_verify_common_runDetails_v1 "$1"
+    e2e_verify_common_builder "$1"
 }
 
 # Verifies common fields of the SLSA v1.0 predicate buildDefinition.
@@ -131,6 +108,9 @@ e2e_verify_common_buildDefinition_v1() {
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REPOSITORY_OWNER_ID" "$GITHUB_REPOSITORY_OWNER_ID"
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_REF"
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
+    TRIGGERING_ACTOR_ID=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.actor.id')
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_TRIGGERING_ACTOR_ID" "$TRIGGERING_ACTOR_ID"
+    e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"gitCommit\":\"$GITHUB_SHA\"}}]"
 }
 
 # Verifies common fields of the SLSA v1.0 predicate runDetails.
@@ -583,16 +563,16 @@ e2e_run_verifier_all_releases() {
 
     # First, verify provenance with the verifier at HEAD.
     # TODO: Verify provenance with verifier at v1 HEAD?
-    go env -w GOFLAGS=-mod=mod
+    # go env -w GOFLAGS=-mod=mod
 
-    # NOTE: clean the cache to avoid "module github.com/slsa-framework/slsa-verifier@main found" errors.
-    # See: https://stackoverflow.com/questions/62974985/go-module-latest-found-but-does-not-contain-package
-    go clean -cache
-    go clean -modcache
+    # # NOTE: clean the cache to avoid "module github.com/slsa-framework/slsa-verifier@main found" errors.
+    # # See: https://stackoverflow.com/questions/62974985/go-module-latest-found-but-does-not-contain-package
+    # go clean -cache
+    # go clean -modcache
 
-    go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
+    #go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
-    verify_provenance_authenticity "slsa-verifier" "HEAD"
+    verify_provenance_authenticity "/usr/local/google/home/laurentsimon/slsa/slsa-verifier/slsa-verifier" "HEAD"
 
     # If the minimum version is HEAD then we are done.
     if [ "$1" == "HEAD" ]; then

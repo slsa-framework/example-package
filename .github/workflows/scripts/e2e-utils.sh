@@ -365,19 +365,11 @@ e2e_verify_predicate_subject_name() {
 }
 
 e2e_verify_predicate_builder_id() {
-    if [[ -n "${SLSA_SPECS_V1:-}" ]]; then
-        _e2e_verify_query "$1" "$2" '.predicate.runDetails.builder.id'
-    else
-        _e2e_verify_query "$1" "$2" '.predicate.builder.id'
-    fi
+    _e2e_verify_query "$1" "$2" '.predicate.builder.id'
 }
 
 e2e_verify_predicate_buildType() {
-    if [[ -n "${SLSA_SPECS_V1:-}" ]]; then
-        _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.buildType'
-    else
-        _e2e_verify_query "$1" "$2" '.predicate.buildType'
-    fi
+    _e2e_verify_query "$1" "$2" '.predicate.buildType'
 }
 
 e2e_verify_predicate_invocation_configSource() {
@@ -386,11 +378,7 @@ e2e_verify_predicate_invocation_configSource() {
 
 # e2e_verify_predicate_invocation_environment(attestation, env_key, expected)
 e2e_verify_predicate_invocation_environment() {
-    if [[ -n "${SLSA_SPECS_V1:-}" ]]; then
-        _e2e_verify_query "$1" "$3" '.predicate.buildDefinition.internalParameters.'"$2"
-    else
-        _e2e_verify_query "$1" "$3" '.predicate.invocation.environment.'"$2"
-    fi
+    _e2e_verify_query "$1" "$3" '.predicate.invocation.environment.'"$2"
 }
 
 # $1: step number
@@ -424,6 +412,14 @@ e2e_verify_predicate_buildConfig_step_workingDir() {
 
 e2e_verify_predicate_metadata() {
     _e2e_verify_query "$1" "$2" '.predicate.metadata'
+}
+
+e2e_verify_predicate_metadata_v1() {
+    _e2e_verify_query "$1" "$2" '.predicate.runDetails.metadata'
+}
+
+e2e_verify_predicate_materials_v1() {
+     _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.resolvedDependencies[0]'
 }
 
 e2e_verify_predicate_materials() {
