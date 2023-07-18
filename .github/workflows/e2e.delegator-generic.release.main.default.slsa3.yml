@@ -46,7 +46,6 @@ jobs:
         run: ./.github/workflows/scripts/e2e-verify-release.sh
 
   build:
-    runs-on: ubuntu-latest
     needs: [shim]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag'
     permissions:
