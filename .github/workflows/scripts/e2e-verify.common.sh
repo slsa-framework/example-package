@@ -167,7 +167,7 @@ get_builder_id() {
     "nodejs")
         builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
         ;;
-    "delegator-generic"|"delegator-low-perms")
+    "delegator-generic"|"delegator-lowperms")
         # The builder ID is set by the workflow.
         # NOTE: the TRW is referenced at a tag, but the BYOB is referenced at HEAD.
         # shellcheck disable=SC2153 # BUILDER_ID is set in the workflow.
