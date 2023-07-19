@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-set -x
-
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
 
