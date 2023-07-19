@@ -7,7 +7,7 @@ on:
 
 permissions: read-all
 
-concurrency: "e2e.delegator-generic.release.main.default.slsa3"
+concurrency: "e2e.delegator-lowperms.release.main.default.slsa3"
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
@@ -57,8 +57,7 @@ jobs:
     needs: [shim]
     permissions:
       id-token: write # For signing
-      contents: write # For asset uploads
-      packages: write # To write to github packages
+      contents: read
       actions: read
     # v2.0.0 uses the delegator_generic_slsa3.yml
     # See https://github.com/slsa-framework/example-trw/blob/v1.0.0/.github/workflows/builder_example_slsa3.yml

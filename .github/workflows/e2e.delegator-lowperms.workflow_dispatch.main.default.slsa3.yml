@@ -40,8 +40,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write # For signing
-      contents: write # For asset uploads
-      packages: write # To write to github packages
+      contents: read
       actions: read
     # v2.0.0 uses the delegator_lowperms-generic_slsa3.yml
     # See https://github.com/slsa-framework/example-trw/blob/v2.0.0/.github/workflows/builder_example_slsa3.yml

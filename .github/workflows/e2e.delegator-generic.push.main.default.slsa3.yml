@@ -1,13 +1,13 @@
 on:
   schedule:
-    - cron: "0 2 * * *"
+    - cron: "0 6 * * *"
   workflow_dispatch:
-  release:
-    types: [created]
+  push:
+    branches: [main]
 
 permissions: read-all
 
-concurrency: "e2e.delegator-generic.release.main.default.slsa3"
+concurrency: "e2e.delegator-generic.push.main.default.slsa3"
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
