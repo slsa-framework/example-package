@@ -114,7 +114,7 @@ e2e_verify_common_buildDefinition_v1() {
         # If the checkout sha was defined, then verify that there is no ref.
         e2e_verify_predicate_v1_buildDefinition_resolvedDependencies0 "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"gitCommit\":\"$CHECKOUT_SHA1\"}}"
     else
-        # The container-based builder uses 2 entries, one for each hash.
+        # The container-based builder uses 2 entries, one for the repo and one for the builder.
         e2e_verify_predicate_v1_buildDefinition_resolvedDependencies0 "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"gitCommit\":\"$GITHUB_SHA\"}}"
     fi
 }
