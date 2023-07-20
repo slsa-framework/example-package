@@ -83,7 +83,7 @@ jobs:
     with:
       base64-subjects-as-file: "${{ needs.build.outputs.handle }}"
       compile-generator: true
-      continue-on-error: false
+      continue-on-error: false # We set this to get the result status.
 
   if-succeeded:
     runs-on: ubuntu-latest
