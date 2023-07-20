@@ -31,15 +31,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Setup Bazelisk
-        uses: bazelbuild/setup-bazelisk@95c9bf48d0c570bb3e28e57108f3450cd67c1a44 # tag=v2.0.0
-        with:
-          bazelisk-version: "1.11"
       - name: Build artifact
         id: build
         run: |
-          bazelisk build //:hello
-          cp bazel-bin/hello_/hello . # Copy binary from Bazel path to root
+          echo "hello world" > hello
           echo "binary-name=hello" >> "${GITHUB_OUTPUT}"
       - name: Upload binary
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
