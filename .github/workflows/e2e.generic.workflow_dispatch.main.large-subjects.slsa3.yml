@@ -59,11 +59,11 @@ jobs:
           outfile="tmp_file"
           sha256sum "$BINARY_NAME" > "$outfile"
 
-          # Create 4096 lines.
+          # Create one subject for the BINARY_NAME, and add 4096 random subjects.
           counter=0
-          while [ $counter -le 12 ]; do
-            val=$(cat "$outfile")
-            echo "$val" >> "$outfile"
+          while [ $counter -le 4096 ]; do
+            subject=$(cat < /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
+            echo "ee819cb7811108e781333b6414c683950239dc546f126b4a058a7af5c61edd02  $subject" >> "$outfile"
             counter=$((counter + 1))
           done
 
