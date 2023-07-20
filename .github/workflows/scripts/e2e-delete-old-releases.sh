@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Script Inputs
+GITHUB_REPOSITORY=${GITHUB_REPOSITORY:-}
+
 today=$(date +"%F")
 
 while read -r line; do

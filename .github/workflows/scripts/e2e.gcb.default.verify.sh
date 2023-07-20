@@ -3,6 +3,10 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
+# Script Inputs
+GITHUB_REF=${GITHUB_REF:-}
+GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
+GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
 RUNNER_DEBUG=${RUNNER_DEBUG:-}
 if [[ -n "${RUNNER_DEBUG}" ]]; then
     set -x
@@ -10,13 +14,13 @@ fi
 
 go env -w GOFLAGS=-mod=mod
 
-THIS_FILE=$(e2e_this_file)
-BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-echo "branch is $BRANCH"
+this_file=$(e2e_this_file)
+this_branch=$(e2e_this_branch)
+echo "branch is ${this_branch}"
 echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
-echo "DEBUG: file is $THIS_FILE"
+echo "DEBUG: file is ${this_file}"
 
 export SLSA_VERIFIER_TESTING="true"
 
