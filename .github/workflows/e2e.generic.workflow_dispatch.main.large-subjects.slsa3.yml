@@ -53,9 +53,15 @@ jobs:
 
           outfile="tmp_file"
           sha256sum "$BINARY_NAME" > "$outfile"
-          echo "ee819cb7811108e781333b6414c683950239dc546f126b4a058a7af5c61edd02  file1" >> "$outfile"
-          echo "ee819cb7811108e781333b6414c683950239dc546f126b4a058a7af5c61edd02  file2" >> "$outfile"
-          echo "ee819cb7811108e781333b6414c683950239dc546f126b4a058a7af5c61edd02  file3" >> "$outfile"
+
+          # Create one subject for the BINARY_NAME, and add 4096 random subjects.
+          counter=0
+          while [ $counter -le 4096 ]; do
+            subject="subject-$counter"
+            echo "ee819cb7811108e781333b6414c683950239dc546f126b4a058a7af5c61edd02  $subject" >> "$outfile"
+            counter=$((counter + 1))
+            echo -n .
+          done
 
           cat "$outfile" | base64 -w0 > digests.txt
 
