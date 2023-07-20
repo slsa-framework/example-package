@@ -60,8 +60,8 @@ jobs:
           sha256sum "$BINARY_NAME" > "$outfile"
 
           # Create 4096 lines.
-          counter=12
-          while [ $counter -le 3 ]; do
+          counter=0
+          while [ $counter -le 12 ]; do
             val=$(cat "$outfile")
             echo "$val" >> "$outfile"
             counter=$((counter + 1))
@@ -84,7 +84,7 @@ jobs:
       actions: read # For the entrypoint.
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
     with:
-      base64-subjects-as-file: "${{ needs.sharedfile.outputs.handle }}"
+      base64-subjects-as-file: "${{ needs.build.outputs.handle }}"
       compile-generator: true
 
   verify:
