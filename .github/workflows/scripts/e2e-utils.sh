@@ -19,14 +19,19 @@ e2e_this_file() {
     echo "${THIS_FILE}"
 }
 
-# Gets the name of the branch for the e2e test.
-e2e_this_branch() {
-    e2e_this_file | cut -d '.' -f4
+# Gets the name of the "builder" for the e2e test.
+e2e_this_builder() {
+    e2e_this_file | cut -d '.' -f2
 }
 
 # Gets the name of the event for the e2e test.
 e2e_this_event() {
     e2e_this_file | cut -d '.' -f3
+}
+
+# Gets the name of the branch for the e2e test.
+e2e_this_branch() {
+    e2e_this_file | cut -d '.' -f4
 }
 
 # Converter from yaml to JSON.
@@ -419,7 +424,7 @@ e2e_verify_predicate_metadata_v1() {
 }
 
 e2e_verify_predicate_materials_v1() {
-     _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.resolvedDependencies[0]'
+    _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.resolvedDependencies[0]'
 }
 
 e2e_verify_predicate_materials() {
