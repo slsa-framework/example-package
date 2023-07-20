@@ -7,6 +7,12 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 # This script bumps the npm package's version number, commits it, and pushes to
 # the repository.
 
+# Script Inputs
+GITHUB_REPOSITORY=${GITHUB_REPOSITORY:-}
+GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}
+GITHUB_SHA=${GITHUB_SHA:-}
+GH_TOKEN=${GH_TOKEN:-}
+
 branch=$(e2e_this_branch)
 
 # NOTE: We can't simply push from $branch because it is occaisonally reset to
