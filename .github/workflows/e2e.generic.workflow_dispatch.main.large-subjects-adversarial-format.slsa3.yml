@@ -69,7 +69,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          # NOTE: sha245 of file is dae7705081b71a4df6fde153ad43c0c17277c611656e28420215cd04439f2c51
           patched_handle=$(echo "$HANDLE" | base64 -d | jq '.filename = ""' | base64 -w0)
           echo "handle=$patched_handle" >> "${GITHUB_OUTPUT}"
 
