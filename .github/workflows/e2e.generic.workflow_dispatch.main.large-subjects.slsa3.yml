@@ -65,6 +65,7 @@ jobs:
             subject=$(cat < /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
             echo "ee819cb7811108e781333b6414c683950239dc546f126b4a058a7af5c61edd02  $subject" >> "$outfile"
             counter=$((counter + 1))
+            echo -n .
           done
 
           cat "$outfile" | base64 -w0 > digests.txt
