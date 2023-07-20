@@ -112,10 +112,16 @@ e2e_verify_common_buildDefinition_v1() {
     e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_TRIGGERING_ACTOR_ID" "$TRIGGERING_ACTOR_ID"
     if [[ -n ${CHECKOUT_SHA1:-} ]]; then
         # If the checkout sha was defined, then verify that there is no ref.
-        e2e_verify_predicate_v1_buildDefinition_resolvedDependencies0 "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"gitCommit\":\"$CHECKOUT_SHA1\"}}"
+        e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"gitCommit\":\"$CHECKOUT_SHA1\"}}]"
     else
+        build_type=$(e2e_this_file | cut -d '.' -f2)
         # The container-based builder uses 2 entries, one for the repo and one for the builder.
-        e2e_verify_predicate_v1_buildDefinition_resolvedDependencies0 "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"gitCommit\":\"$GITHUB_SHA\"}}"
+        # It also uses sha1 instead of gitCommit.
+        if [[ "$build_type" == "container-based" ]]; then
+            e2e_verify_predicate_v1_buildDefinition_resolvedDependencies0 "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
+        else
+            e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"gitCommit\":\"$GITHUB_SHA\"}}]"
+        fi
     fi
 }
 
