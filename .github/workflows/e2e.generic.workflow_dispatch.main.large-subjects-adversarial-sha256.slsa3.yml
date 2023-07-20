@@ -56,6 +56,7 @@ jobs:
           cat "$outfile" | base64 -w0 > digests.txt
 
       - name: Share the file
+        id: sharedfile
         uses: slsa-framework/slsa-github-generator/actions/generator/generic/create-base64-subjects-from-file@main
         with:
           path: digests.txt
@@ -63,10 +64,13 @@ jobs:
       - name: Alter the sha256
         shell: bash
         id: patchedhandle
+        env:
+          HANDLE: ${{ steps.sharedfile.outputs.handle }}
         run: |
           set -euo pipefail
 
-          patched_handle=$(cat digests.txt | base64 -d | jq '.sha256 = "19e01912fdc57ec7723b121ec77cd3f897f5771a517ddc0976e19627f8d376f6"' | base64 -w0)
+          # NOTE: sha245 of file is dae7705081b71a4df6fde153ad43c0c17277c611656e28420215cd04439f2c51
+          patched_handle=$(echo "$HANDLE" | base64 -d | jq '.sha256 = "dae7705081b71a4df6fde153ad43c0c17277c611656e28420215cd04439f2c52"' | base64 -w0)
           echo "handle=$patched_handle" >> "${GITHUB_OUTPUT}"
 
   provenance:
