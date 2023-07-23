@@ -47,7 +47,7 @@ jobs:
   #      should depend on this job.
   shim:
     # NOTE: this must be kept in sync with the if-failed job.
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v44')
     runs-on: ubuntu-latest
     steps:
       - run: |
