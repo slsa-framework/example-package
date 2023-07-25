@@ -56,6 +56,8 @@ jobs:
     with:
       artifact: my-artifact
       filename: delegator/e2e.delegator-generic.workflow_dispatch.main.checkout/build.txt
+      # WARNING: This value must be kept in sync with env variable CHECKOUT_SHA
+      # defined at the top of the file.
       commit-sha: aa526e30174c737361b33558a771e5f22dea3309
     secrets:
       # NOTE: this password is set to 'delegator-password'.
