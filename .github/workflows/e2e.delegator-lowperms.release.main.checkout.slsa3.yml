@@ -91,7 +91,7 @@ jobs:
           name: "${{ needs.build.outputs.artifact-download-name }}" # NOTE: This is randomized 'my-artifact'.
           sha256: "${{ needs.build.outputs.artifact-download-sha256 }}"
           path: "."
-      - uses: slsa-framework/example-trw/download/attestation@v2.0.0 # Use same version as the builder.
+      - uses: slsa-framework/example-trw/download/attestation@v3.0.0 # Use same version as the builder.
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
