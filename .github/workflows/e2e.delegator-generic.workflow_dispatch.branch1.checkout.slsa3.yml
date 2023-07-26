@@ -72,7 +72,7 @@ jobs:
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: "${{ needs.build.outputs.artifact }}" # NOTE: This is 'my-artifact'.
-      - uses: slsa-framework/example-trw/download/attestation@v1.0.0 # Use same version as the builder.
+      - uses: slsa-framework/example-trw/download/attestation@v3.0.0 # Use same version as the builder.
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
