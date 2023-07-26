@@ -370,6 +370,13 @@ verify_provenance_authenticity() {
         branchOpts=()
     fi
 
+    if [[ "$GITHUB_EVENT_NAME" == "create" ]]; then
+        # This trigger does not support branch verification.
+        # The GitHub event only seems to contain: "master_branch": "main" and "default_branch": "main".
+        branchArg=()
+        branchOpts=()
+    fi
+
     if [[ "$build_type" == "nodejs" ]]; then
         # Node.js does not support branch verification.
         branchArg=()
