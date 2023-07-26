@@ -11,11 +11,11 @@ env:
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   # File contains hello checkout
-  # https://github.com/slsa-framework/example-package/commit/777969350837d90e56583384f663edecf4f3abea
+  # https://github.com/slsa-framework/example-package/commit/f0afb8daaa59dc649b7c839fc3afce24f319527a
   # At main, it contains only hello.
   # WARNING: CHECKOUT_SHA1 value needs to be kept in sync with
   # the builder call.
-  CHECKOUT_SHA1: 777969350837d90e56583384f663edecf4f3abea
+  CHECKOUT_SHA1: f0afb8daaa59dc649b7c839fc3afce24f319527a
   CHECKOUT_MESSAGE: "hello checkout1"
 
 jobs:
@@ -55,10 +55,10 @@ jobs:
     uses: slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml@v3.0.0
     with:
       artifact: my-artifact
-      filename: delegator/e2e.delegator-generic.workflow_dispatch.main.checkout/build.txt
+      filename: delegator/e2e.delegator-generic.workflow_dispatch.branch1.checkout/build.txt
       # WARNING: This value must be kept in sync with env variable CHECKOUT_SHA1
       # defined at the top of the file.
-      commit-sha: 777969350837d90e56583384f663edecf4f3abea
+      commit-sha: f0afb8daaa59dc649b7c839fc3afce24f319527a
     secrets:
       # NOTE: this password is set to 'delegator-password'.
       password: ${{ secrets.DELEGATOR_PASSWORD }}
