@@ -230,7 +230,10 @@ assemble_full_builder_args() {
 # Dynamically toggle the assertion function
 # to adapt to BYOB with checkout-sha1 option used.
 assert_fn() {
-    if [[ -n ${CHECKOUT_SHA1:-} ]]; then
+    local branchDefined="$1"
+    # If a branch is defined and checkout sha1 is used,
+    # verification must fail.
+    if [[ -n ${CHECKOUT_SHA1:-} ]] && [[ "${branchDefined}" != "0" ]]; then
         echo e2e_assert_not_eq
     else
         echo e2e_assert_eq
@@ -337,8 +340,6 @@ verify_provenance_authenticity() {
     if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.3"; then
         echo "  **** Default parameters (annotated tags) *****"
 
-        echo "${verifierCmd[@]}" "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "not main default parameters (annotated_tags)"
     elif [[ -z "$annotated_tags" ]]; then
@@ -388,7 +389,8 @@ verify_provenance_authenticity() {
     # Set the assert function dynamically.
     # This lets us toggle the assertion from e2e_assert_eq to e2e_assert_not_eq
     # if BYOB is used with checkout-sha1 argument.
-    assert_fn=$(assert_fn)
+    assert_fn=$(assert_fn "${#branchOpts[@]}")
+
 
     # Workflow inputs
     workflow_inputs=$(e2e_this_file | cut -d '.' -f5 | grep workflow_inputs)
@@ -428,8 +430,6 @@ verify_provenance_authenticity() {
     # Correct raw builder ID verification
     echo "  **** Correct raw builder.id *****"
     $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-    # The assert function is dynamically set. If it's BYOB with checkout-sha1 set
-    # this needs to fail.
     "${assert_fn}" "$?" "0" "correct raw builder id"
 
     # Wrong raw builder ID verification
@@ -441,8 +441,6 @@ verify_provenance_authenticity() {
     # Correct full builder ID verification
     echo "  **** Correct full builder.id *****"
     $verifierCmd "${artifactAndbuilderFullArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-    # The assert function is dynamically set. If it's BYOB with checkout-sha1 set
-    # this needs to fail.
     "${assert_fn}" "$?" "0" "correct full builder id"
 
     # Wrong full builder ID verification
