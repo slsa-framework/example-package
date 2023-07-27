@@ -69,11 +69,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - uses: slsa-framework/slsa-github-generator/actions/delegator/secure-download-folder@main
+      - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
-          name: "${{ needs.build.outputs.artifact-download-name }}" # NOTE: This is randomized 'my-artifact'.
-          sha256: "${{ needs.build.outputs.artifact-download-sha256 }}"
-          path: "."
+          name: "${{ needs.build.outputs.artifact }}" # NOTE: This is 'my-artifact'.
       - uses: slsa-framework/example-trw/download/attestation@v3.0.0 # Use same version as the builder.
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
