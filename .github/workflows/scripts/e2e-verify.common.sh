@@ -227,6 +227,19 @@ assemble_full_builder_args() {
     echo "--builder-id=$builder_id"
 }
 
+# Dynamically toggle the assertion function
+# to adapt to BYOB with checkout-sha1 option used.
+assert_fn() {
+    local branchDefined="$1"
+    # If a branch is defined and checkout sha1 is used,
+    # verification must fail.
+    if [[ -n ${CHECKOUT_SHA1:-} ]] && [[ "${branchDefined}" != "0" ]]; then
+        echo e2e_assert_not_eq
+    else
+        echo e2e_assert_eq
+    fi
+}
+
 # verify_provenance_authenticity is a function that verifies the authenticity of
 # the provenance using slsa-verifier.
 # $1: The path to the slsa-verifier binary.
@@ -327,8 +340,6 @@ verify_provenance_authenticity() {
     if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.3"; then
         echo "  **** Default parameters (annotated tags) *****"
 
-        echo "${verifierCmd[@]}" "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "not main default parameters (annotated_tags)"
     elif [[ -z "$annotated_tags" ]]; then
@@ -360,6 +371,13 @@ verify_provenance_authenticity() {
         branchOpts=()
     fi
 
+    if [[ "$GITHUB_EVENT_NAME" == "create" ]]; then
+        # This trigger does not support branch verification.
+        # The GitHub event only seems to contain: "master_branch": "main" and "default_branch": "main".
+        branchArg=()
+        branchOpts=()
+    fi
+
     if [[ "$build_type" == "nodejs" ]]; then
         # Node.js does not support branch verification.
         branchArg=()
@@ -368,16 +386,11 @@ verify_provenance_authenticity() {
         vTagArg=()
     fi
 
-    if [[ "$build_type" == "delegator-generic" ]] || [[ "$build_type" == "delegator-lowperms" ]]; then
-        # TODO(234): Add support for checkout-sha1, i.e., tag / branch are not supported.
-        echo "TODO(234)"
-    fi
+    # Set the assert function dynamically.
+    # This lets us toggle the assertion from e2e_assert_eq to e2e_assert_not_eq
+    # if BYOB is used with checkout-sha1 argument.
+    assert_fn=$(assert_fn "${#branchOpts[@]}")
 
-    # TODO(#661): Add support for branch verification in v1 format.
-    if [[ -n "${SLSA_SPEC_V1:-}" ]]; then
-        branchArg=()
-        branchOpts=()
-    fi
 
     # Workflow inputs
     workflow_inputs=$(e2e_this_file | cut -d '.' -f5 | grep workflow_inputs)
@@ -393,10 +406,11 @@ verify_provenance_authenticity() {
 
     # Correct branch.
     echo "  **** Correct branch *****"
-    # NOTE: v1 spec does not support branch verification yet.
     if [[ "${#branchOpts[@]}" != "0" ]]; then
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-        e2e_assert_eq "$?" "0" "should be branch $BRANCH"
+        # The assert function is dynamically set. If it's BYOB with checkout-sha1 set
+        # this needs to fail.
+        "${assert_fn}" "$?" "0" "should be branch $BRANCH"
     fi
 
     # Wrong branch
@@ -416,7 +430,7 @@ verify_provenance_authenticity() {
     # Correct raw builder ID verification
     echo "  **** Correct raw builder.id *****"
     $verifierCmd "${artifactAndbuilderRawArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_eq "$?" "0" "correct raw builder id"
+    "${assert_fn}" "$?" "0" "correct raw builder id"
 
     # Wrong raw builder ID verification
     echo "  **** Wrong raw builder.id *****"
@@ -427,7 +441,7 @@ verify_provenance_authenticity() {
     # Correct full builder ID verification
     echo "  **** Correct full builder.id *****"
     $verifierCmd "${artifactAndbuilderFullArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-    e2e_assert_eq "$?" "0" "correct full builder id"
+    "${assert_fn}" "$?" "0" "correct full builder id"
 
     # Wrong full builder ID verification
     echo "  **** Wrong full builder.id *****"
@@ -493,17 +507,23 @@ verify_provenance_authenticity() {
             # Correct vM.N.P
             echo "  **** Correct vM.N.P *****"
             $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR.$PATCH" "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-            e2e_assert_eq "$?" "0" "$MAJOR.$MINOR.$PATCH versioned-tag vM.N.P ($MAJOR.$MINOR.$PATCH) should be correct"
+            # The assert function is dynamically set. If it's BYOB with checkout-sha1 set
+            # this needs to fail.
+            "${assert_fn}" "$?" "0" "$MAJOR.$MINOR.$PATCH versioned-tag vM.N.P ($MAJOR.$MINOR.$PATCH) should be correct"
 
             # Correct vM.N
             echo "  **** Correct vM.N *****"
             $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR.$MINOR" "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-            e2e_assert_eq "$?" "0" "$MAJOR.$MINOR versioned-tag vM.N ($MAJOR.$MINOR) should be correct"
+            # The assert function is dynamically set. If it's BYOB with checkout-sha1 set
+            # this needs to fail.
+            "${assert_fn}" "$?" "0" "$MAJOR.$MINOR versioned-tag vM.N ($MAJOR.$MINOR) should be correct"
 
             # Correct vM
             echo "  **** Correct vM *****"
             $verifierCmd "${branchOpts[@]}" "${vTagArg[@]}" "v$MAJOR" "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
-            e2e_assert_eq "$?" "0" "$MAJOR versioned-tag vm ($MAJOR) should be correct"
+            # The assert function is dynamically set. If it's BYOB with checkout-sha1 set
+            # this needs to fail.
+            "${assert_fn}" "$?" "0" "$MAJOR versioned-tag vm ($MAJOR) should be correct"
 
             # Incorrect v(M-1)
             echo "  **** Incorrect v(M-1) *****"

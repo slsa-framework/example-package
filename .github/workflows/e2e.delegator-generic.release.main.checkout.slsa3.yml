@@ -1,21 +1,27 @@
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 2 * * *"
   workflow_dispatch:
-  push:
-    tags:
-      - "v44.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
+  release:
+    types: [created]
 
 permissions: read-all
 
-concurrency: "e2e.delegator-generic.tag.main.default.slsa3"
+concurrency: "e2e.delegator-generic.release.main.checkout.slsa3"
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+  # File contains hello checkout
+  # https://github.com/slsa-framework/example-package/commit/aa526e30174c737361b33558a771e5f22dea3309
+  # At main, it contains only hello.
+  # WARNING: CHECKOUT_SHA1 value needs to be kept in sync with
+  # the builder call.
+  CHECKOUT_SHA1: aa526e30174c737361b33558a771e5f22dea3309
+  CHECKOUT_MESSAGE: "hello checkout"
   # BEWARE: Updateing this version requires updating the hardcoded
-  # v44 in the workflow.
-  DEFAULT_VERSION: v44.0.0
+  # v50 in the workflow.
+  DEFAULT_VERSION: v50.0.0
 
 jobs:
   # Bootstrap
@@ -47,7 +53,7 @@ jobs:
   #      should depend on this job.
   shim:
     # NOTE: this must be kept in sync with the if-failed job.
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v44')
+    if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags/v50')
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -61,12 +67,16 @@ jobs:
       contents: write # For asset uploads
       packages: write # To write to github packages
       actions: read
-    # v1.0.0 uses the delegator_generic_slsa3.yml
+    # v3.0.0 uses the delegator_generic_slsa3.yml
     # See https://github.com/slsa-framework/example-trw/blob/v1.0.0/.github/workflows/builder_example_slsa3.yml
-    uses: slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml@v1.0.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml@v3.0.0
     with:
       artifact: my-artifact
-      content: "hello world delegator_generic_slsa3"
+      # NOTE: we re-use the same build.txt from other tests.
+      filename: delegator/e2e.delegator-generic.workflow_dispatch.main.checkout/build.txt
+      # WARNING: This value must be kept in sync with env variable CHECKOUT_SHA1
+      # defined at the top of the file.
+      commit-sha: aa526e30174c737361b33558a771e5f22dea3309
     secrets:
       # NOTE: this password is set to 'delegator-password'.
       password: ${{ secrets.DELEGATOR_PASSWORD }}
@@ -79,7 +89,7 @@ jobs:
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: "${{ needs.build.outputs.artifact }}" # NOTE: This is 'my-artifact'.
-      - uses: slsa-framework/example-trw/download/attestation@v1.0.0 # Use same version as the builder.
+      - uses: slsa-framework/example-trw/download/attestation@v3.0.0 # Use same version as the builder.
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
@@ -90,7 +100,7 @@ jobs:
           BINARY: "${{ needs.build.outputs.artifact }}"
           PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
           BUILDER_ID: "https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml"
-          BUILDER_TAG: "v1.0.0"
+          BUILDER_TAG: "v3.0.0"
         run: ./.github/workflows/scripts/e2e.delegator.default.verify.sh
 
   if-succeeded:
@@ -104,7 +114,7 @@ jobs:
   if-failed:
     runs-on: ubuntu-latest
     needs: [build, verify]
-    if: always() && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result != 'success' || needs.verify.result != 'success')
+    if: always() && github.event_name == 'release' && startsWith(github.ref, 'refs/tags/v50') && (needs.build.result != 'success' || needs.verify.result != 'success')
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
