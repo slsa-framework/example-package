@@ -53,7 +53,7 @@ jobs:
 
           outfile="tmp_file"
           sha256sum "$BINARY_NAME" > "$outfile"
-          cat "$outfile" | base64 -w0 > digests.txt
+          base64 -w0 "${outfile}" > digests.txt
 
       - name: Share the file
         id: sharedfile
