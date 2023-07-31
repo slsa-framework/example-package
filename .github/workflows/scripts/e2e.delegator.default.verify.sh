@@ -22,6 +22,11 @@ verify_provenance_content() {
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
     e2e_verify_predicate_v1_runDetails_builder_id "$ATTESTATION" "${BUILDER_ID}@refs/tags/${BUILDER_TAG}"
     e2e_verify_predicate_v1_buildDefinition_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
+
+    # Verify the artifact contains the expected value.
+    if [[ -n ${CHECKOUT_SHA1:-} ]]; then
+        cat < "${BINARY}" | grep "${CHECKOUT_MESSAGE}" || exit 1
+    fi
 }
 
 THIS_FILE=$(e2e_this_file)
@@ -33,7 +38,6 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $THIS_FILE"
 
 export SLSA_VERIFIER_TESTING="true"
-export SLSA_SPEC_V1=1
 
 # Verify provenance authenticity.
 # TODO(233): Update to v1.8.0 tag.

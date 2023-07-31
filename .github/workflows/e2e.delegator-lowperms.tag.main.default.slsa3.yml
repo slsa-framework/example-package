@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - "v45.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
+      - "v47.[0-9]+.[0-9]+" # # triggers only if push new tag version, like `v0.8.4` or else
 
 permissions: read-all
 
@@ -14,8 +14,8 @@ env:
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
   # BEWARE: Updateing this version requires updating the hardcoded
-  # v45 in the workflow.
-  DEFAULT_VERSION: v45.0.0
+  # v47 in the workflow.
+  DEFAULT_VERSION: v47.0.0
 
 jobs:
   # Bootstrap
@@ -47,7 +47,7 @@ jobs:
   #      should depend on this job.
   shim:
     # NOTE: this must be kept in sync with the if-failed job.
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v47')
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - uses: slsa-framework/slsa-github-generator/actions/delegator/secure-download-folder@main
         with:
           name: "${{ needs.build.outputs.artifact-download-name }}" # NOTE: This is randomized 'my-artifact'.
@@ -85,7 +85,7 @@ jobs:
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
-      - uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568 # v3.5.0
+      - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
           go-version: "1.18"
       - env:
@@ -106,13 +106,13 @@ jobs:
     needs: [build, verify]
     if: needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
     runs-on: ubuntu-latest
     needs: [build, verify]
-    if: always() && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result != 'success' || needs.verify.result != 'success')
+    if: always() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v47') && (needs.build.result != 'success' || needs.verify.result != 'success')
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

@@ -502,3 +502,7 @@ e2e_verify_predicate_v1_buildDefinition_externalParameters_inputs() {
 e2e_verify_predicate_v1_buildDefinition_resolvedDependencies() {
     _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.resolvedDependencies'
 }
+
+e2e_verify_predicate_v1_buildDefinition_resolvedDependencies0() {
+    _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.resolvedDependencies[0]'
+}
