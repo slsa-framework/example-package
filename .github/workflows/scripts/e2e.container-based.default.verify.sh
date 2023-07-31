@@ -4,6 +4,8 @@
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
 # Script Inputs
+BINARY=${BINARY:-}
+PROVENANCE=${PROVENANCE:-}
 GITHUB_REF=${GITHUB_REF:-}
 GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
 GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
