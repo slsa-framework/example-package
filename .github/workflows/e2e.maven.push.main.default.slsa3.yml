@@ -1,0 +1,17 @@
+name: Maven e2e test - simple
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  build:
+    permissions:
+      id-token: write # For signing.
+      contents: read # For repo checkout of private repos.
+      actions: read # For getting workflow run on private repos.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@main
+    with:
+      rekor-log-public: true
