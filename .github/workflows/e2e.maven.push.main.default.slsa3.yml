@@ -7,11 +7,17 @@ on:
 permissions: read-all
 
 jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - run: mv e2e/maven/pom.xml ./ && mv e2e/maven/src ./
   build:
+    runs-on: ubuntu-latest
     permissions:
       id-token: write # For signing.
       contents: read # For repo checkout of private repos.
       actions: read # For getting workflow run on private repos.
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@main
-    with:
-      rekor-log-public: true
