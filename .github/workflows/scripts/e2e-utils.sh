@@ -433,7 +433,7 @@ _e2e_verify_query() {
     local expected="$2"
     local query="$3"
     name=$(echo -n "${attestation}" | jq -c -r "${query}")
-    e2e_assert_eq "${name}" "${expected}" "${query} should be ${expected}"
+    e2e_assert_eq "${name}" "${expected}" "${query} should be ${expected} but was ${name}"
 }
 
 # Returns the first 2 asset in a release.
