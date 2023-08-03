@@ -43,11 +43,11 @@ jobs:
           # NOTE: We move the artifact because the verification script
           # check that the subject name matches the filename.
           ARTIFACT: "${{ needs.build.outputs.artifact }}"
-        run: |
-          mv "artifacts/${ARTIFACT}" .
+        #run: |
+        #  mv "artifacts/${ARTIFACT}" .
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
-          PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
+          PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/test-java-project-0.1.19.jar.build.slsa"
           BUILDER_ID: "https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml"
           BUILDER_TAG: "v2.0.0"
         run: ./.github/workflows/scripts/e2e.delegator.default.verify.sh
