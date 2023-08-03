@@ -49,7 +49,7 @@ jobs:
 #        run: |
 #          mv "artifacts/${ARTIFACT}" .
       - env:
-          BINARY: "${{ needs.build.outputs.artifact }}"
+          BINARY: ./target/test-java-project-0.1.19.jar
           PROVENANCE: "slsa-attestations/${{ needs.build.outputs.provenance-download-name }}/test-java-project-0.1.19.jar.build.slsa"
           BUILDER_ID: "https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml"
           BUILDER_TAG: "v2.0.0"
