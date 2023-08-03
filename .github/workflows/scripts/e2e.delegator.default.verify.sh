@@ -41,6 +41,7 @@ export SLSA_VERIFIER_TESTING="true"
 
 echo "finding..................."
 find . -name *.build.slsa
+find . -name "*.jar"
 
 # Verify provenance authenticity.
 # TODO(233): Update to v1.8.0 tag.
