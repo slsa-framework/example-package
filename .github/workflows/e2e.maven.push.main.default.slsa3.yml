@@ -34,5 +34,5 @@ jobs:
       - uses: slsa-framework/slsa-github-generator/.github/actions/secure-download-folder@v1.8.0-rc.2
         with:
           name: target
-          sha256: "${{ inputs.target-download-sha256 }}"
+          sha256: "${{ needs.build.outputs.target-download-sha256 }}"
           path: ./
