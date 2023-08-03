@@ -6,6 +6,9 @@ on:
 
 permissions: read-all
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
