@@ -39,12 +39,12 @@ jobs:
       - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
           go-version: "1.18"
-      - env:
-          # NOTE: We move the artifact because the verification script
-          # check that the subject name matches the filename.
-          ARTIFACT: "${{ needs.build.outputs.artifact }}"
-        #run: |
-        #  mv "artifacts/${ARTIFACT}" .
+#      - env:
+#          # NOTE: We move the artifact because the verification script
+#          # check that the subject name matches the filename.
+#          ARTIFACT: "${{ needs.build.outputs.artifact }}"
+#        run: |
+#          mv "artifacts/${ARTIFACT}" .
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
           PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/test-java-project-0.1.19.jar.build.slsa"
