@@ -340,11 +340,6 @@ verify_provenance_authenticity() {
     if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.3"; then
         echo "  **** Default parameters (annotated tags) *****"
 
-        echo "1: ${artifactAndbuilderMinArgs[@]}"
-        echo "2: ${provenanceArg[@]}"
-        echo "3: ${packageArg[@]}"
-        echo "4: ${sourceArg[@]}"
-        echo "5: github.com/$GITHUB_REPOSITORY"
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "not main default parameters (annotated_tags)"
     elif [[ -z "$annotated_tags" ]]; then
