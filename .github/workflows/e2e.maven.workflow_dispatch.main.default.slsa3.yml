@@ -24,6 +24,7 @@ jobs:
       contents: read # For repo checkout of private repos.
       actions: read # For getting workflow run on private repos.
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@main
+
   verify:
     runs-on: ubuntu-latest
     needs: [build]
