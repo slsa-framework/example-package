@@ -1,8 +1,10 @@
+name: Maven e2e test - simple
 on:
-  schedule:
-    - cron: "0 6 * * *"
-  workflow_dispatch:
-
+  - workflow_dispatch
+#  schedule:
+#    - cron: "0 6 * * *"
+#  workflow_dispatch:
+#
 permissions: read-all
 
 env:
@@ -23,7 +25,9 @@ jobs:
       id-token: write # For signing.
       contents: read # For repo checkout of private repos.
       actions: read # For getting workflow run on private repos.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@main
+    uses: AdamKorcz/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@maven-builder-test-updates
+    with:
+      directory: ./e2e/maven
 
   verify:
     runs-on: ubuntu-latest
