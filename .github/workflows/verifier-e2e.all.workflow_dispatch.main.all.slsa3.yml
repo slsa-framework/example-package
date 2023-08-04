@@ -89,7 +89,7 @@ jobs:
       id-token: write # For signing.
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.8.0
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       upload-assets: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -100,7 +100,7 @@ jobs:
       id-token: write # For signing.
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.8.0
     with:
       go-version: 1.18
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
@@ -160,7 +160,7 @@ jobs:
       id-token: write # For signing.
       actions: read # For reading workflow info.
       packages: write # For uploading attestations.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.8.0
     with:
       image: ${{ needs.container_build.outputs.image }}
       digest: ${{ needs.container_build.outputs.digest }}
@@ -174,8 +174,7 @@ jobs:
       id-token: write # For signing.
       actions: read # For reading workflow info.
       contents: write # For asset upload.
-    # FIXME: Update to v1.7.0
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@v1.8.0
     with:
       builder-image: "bash"
       builder-digest: "sha256:9e2ba52487d945504d250de186cb4fe2e3ba023ed2921dd6ac8b97ed43e76af9"
