@@ -18,7 +18,7 @@ verify_provenance_content() {
     local attestation
     attestation=$(jq -r '.dsseEnvelope.payload' "${PROVENANCE}" | base64 -d)
 
-    e2e_verify_predicate_subject_name "${attestation}" "${BINARY}"
+    e2e_verify_predicate_subject_name "${attestation}" "test-java-project-${ARTIFACT_VERSION}.jar"
     e2e_verify_predicate_v1_runDetails_builder_id "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_v1_buildDefinition_buildType "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
@@ -35,5 +35,4 @@ echo "PROVENANCE is: ${PROVENANCE}"
 export SLSA_VERIFIER_TESTING="true"
 
 # Verify provenance content.
-echo "verify_provenance_content:"
 verify_provenance_content
