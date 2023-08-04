@@ -198,7 +198,7 @@ jobs:
           # Dispatch tags v14 v14.2 v13.0.30
           for tag in v14 v14.2 v13.0.30
           do
-            GH_TOKEN=${PAT_TOKEN} gh release delete "$tag" -y --cleanup-tag || true
+            gh release delete "$tag" -y --cleanup-tag || true
             git push --delete origin "$tag" || true
           done
 
@@ -219,5 +219,5 @@ jobs:
 
           for tag in v14 v14.2 v13.0.30
           do
-            GH_TOKEN="${PAT_TOKEN}" gh release create "${tag}" --target main --notes "gha_generic"
+            gh release create "${tag}" --target main --notes "gha_generic"
           done
