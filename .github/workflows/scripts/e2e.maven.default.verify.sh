@@ -3,6 +3,10 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
+# Input variables
+PROVENANCE=${PROVENANCE:-}
+GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
+GITHUB_REF=${GITHUB_REF:-}
 RUNNER_DEBUG=${RUNNER_DEBUG:-}
 if [[ -n "${RUNNER_DEBUG}" ]]; then
     set -x
