@@ -73,7 +73,7 @@ e2e_npm_package_dir() {
     package_name="$(e2e_this_file | rev | cut -d'.' -f2- | rev)"
     # convert periods to hyphen
     package_name="${package_name//./-}"
-    echo "nodejs/${package_name}"
+    echo "e2e/nodejs/${package_name}"
 }
 
 # name_to_url takes a npm package name and outputs a purl for that package name.
@@ -419,7 +419,7 @@ e2e_verify_predicate_metadata_v1() {
 }
 
 e2e_verify_predicate_materials_v1() {
-     _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.resolvedDependencies[0]'
+    _e2e_verify_query "$1" "$2" '.predicate.buildDefinition.resolvedDependencies[0]'
 }
 
 e2e_verify_predicate_materials() {
