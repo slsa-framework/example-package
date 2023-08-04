@@ -1,4 +1,3 @@
-name: Maven e2e test - simple
 on:
   schedule:
     - cron: "0 6 * * *"
