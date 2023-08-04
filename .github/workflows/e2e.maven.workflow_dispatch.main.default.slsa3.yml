@@ -44,7 +44,7 @@ jobs:
         with:
           go-version: "1.18"
       - env:
-          BINARY: ./target/test-java-project-0.1.19.jar
+          BINARY: "test-java-project-0.1.19.jar"
           PROVENANCE: "slsa-attestations/${{ needs.build.outputs.provenance-download-name }}/test-java-project-0.1.19.jar.build.slsa"
           BUILDER_TAG: "v2.0.0"
         run: ./.github/workflows/scripts/e2e.maven.default.verify.sh
