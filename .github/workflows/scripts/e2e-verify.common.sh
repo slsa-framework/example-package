@@ -177,8 +177,7 @@ get_builder_id() {
     "delegator-generic"|"delegator-lowperms")
         # The builder ID is set by the workflow.
         # NOTE: the TRW is referenced at a tag, but the BYOB is referenced at HEAD.
-        # shellcheck disable=SC2153 # BUILDER_ID is set in the workflow.
-        builder_id="${BUILDER_ID}@refs/tags/${BUILDER_TAG}"
+        builder_id="${BUILDER_ID}@refs/tags/v0.0.1"
         ;;
     *)
         echo "unknown build_type: $build_type"
