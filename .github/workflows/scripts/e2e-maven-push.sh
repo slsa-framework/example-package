@@ -9,6 +9,10 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 
 branch=$(e2e_this_branch)
 
+# NOTE: We can't simply push from $branch because it is occaisonally reset to
+# the main branch. We need to maintain the version number in pom.xml
+# because you cannot overwrite a version in maven. Instead we commit to main,
+# set the tag, reset $branch and push both main and $branch.
 echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}"
 gh repo clone "${GITHUB_REPOSITORY}" -- -b maven-e2e-temp
 repo_name=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
