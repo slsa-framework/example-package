@@ -49,7 +49,6 @@ jobs:
           echo "ref: ${GITHUB_REF}"
 
   build:
-    #runs-on: ubuntu-latest
     permissions:
       id-token: write # For signing.
       contents: read # For repo checkout of private repos.
