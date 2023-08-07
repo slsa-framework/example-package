@@ -21,7 +21,10 @@ verify_provenance_content() {
 
     e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
     # NOTE: the ref must be a tag. The builder uses the delegator at head.
-    e2e_verify_predicate_v1_runDetails_builder_id "$ATTESTATION" "${BUILDER_ID}"
+    # The tag is provided as "vx.y.z", so we re-construct the git ref.
+    builder_id=$(echo "${BUILDER_ID}" | cut -d@ -f1)
+    builder_tag=$(echo "${BUILDER_ID}" | cut -d@ -f2)
+    e2e_verify_predicate_v1_runDetails_builder_id "$ATTESTATION" "${builder_id}@refs/tags/${builder_tag}"
     e2e_verify_predicate_v1_buildDefinition_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 
     # Verify the artifact contains the expected value.
