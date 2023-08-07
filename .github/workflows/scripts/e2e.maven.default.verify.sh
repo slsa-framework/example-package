@@ -18,6 +18,12 @@ verify_provenance_content() {
     local attestation
     attestation=$(jq -r '.dsseEnvelope.payload' "${PROVENANCE}" | base64 -d)
 
+    # Run the artifact and verify the output is correct
+    artifact_output=$(java -jar target/test-java-project-"${ARTIFACT_VERSION}".jar)
+    expected_artifact_output="${EXPECTED_ARTIFACT_OUTPUT}"
+    e2e_assert_eq "${artifact_output}" "${expected_artifact_output}" "The output from the artifact should be '${expected_artifact_output}' but was '${artifact_output}'"
+    
+    # Verify the content of the attestation
     e2e_verify_predicate_subject_name "${attestation}" "test-java-project-${ARTIFACT_VERSION}.jar"
     e2e_verify_predicate_v1_runDetails_builder_id "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_v1_buildDefinition_buildType "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
