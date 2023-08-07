@@ -54,9 +54,8 @@ jobs:
     permissions:
       id-token: write # For signing
       contents: write # For asset uploads
-      packages: write # To write to github packages
       actions: read
-    # v2.0.0 uses the delegator_generic_slsa3.yml
+    # v2.0.0 uses the delegator-lowperms_generic_slsa3.yml
     # See https://github.com/slsa-framework/example-trw/blob/v1.0.0/.github/workflows/builder_example_slsa3.yml
     uses: slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml@v2.0.0
     with:
