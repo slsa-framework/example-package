@@ -38,8 +38,8 @@ jobs:
           if [ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]; then
             {
               echo "gha_generic_binary-name=gha_generic-binary-linux-amd64-workflow_dispatch"
-              echo "gha_delegator_binary-name="gha_delegator-binary-linux-amd64-workflow_dispatch"
-              echo "gha_delegator-lowperms_binary-name="gha_delegator-lowperms-binary-linux-amd64-workflow_dispatch"
+              echo "gha_delegator_binary-name=gha_delegator-binary-linux-amd64-workflow_dispatch"
+              echo "gha_delegator-lowperms_binary-name=gha_delegator-lowperms-binary-linux-amd64-workflow_dispatch"
               echo "config-file=.github/configs-go/config-ldflags-workflow_dispatch.yml"
               echo "config-path=.github/configs-docker/config-workflow_dispatch.toml"
             } >> "${GITHUB_OUTPUT}"
@@ -48,8 +48,8 @@ jobs:
           # This must be a tag event.
           {
             echo "gha_generic_binary-name=gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}"
-            echo "gha_delegator_binary-name="gha_delegator-binary-linux-amd64-${GITHUB_REF_NAME}"
-            echo "gha_delegator-lowperms_binary-name="gha_delegator-lowperms-binary-linux-amd64-${GITHUB_REF_NAME}"
+            echo "gha_delegator_binary-name=gha_delegator-binary-linux-amd64-${GITHUB_REF_NAME}"
+            echo "gha_delegator-lowperms_binary-name=gha_delegator-lowperms-binary-linux-amd64-${GITHUB_REF_NAME}"
             echo "config-file=.github/configs-go/config-ldflags-tag-name.yml"
             echo "config-path=.github/configs-docker/config-tag-${GITHUB_REF_NAME}.toml"
           } >> "${GITHUB_OUTPUT}"
