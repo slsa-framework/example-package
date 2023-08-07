@@ -42,9 +42,7 @@ jobs:
       id-token: write # For signing
       contents: write # For asset uploads
       actions: read
-    # v2.0.0 uses the delegator-lowperms_generic_slsa3.yml
-    # See https://github.com/slsa-framework/example-trw/blob/v2.0.0/.github/workflows/builder_example_slsa3.yml
-    uses: slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml@v2.0.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v0.0.1
     with:
       artifact: my-artifact
       content: "hello world delegator_lowperms_slsa3"
@@ -63,7 +61,7 @@ jobs:
           name: "${{ needs.build.outputs.artifact-download-name }}" # NOTE: This is randomized 'my-artifact'.
           sha256: "${{ needs.build.outputs.artifact-download-sha256 }}"
           path: "."
-      - uses: slsa-framework/example-trw/download/attestation@v2.0.0 # Use same version as the builder.
+      - uses: slsa-framework/example-trw/low-perms/actions/download/attestation@v0.0.1
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
@@ -79,8 +77,7 @@ jobs:
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
           PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
-          BUILDER_ID: "https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml"
-          BUILDER_TAG: "v2.0.0"
+          BUILDER_ID: "https://github.com/slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v0.0.1"
         run: ./.github/workflows/scripts/e2e.delegator.default.verify.sh
 
   if-succeeded:

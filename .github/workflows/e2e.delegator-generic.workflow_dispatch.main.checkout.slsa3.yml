@@ -49,10 +49,7 @@ jobs:
       contents: write # For asset uploads
       packages: write # To write to github packages
       actions: read
-    # v3.0.0 uses the delegator_generic_slsa3.yml
-    # and supports filename and checkout.
-    # See https://github.com/slsa-framework/example-trw/blob/v3.0.0/.github/workflows/builder_example_slsa3.yml
-    uses: slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml@v3.0.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms-checkout_slsa3.yml@v0.0.1
     with:
       artifact: my-artifact
       filename: delegator/e2e.delegator-generic.workflow_dispatch.main.checkout/build.txt
@@ -72,7 +69,7 @@ jobs:
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: "${{ needs.build.outputs.artifact }}" # NOTE: This is 'my-artifact'.
-      - uses: slsa-framework/example-trw/download/attestation@v3.0.0 # Use same version as the builder.
+      - uses: slsa-framework/example-trw/high-perms-checkout/actions/download/attestation@v0.0.1
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
@@ -82,8 +79,7 @@ jobs:
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
           PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.
-          BUILDER_ID: "https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml"
-          BUILDER_TAG: "v3.0.0"
+          BUILDER_ID: "https://github.com/slsa-framework/example-trw/.github/workflows/builder_high-perms-checkout_slsa3.yml@v0.0.1"
         run: ./.github/workflows/scripts/e2e.delegator.default.verify.sh
 
   if-succeeded:
