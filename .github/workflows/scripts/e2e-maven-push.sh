@@ -10,7 +10,7 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 branch=$(e2e_this_branch)
 
 echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}"
-gh repo clone "${GITHUB_REPOSITORY}" -- -b maven-e2e-temp2
+gh repo clone "${GITHUB_REPOSITORY}" -- -b maven-e2e-temp
 repo_name=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
 cd ./"$repo_name"
 
@@ -23,15 +23,62 @@ git remote set-url origin "https://github-actions:${GH_TOKEN}@github.com/${GITHU
 package_dir="${PACKAGE_DIR}" # specified in the e2e test yaml
 
 cd "${package_dir}"
-current_tag=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-if [ "${current_tag}" = "1.19.6-SNAPSHOT" ]; then
-    next_tag="1.19.7-SNAPSHOT"
-else
-    next_tag="1.19.6-SNAPSHOT"
-fi
+
+# Get the new version
+artifact_tag=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+
+# version_major prints the major version number.
+# Expects a string like '1.19.7'
+# version_major returns "1" if the input is '1.19.7'
+version_major() {
+    VER=$(echo $1 | cut -d '.' -f1)
+    echo "$VER"
+}
+
+# version_minor prints the minor version number.
+# Expects a string like '1.19.7'.
+# version_minor returns "19" if the input is '1.19.7'
+version_minor() {
+    VER=$(echo $1 | cut -d '.' -f2)
+    echo "$VER"
+}
+
+# version_patch prints the patch version number.
+# Expects a string like '1.19.7-SNAPSHOT.jar'
+# version_patch returns "7" if the input is '1.19.7'
+version_patch() {
+    VER=$(echo $1 | cut -d '.' -f3)
+    echo "$VER"
+}
+
+# Bumps the version
+new_version() {
+    current_tag=$1
+    release_major=$(version_major "$current_tag")
+    release_minor=$(version_minor "$current_tag")
+    release_patch=$(version_patch "$current_tag")
+
+    # These if-statements are sorted by likelihood
+    if [[ $release_patch != "99" ]]; then
+        # Only need to bump the patch
+        release_patch=$((release_patch+1))
+    elif [[ $release_patch = "99" && $release_minor != "99" ]]; then
+        # Need to bump minor
+        release_minor=$(($release_minor+1))
+        release_patch="0"
+    elif [[ $release_patch = "99" && $release_minor = "99" ]]; then
+        # Need to bump major
+        release_major=$(($release_major+1))
+        release_minor="0"
+        release_patch="0"
+    fi
+    echo $release_major.$release_minor.$release_patch
+}
+
+next_tag=$(new_version $artifact_tag)
 
 # Output the artifact name
-echo "artifact-version=${current_tag}" >> $GITHUB_OUTPUT
+echo "artifact-version=${artifact_tag}" >> $GITHUB_OUTPUT
 
 tag=$(mvn versions:set -DnewVersion=$next_tag)
 cd -
@@ -73,7 +120,7 @@ else
         git push origin main
         git push origin "${tag}"
     else
-        git push origin maven-e2e-temp2 # TODO: CHANGE to main!!!!!!!!!!
+        git push origin maven-e2e-temp # TODO: CHANGE to main!!!!!!!!!!
     fi
 fi
 
