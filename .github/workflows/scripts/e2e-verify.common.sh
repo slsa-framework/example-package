@@ -97,7 +97,7 @@ e2e_verify_common_invocation_v02() {
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY" "${gh_repo}"
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ATTEMPT" "${gh_run_attempt}"
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ID" "${gh_run_id}"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "${gh_run_number}":
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "${gh_run_number}"
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_SHA" "${gh_sha}"
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_ACTOR_ID" "${gh_actor_id}"
     e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_ID" "${gh_repo_id}"
