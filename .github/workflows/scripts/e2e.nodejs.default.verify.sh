@@ -19,6 +19,10 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
+# Script Inputs
+GITHUB_REF=${GITHUB_REF:-}
+GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
+GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
 RUNNER_DEBUG=${RUNNER_DEBUG:-}
 if [[ -n "${RUNNER_DEBUG}" ]]; then
     set -x
@@ -77,24 +81,25 @@ verify_provenance_content() {
 
     # BINARY is the tarball.
     BINARY=$(mktemp)
+    export BINARY
     curl -Sso "${BINARY}" "$(npm view "${package_name_and_version}" --json | jq -r '.dist.tarball')"
 
     echo "  **** Provenance content verification *****"
 
     # Verify all common provenance fields.
-    e2e_verify_common_all_v02 "$PROVENANCE"
+    e2e_verify_common_all_v02 "${PROVENANCE}"
 
-    e2e_verify_predicate_subject_name "$PROVENANCE" "$(name_to_purl "${package_name_and_version}")"
-    e2e_verify_predicate_builder_id "$PROVENANCE" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
-    e2e_verify_predicate_buildType "$PROVENANCE" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
+    e2e_verify_predicate_subject_name "${PROVENANCE}" "$(name_to_purl "${package_name_and_version}")"
+    e2e_verify_predicate_builder_id "${PROVENANCE}" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
+    e2e_verify_predicate_buildType "${PROVENANCE}" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
 
 # =====================================
 # ===== main execution starts =========
 # =====================================
 
-BRANCH=$(e2e_this_file | cut -d '.' -f4)
-echo "branch is $BRANCH"
+this_branch=$(e2e_this_branch)
+echo "branch is ${this_branch}"
 echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"

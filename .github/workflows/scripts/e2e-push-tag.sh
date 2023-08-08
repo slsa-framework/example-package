@@ -7,6 +7,16 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 # This script checks for tags matching the semver major version of the
 # DEFAULT_VERSION enviornment variable, bumps the version and pushes a new tag.
 
+# Script Inputs
+DEFAULT_VERSION=${DEFAULT_VERSION:-}
+GITHUB_REPOSITORY=${GITHUB_REPOSITORY:-}
+GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}
+GH_TOKEN=${GH_TOKEN:-}
+RUNNER_DEBUG=${RUNNER_DEBUG:-}
+if [[ -n "${RUNNER_DEBUG}" ]]; then
+    set -x
+fi
+
 branch=$(e2e_this_branch)
 
 # Check presence of file in the correct branch.

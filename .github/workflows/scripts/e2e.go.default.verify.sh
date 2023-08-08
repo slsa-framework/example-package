@@ -19,6 +19,14 @@
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
+# Script Inputs
+GITHUB_REF=${GITHUB_REF:-}
+GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
+GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
+BINARY=${BINARY:-}
+PROVENANCE=${PROVENANCE:-}
+GO_MAIN=${GO_MAIN:-}
+GO_DIR=${GO_DIR:-}
 RUNNER_DEBUG=${RUNNER_DEBUG:-}
 if [[ -n "${RUNNER_DEBUG}" ]]; then
     set -x
@@ -26,76 +34,77 @@ fi
 
 # Function used to verify the content of the provenance.
 verify_provenance_content() {
-
-    ATTESTATION=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
+    attestation=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
     #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
     #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-    LDFLAGS=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noldflags || true)
+    this_file=$(e2e_this_file)
+    this_branch=$(e2e_this_branch)
+    ldflags=$(echo "${this_file}" | cut -d '.' -f5 | grep -v noldflags || true)
     #DIR=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep '\-dir')
-    has_assets=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep -v noassets || true)
-    is_prerelease=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep prerelease || true)
-    is_draft=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep draft || true)
-    TAG=$(echo "$THIS_FILE" | cut -d '.' -f5 | grep tag || true)
+    has_assets=$(echo "${this_file}" | cut -d '.' -f5 | grep -v noassets || true)
+    is_prerelease=$(echo "${this_file}" | cut -d '.' -f5 | grep prerelease || true)
+    is_draft=$(echo "${this_file}" | cut -d '.' -f5 | grep draft || true)
+    tag=$(echo "${this_file}" | cut -d '.' -f5 | grep tag || true)
     # Note GO_MAIN and GO_DIR are set in the workflows as env variables.
-    DIR="$PWD/__PROJECT_CHECKOUT_DIR__"
+    dir="$PWD/__PROJECT_CHECKOUT_DIR__"
     if [[ -n "$GO_DIR" ]]; then
-        DIR="$DIR/$GO_DIR"
+        dir="${dir}/$GO_DIR"
     fi
 
     echo "  **** Provenance content verification *****"
 
     # Verify all common provenance fields.
-    e2e_verify_common_all "$ATTESTATION"
+    e2e_verify_common_all "${attestation}"
 
-    e2e_verify_predicate_subject_name "$ATTESTATION" "$BINARY"
-    e2e_verify_predicate_builder_id "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
-    e2e_verify_predicate_buildType "$ATTESTATION" "https://github.com/slsa-framework/slsa-github-generator/go@v1"
+    e2e_verify_predicate_subject_name "${attestation}" "$BINARY"
+    e2e_verify_predicate_builder_id "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
+    e2e_verify_predicate_buildType "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/go@v1"
 
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "os" "ubuntu22"
-    e2e_verify_predicate_invocation_environment "$ATTESTATION" "arch" "X64"
+    e2e_verify_predicate_invocation_environment "${attestation}" "os" "ubuntu22"
+    e2e_verify_predicate_invocation_environment "${attestation}" "arch" "X64"
 
     # First step is vendoring
-    e2e_verify_predicate_buildConfig_step_command "0" "$ATTESTATION" "[\"mod\",\"vendor\"]"
-    e2e_verify_predicate_buildConfig_step_env "0" "$ATTESTATION" "[]"
-    e2e_verify_predicate_buildConfig_step_workingDir "0" "$ATTESTATION" "$DIR"
+    e2e_verify_predicate_buildConfig_step_command "0" "${attestation}" "[\"mod\",\"vendor\"]"
+    e2e_verify_predicate_buildConfig_step_env "0" "${attestation}" "[]"
+    e2e_verify_predicate_buildConfig_step_workingDir "0" "${attestation}" "${dir}"
 
     # Second step is the actual compilation.
-    e2e_verify_predicate_buildConfig_step_env "1" "$ATTESTATION" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
-    e2e_verify_predicate_buildConfig_step_workingDir "1" "$ATTESTATION" "$DIR"
+    e2e_verify_predicate_buildConfig_step_env "1" "${attestation}" "[\"GOOS=linux\",\"GOARCH=amd64\",\"GO111MODULE=on\",\"CGO_ENABLED=0\"]"
+    e2e_verify_predicate_buildConfig_step_workingDir "1" "${attestation}" "${dir}"
 
-    if [[ -z "$LDFLAGS" ]]; then
-        e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"$BINARY\"]"
+    if [[ -z "${ldflags}" ]]; then
+        e2e_verify_predicate_buildConfig_step_command "1" "${attestation}" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-o\",\"$BINARY\"]"
     else
         chmod a+x ./"$BINARY"
 
         if [[ -z "$GO_MAIN" ]]; then
             # Note: Tests with tag don't use the `main:` field in config file.
-            if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG" ]]; then
-                e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitTag=$GITHUB_REF_NAME\",\"-o\",\"$BINARY\"]"
+            if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "${tag}" ]]; then
+                e2e_verify_predicate_buildConfig_step_command "1" "${attestation}" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=${this_branch} -X main.gitTag=$GITHUB_REF_NAME\",\"-o\",\"$BINARY\"]"
             else
-                e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH\",\"-o\",\"$BINARY\"]"
+                e2e_verify_predicate_buildConfig_step_command "1" "${attestation}" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=${this_branch}\",\"-o\",\"$BINARY\"]"
             fi
         else
-            e2e_verify_predicate_buildConfig_step_command "1" "$ATTESTATION" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=$BRANCH -X main.gitMain=$GO_MAIN\",\"-o\",\"$BINARY\",\"$GO_MAIN\"]"
+            e2e_verify_predicate_buildConfig_step_command "1" "${attestation}" "[\"build\",\"-mod=vendor\",\"-trimpath\",\"-tags=netgo\",\"-ldflags=-X main.gitVersion=v1.2.3 -X main.gitCommit=abcdef -X main.gitBranch=${this_branch} -X main.gitMain=$GO_MAIN\",\"-o\",\"$BINARY\",\"$GO_MAIN\"]"
             M=$(./"$BINARY" | grep "GitMain: $GO_MAIN")
             e2e_assert_not_eq "$M" "" "GitMain should not be empty"
         fi
 
         V=$(./"$BINARY" | grep 'GitVersion: v1.2.3')
         C=$(./"$BINARY" | grep 'GitCommit: abcdef')
-        B=$(./"$BINARY" | grep "GitBranch: $BRANCH")
+        B=$(./"$BINARY" | grep "GitBranch: ${this_branch}")
         e2e_assert_not_eq "$V" "" "GitVersion should not be empty"
         e2e_assert_not_eq "$C" "" "GitCommit should not be empty"
         e2e_assert_not_eq "$B" "" "GitBranch should not be empty"
 
         # Verify the GitTag is set to the dynamic version using {{ .Version }}.
         # and that the name of the binary is set properly.
-        if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "$TAG" ]]; then
+        if [[ "$GITHUB_REF_TYPE" == "tag" ]] && [[ -n "${tag}" ]]; then
             T=$(./"$BINARY" | grep "GitTag: $GITHUB_REF_NAME")
             e2e_assert_not_eq "$T" "" "GitTag should not be empty"
 
             e2e_assert_eq "$BINARY" "binary-linux-amd64-$GITHUB_REF_NAME"
-        elif [[ "$GITHUB_REF_TYPE" != "tag" ]] && [[ -n "$TAG" ]]; then
+        elif [[ "$GITHUB_REF_TYPE" != "tag" ]] && [[ -n "${tag}" ]]; then
             ./"$BINARY"
             T=$(./"$BINARY" | grep "GitTag: unknown")
             e2e_assert_not_eq "$T" "" "GitTag should contain unknown"
@@ -139,13 +148,13 @@ verify_provenance_content() {
 # ===== main execution starts =========
 # =====================================
 
-THIS_FILE=$(e2e_this_file)
-BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
-echo "branch is $BRANCH"
+this_file=$(e2e_this_file)
+branch=$(e2e_this_branch)
+echo "branch is ${branch}"
 echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
-echo "DEBUG: file is $THIS_FILE"
+echo "DEBUG: file is ${this_file}"
 echo "BINARY: file is $BINARY"
 
 export SLSA_VERIFIER_TESTING="true"

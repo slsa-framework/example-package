@@ -18,6 +18,9 @@ set -euo pipefail
 
 source "./.github/workflows/scripts/e2e-verify.common.sh"
 
+# Script Inputs
+SLSA_TOKEN=${SLSA_TOKEN:-}
+
 # TODO(#1709): Add more token verification.
 if [[ "$SLSA_TOKEN" == "" ]]; then
     echo "SLSA_TOKEN is empty."
