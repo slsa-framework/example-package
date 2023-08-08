@@ -35,7 +35,7 @@ GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}
 
 # bump_npm_package_version bumps the given npm package's patch version,
 # commits it to the local git repo, and outputs the resulting version.
-bump_npm_package_version() {
+npm_bump_package_version() {
     local package_dir
     local this_event
     local version
