@@ -131,6 +131,7 @@ e2e_verify_common_buildDefinition_v1() {
     local gh_repo_id=${GITHUB_REPOSITORY_ID:-}
     local gh_repo_owner_id=${GITHUB_REPOSITORY_OWNER_ID:-}
     local gh_run_attempt=${GITHUB_RUN_ATTEMPT:-}
+    local gh_run_id=${GITHUB_RUN_ID:-}
     local gh_run_number=${GITHUB_RUN_NUMBER:-}
     local gh_sha=${GITHUB_SHA:-}
     local gh_workflow_ref=${GITHUB_WORKFLOW_REF:-}
