@@ -32,6 +32,10 @@ GH_TOKEN=${GH_TOKEN:-}
 GITHUB_REPOSITORY=${GITHUB_REPOSITORY:-}
 GITHUB_EVENT_NAME=${GITHUB_EVENT_NAME:-}
 GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}
+RUNNER_DEBUG=${RUNNER_DEBUG:-}
+if [[ -n "${RUNNER_DEBUG}" ]]; then
+    set -x
+fi
 
 # bump_npm_package_version bumps the given npm package's patch version,
 # commits it to the local git repo, and outputs the resulting version.
