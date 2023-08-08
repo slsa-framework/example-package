@@ -23,28 +23,41 @@ e2e_verify_common_builder() {
 # Verifies the invocation for generic provenance.
 # $1: the attestation content
 e2e_verify_common_invocation() {
-    e2e_verify_predicate_invocation_configSource "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\".github/workflows/$(e2e_this_file)\"}"
+    # Script Inputs
+    local gh_actor=${GITHUB_ACTOR:-}
+    local gh_event_name=${GITHUB_EVENT_NAME:-}
+    local gh_ref=${GITHUB_REF:-}
+    local gh_ref_type=${GITHUB_REF_TYPE:-}
+    local gh_repo=${GITHUB_REPOSITORY:-}
+    local gh_repo_owner=${GITHUB_REPOSITORY_OWNER:-}
+    local gh_run_attempt=${GITHUB_RUN_ATTEMPT:-}
+    local gh_run_id=${GITHUB_RUN_ID:-}
+    local gh_run_number=${GITHUB_RUN_NUMBER:-}
+    local gh_sha=${GITHUB_SHA:-}
 
-    e2e_verify_predicate_invocation_environment "$1" "github_actor" "$GITHUB_ACTOR"
-    e2e_verify_predicate_invocation_environment "$1" "github_sha1" "$GITHUB_SHA"
-    e2e_verify_predicate_invocation_environment "$1" "github_event_name" "$GITHUB_EVENT_NAME"
-    e2e_verify_predicate_invocation_environment "$1" "github_ref" "$GITHUB_REF"
-    e2e_verify_predicate_invocation_environment "$1" "github_ref_type" "$GITHUB_REF_TYPE"
-    e2e_verify_predicate_invocation_environment "$1" "github_run_id" "$GITHUB_RUN_ID"
-    e2e_verify_predicate_invocation_environment "$1" "github_run_number" "$GITHUB_RUN_NUMBER"
-    e2e_verify_predicate_invocation_environment "$1" "github_run_attempt" "$GITHUB_RUN_ATTEMPT"
-    ACTOR_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_ACTOR" | jq -r '.id')
-    OWNER_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"$GITHUB_REPOSITORY_OWNER" | jq -r '.id')
-    REPO_ID=$(gh api -H "Accept: application/vnd.github.v3+json" /repos/"$GITHUB_REPOSITORY" | jq -r '.id')
-    e2e_verify_predicate_invocation_environment "$1" "github_actor_id" "$ACTOR_ID"
-    e2e_verify_predicate_invocation_environment "$1" "github_repository_owner_id" "$OWNER_ID"
-    e2e_verify_predicate_invocation_environment "$1" "github_repository_id" "$REPO_ID"
+    e2e_verify_predicate_invocation_configSource "$1" "{\"uri\":\"git+https://github.com/${gh_repo}@${gh_ref}\",\"digest\":{\"sha1\":\"${gh_sha}\"},\"entryPoint\":\".github/workflows/$(e2e_this_file)\"}"
+
+    e2e_verify_predicate_invocation_environment "$1" "github_actor" "${gh_actor}"
+    e2e_verify_predicate_invocation_environment "$1" "github_sha1" "${gh_sha}"
+    e2e_verify_predicate_invocation_environment "$1" "github_event_name" "${gh_event_name}"
+    e2e_verify_predicate_invocation_environment "$1" "github_ref" "${gh_ref}"
+    e2e_verify_predicate_invocation_environment "$1" "github_ref_type" "${gh_ref_type}"
+    e2e_verify_predicate_invocation_environment "$1" "github_run_id" "${gh_run_id}"
+    e2e_verify_predicate_invocation_environment "$1" "github_run_number" "${gh_run_number}"
+    e2e_verify_predicate_invocation_environment "$1" "github_run_attempt" "${gh_run_attempt}"
+    local actor_id owner_id repo_id
+    actor_id=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"${gh_actor}" | jq -r '.id')
+    owner_id=$(gh api -H "Accept: application/vnd.github.v3+json" /users/"${gh_repo_owner}" | jq -r '.id')
+    repo_id=$(gh api -H "Accept: application/vnd.github.v3+json" /repos/"${gh_repo}" | jq -r '.id')
+    e2e_verify_predicate_invocation_environment "$1" "github_actor_id" "${actor_id}"
+    e2e_verify_predicate_invocation_environment "$1" "github_repository_owner_id" "${owner_id}"
+    e2e_verify_predicate_invocation_environment "$1" "github_repository_id" "${repo_id}"
 }
 
 # Verifies the expected metadata.
 # $1: the attestation content
 e2e_verify_common_metadata() {
-   e2e_verify_predicate_metadata "$1" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
+    e2e_verify_predicate_metadata "$1" "{\"buildInvocationID\":\"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\",\"completeness\":{\"parameters\":true,\"environment\":false,\"materials\":false},\"reproducible\":false}"
 }
 
 # Verifies the materials include the GitHub repository.
@@ -61,22 +74,36 @@ e2e_verify_common_all_v02() {
 }
 
 e2e_verify_common_invocation_v02() {
-    # This does not include buildType since it is not common to all.
-    e2e_verify_predicate_invocation_configSource "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"},\"entryPoint\":\".github/workflows/$(e2e_this_file)\"}"
+    local gh_event_name=${GITHUB_EVENT_NAME:-}
+    local gh_actor_id=${GITHUB_ACTOR_ID:-}
+    local gh_repo=${GITHUB_REPOSITORY:-}
+    local gh_repo_id=${GITHUB_REPOSITORY_ID:-}
+    local gh_repo_owner_id=${GITHUB_REPOSITORY_OWNER_ID:-}
+    local gh_ref=${GITHUB_REF:-}
+    local gh_ref_type=${GITHUB_REF_TYPE:-}
+    local gh_run_attempt=${GITHUB_RUN_ATTEMPT:-}
+    local gh_run_id=${GITHUB_RUN_ID:-}
+    local gh_run_number=${GITHUB_RUN_NUMBER:-}
+    local gh_sha=${GITHUB_SHA:-}
+    local gh_workflow_ref=${GITHUB_WORKFLOW_REF:-}
+    local gh_workflow_sha=${GITHUB_WORKFLOW_SHA:-}
 
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_EVENT_NAME" "$GITHUB_EVENT_NAME"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF" "$GITHUB_REF"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF_TYPE" "$GITHUB_REF_TYPE"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY" "$GITHUB_REPOSITORY"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ATTEMPT" "$GITHUB_RUN_ATTEMPT"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ID" "$GITHUB_RUN_ID"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "$GITHUB_RUN_NUMBER"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_SHA" "$GITHUB_SHA"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_ACTOR_ID" "$GITHUB_ACTOR_ID"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_ID" "$GITHUB_REPOSITORY_ID"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_OWNER_ID" "$GITHUB_REPOSITORY_OWNER_ID"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_REF"
-    e2e_verify_predicate_invocation_environment "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
+    # This does not include buildType since it is not common to all.
+    e2e_verify_predicate_invocation_configSource "$1" "{\"uri\":\"git+https://github.com/${gh_repo}@${gh_ref}\",\"digest\":{\"sha1\":\"${gh_sha}\"},\"entryPoint\":\".github/workflows/$(e2e_this_file)\"}"
+
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_EVENT_NAME" "${gh_event_name}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF" "${gh_ref}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REF_TYPE" "${gh_ref_type}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY" "${gh_repo}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ATTEMPT" "${gh_run_attempt}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_ID" "${gh_run_id}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_RUN_NUMBER" "${gh_run_number}":
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_SHA" "${gh_sha}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_ACTOR_ID" "${gh_actor_id}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_ID" "${gh_repo_id}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_REPOSITORY_OWNER_ID" "${gh_repo_owner_id}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_WORKFLOW_REF" "${gh_workflow_ref}"
+    e2e_verify_predicate_invocation_environment "$1" "GITHUB_WORKFLOW_SHA" "${gh_workflow_sha}"
 }
 
 e2e_verify_common_metadata_v02() {
@@ -94,33 +121,48 @@ e2e_verify_common_all_v1() {
 # Verifies common fields of the SLSA v1.0 predicate buildDefinition.
 # $1: the predicate content
 e2e_verify_common_buildDefinition_v1() {
+    # Script Inputs.
+    local checkout_sha1=${CHECKOUT_SHA1:-}
+    local gh_actor_id=${GITHUB_ACTOR_ID:-}
+    local gh_event_name=${GITHUB_EVENT_NAME:-}
+    local gh_ref=${GITHUB_REF:-}
+    local gh_ref_type=${GITHUB_REF_TYPE:-}
+    local gh_repo=${GITHUB_REPOSITORY:-}
+    local gh_repo_id=${GITHUB_REPOSITORY_ID:-}
+    local gh_repo_owner_id=${GITHUB_REPOSITORY_OWNER_ID:-}
+    local gh_run_attempt=${GITHUB_RUN_ATTEMPT:-}
+    local gh_run_number=${GITHUB_RUN_NUMBER:-}
+    local gh_sha=${GITHUB_SHA:-}
+    local gh_workflow_ref=${GITHUB_WORKFLOW_REF:-}
+    local gh_workflow_sha=${GITHUB_WORKFLOW_SHA:-}
+
     # This does not include buildType since it is not common to all.
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_EVENT_NAME" "$GITHUB_EVENT_NAME"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REF" "$GITHUB_REF"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REF_TYPE" "$GITHUB_REF_TYPE"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REPOSITORY" "$GITHUB_REPOSITORY"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_RUN_ATTEMPT" "$GITHUB_RUN_ATTEMPT"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_RUN_ID" "$GITHUB_RUN_ID"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_RUN_NUMBER" "$GITHUB_RUN_NUMBER"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_SHA" "$GITHUB_SHA"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_ACTOR_ID" "$GITHUB_ACTOR_ID"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REPOSITORY_ID" "$GITHUB_REPOSITORY_ID"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REPOSITORY_OWNER_ID" "$GITHUB_REPOSITORY_OWNER_ID"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_REF"
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_SHA" "$GITHUB_WORKFLOW_SHA"
-    TRIGGERING_ACTOR_ID=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" | jq -r '.actor.id')
-    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_TRIGGERING_ACTOR_ID" "$TRIGGERING_ACTOR_ID"
-    if [[ -n ${CHECKOUT_SHA1:-} ]]; then
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_EVENT_NAME" "${gh_event_name}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REF" "${gh_ref}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REF_TYPE" "$gh_ref_type"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REPOSITORY" "${gh_repo}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_RUN_ATTEMPT" "${gh_run_attempt}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_RUN_ID" "${gh_run_id}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_RUN_NUMBER" "${gh_run_number}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_SHA" "${gh_sha}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_ACTOR_ID" "${gh_actor_id}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REPOSITORY_ID" "${gh_repo_id}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_REPOSITORY_OWNER_ID" "${gh_repo_owner_id}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_REF" "${gh_workflow_ref}"
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_WORKFLOW_SHA" "${gh_workflow_sha}"
+    triggering_actor_id=$(gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/${gh_repo}/actions/runs/${gh_run_id}" | jq -r '.actor.id')
+    e2e_verify_predicate_v1_buildDefinition_internalParameters "$1" "GITHUB_TRIGGERING_ACTOR_ID" "${triggering_actor_id}"
+    if [[ -n ${checkout_sha1:-} ]]; then
         # If the checkout sha was defined, then verify that there is no ref.
-        e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY\",\"digest\":{\"gitCommit\":\"$CHECKOUT_SHA1\"}}]"
+        e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/${gh_repo}\",\"digest\":{\"gitCommit\":\"${checkout_sha1}\"}}]"
     else
         build_type=$(e2e_this_file | cut -d '.' -f2)
         # The container-based builder uses 2 entries, one for the repo and one for the builder.
         # It also uses sha1 instead of gitCommit.
         if [[ "$build_type" == "container-based" ]]; then
-            e2e_verify_predicate_v1_buildDefinition_resolvedDependencies0 "$1" "{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"sha1\":\"$GITHUB_SHA\"}}"
+            e2e_verify_predicate_v1_buildDefinition_resolvedDependencies0 "$1" "{\"uri\":\"git+https://github.com/${gh_repo}@${gh_ref}\",\"digest\":{\"sha1\":\"${gh_sha}\"}}"
         else
-            e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/$GITHUB_REPOSITORY@$GITHUB_REF\",\"digest\":{\"gitCommit\":\"$GITHUB_SHA\"}}]"
+            e2e_verify_predicate_v1_buildDefinition_resolvedDependencies "$1" "[{\"uri\":\"git+https://github.com/${gh_repo}@${gh_ref}\",\"digest\":{\"gitCommit\":\"${gh_sha}\"}}]"
         fi
     fi
 }
@@ -128,8 +170,12 @@ e2e_verify_common_buildDefinition_v1() {
 # Verifies common fields of the SLSA v1.0 predicate runDetails.
 # $1: the predicate content
 e2e_verify_common_runDetails_v1() {
+    local gh_repo=${GITHUB_REPOSITORY:-}
+    local gh_run_attempt=${GITHUB_RUN_ATTEMPT:-}
+    local gh_run_id=${GITHUB_RUN_ID:-}
+
     # This does not include the builder ID since it is not common to all.
-    e2e_verify_predicate_v1_runDetails_metadata_invocationId "$1" "https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT"
+    e2e_verify_predicate_v1_runDetails_metadata_invocationId "$1" "https://github.com/${gh_repo}/actions/runs/${gh_run_id}/attempts/${gh_run_attempt}"
 }
 
 # e2e_get_payload prints the provenance payload in JSON format.
@@ -143,8 +189,9 @@ e2e_get_payload() {
 # $1: File containing the DSSE envelope.
 # $2: The new provenance payload.
 e2e_set_payload() {
-    build_type=$(e2e_this_file | cut -d '.' -f2)
-    if [[ "$build_type" == "gcb" ]]; then
+    local this_builder
+    this_builder=$(e2e_this_builder)
+    if [[ "${this_builder}" == "gcb" ]]; then
         jq -c ".provenance_summary.provenance[0].envelope.payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
     else
         jq -c ".payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
@@ -153,9 +200,12 @@ e2e_set_payload() {
 
 # get_builder_id returns the build ID used for the test.
 get_builder_id() {
-    build_type=$(e2e_this_file | cut -d '.' -f2)
+    # Script Inputs.
+    local full_builder_id=${BUILDER_ID:-}
+
+    this_builder=$(e2e_this_builder)
     builder_id=""
-    case $build_type in
+    case ${this_builder} in
     "go")
         builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@refs/heads/main"
         ;;
@@ -174,56 +224,58 @@ get_builder_id() {
     "nodejs")
         builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
         ;;
-    "delegator-generic"|"delegator-lowperms")
+    "delegator-generic" | "delegator-lowperms")
         # The builder ID is set by the workflow.
         # NOTE: the TRW is referenced at a tag, but the BYOB is referenced at HEAD.
-        builder_id="${BUILDER_ID}"
+        builder_id="${full_builder_id}"
         ;;
     *)
-        echo "unknown build_type: $build_type"
+        echo "unknown build_type: ${this_builder}"
         exit 1
         ;;
     esac
-    echo "$builder_id"
+    echo "${builder_id}"
 }
 
 # assemble_minimum_builder_args assembles the minimum arguments
 # number of arguments for the build ID.
 assemble_minimum_builder_args() {
-    build_type=$(e2e_this_file | cut -d '.' -f2)
+    local this_builder builder_id
+    this_builder=$(e2e_this_builder)
     builder_id=$(get_builder_id)
-    if [[ "$build_type" == "gcb" ]]; then
-        echo "--builder-id=$builder_id"
-    elif [[ "$build_type" == "nodejs" ]]; then
-        echo "--builder-id=$builder_id"
-    elif [[ "$build_type" == "delegator-generic" ]]; then
-        echo "--builder-id=$builder_id"
-    elif [[ "$build_type" == "delegator-lowperms" ]]; then
-        echo "--builder-id=$builder_id" 
+    if [[ "${this_builder}" == "gcb" ]]; then
+        echo "--builder-id=${builder_id}"
+    elif [[ "${this_builder}" == "nodejs" ]]; then
+        echo "--builder-id=${builder_id}"
+    elif [[ "${this_builder}" == "delegator-generic" ]]; then
+        echo "--builder-id=${builder_id}"
+    elif [[ "${this_builder}" == "delegator-lowperms" ]]; then
+        echo "--builder-id=${builder_id}"
     fi
 }
 
 # assemble_raw_builder_args assembles
 # builder ID with the builder.id but without the tag.
 assemble_raw_builder_args() {
-    build_type=$(e2e_this_file | cut -d '.' -f2)
+    local this_builder builder_id builder_raw_id
+    this_builder=$(e2e_this_builder)
     builder_id=$(get_builder_id)
-    builder_raw_id=$(echo "$builder_id" | cut -f1 -d '@')
-    if [[ "$build_type" == "gcb" ]]; then
-        echo "--builder-id=$builder_id"
-    elif [[ "$build_type" == "nodejs" ]]; then
-        echo "--builder-id=$builder_id"
+    builder_raw_id=$(echo "${builder_id}" | cut -f1 -d '@')
+    if [[ "${this_builder}" == "gcb" ]]; then
+        echo "--builder-id=${builder_id}"
+    elif [[ "${this_builder}" == "nodejs" ]]; then
+        echo "--builder-id=${builder_id}"
     else
-        echo "--builder-id=$builder_raw_id"
+        echo "--builder-id=${builder_raw_id}"
     fi
 }
 
 # assemble_full_builder_args assembles
 # builder ID with the builder.id@tag.
 assemble_full_builder_args() {
-    build_type=$(e2e_this_file | cut -d '.' -f2)
+    local builder_id
     builder_id=$(get_builder_id)
-    echo "--builder-id=$builder_id"
+    echo "--builder-id=${builder_id}"
 }
 
 # Dynamically toggle the assertion function
@@ -244,12 +296,21 @@ assert_fn() {
 # $1: The path to the slsa-verifier binary.
 # $2: The slsa-verifier version's git tag.
 verify_provenance_authenticity() {
+    # Script Inputs.
+    ATTESTATIONS=${ATTESTATIONS:-}
+    BINARY=${BINARY:-}
+    CONTAINER=${CONTAINER:-}
+    GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
+    PROVENANCE=${PROVENANCE:-}
+
     local verifier="$1"
     local tag="$2"
     local annotated_tags
     local build_type
+    local this_branch
     annotated_tags=$(e2e_this_file | cut -d '.' -f5 | grep annotated || true)
     build_type=$(e2e_this_file | cut -d '.' -f2)
+    this_branch=$(e2e_this_branch)
 
     verifierCmd="$verifier"
     # After version v1.3.X, we split into subcommands for artifacts and images
@@ -343,7 +404,7 @@ verify_provenance_authenticity() {
         e2e_assert_eq "$?" "0" "not main default parameters (annotated_tags)"
     elif [[ -z "$annotated_tags" ]]; then
         # Up until v1.3, we verified the default branch as "main".
-        if [[ "$BRANCH" == "main" ]]; then
+        if [[ "${this_branch}" == "main" ]]; then
             echo "  **** Default parameters (main) *****"
             $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
             e2e_assert_eq "$?" "0" "main default parameters"
@@ -355,7 +416,7 @@ verify_provenance_authenticity() {
     fi
 
     branchOpts=("${branchArg[@]}")
-    branchOpts+=("$BRANCH")
+    branchOpts+=("${this_branch}")
     if [[ -n "$annotated_tags" ]]; then
         branchOpts=()
         # Annotated tags don't have a branch to verify, so we bail early for versions that always verify the branch.
@@ -390,7 +451,6 @@ verify_provenance_authenticity() {
     # if BYOB is used with checkout-sha1 argument.
     assert_fn=$(assert_fn "${#branchOpts[@]}")
 
-
     # Workflow inputs
     workflow_inputs=$(e2e_this_file | cut -d '.' -f5 | grep workflow_inputs)
     if [[ -n "$workflow_inputs" ]] && (version_ge "$tag" "v1.3" || [[ "$tag" == "HEAD" ]]); then
@@ -409,7 +469,7 @@ verify_provenance_authenticity() {
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         # The assert function is dynamically set. If it's BYOB with checkout-sha1 set
         # this needs to fail.
-        "${assert_fn}" "$?" "0" "should be branch $BRANCH"
+        "${assert_fn}" "$?" "0" "should be branch ${this_branch}"
     fi
 
     # Wrong branch
@@ -449,22 +509,22 @@ verify_provenance_authenticity() {
     e2e_assert_not_eq "$?" "0" "wrong full builder id"
 
     # Note that for containers with attached provenance, we will skip this test.
-    # TODO(github.com/slsa-framework/example-package/issues/108):
+    # TODO(#108):
     # Add a malicious container test that attaches bad provenance.
     if [[ "$build_type" != "container" ]] && [[ "$build_type" != "nodejs" ]]; then
         echo "  **** Wrong payload *****"
-        local BAD_PROV
-        BAD_PROV="$(mktemp -t slsa-e2e.XXXXXXXX)"
-        e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"$BAD_PROV"
-        read -ra badProvenanceArg <<<"$($argr "provenance") ${BAD_PROV}"
+        local bad_prov
+        bad_prov="$(mktemp -t slsa-e2e.XXXXXXXX)"
+        e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"${bad_prov}"
+        read -ra badProvenanceArg <<<"$($argr "provenance") ${bad_prov}"
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${badProvenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "wrong payload"
     elif [[ "$build_type" == "nodejs" ]]; then
         echo "  **** Wrong payload *****"
-        local BAD_PROV
-        BAD_PROV="$(mktemp -t slsa-e2e.XXXXXXXX)"
-        e2e_set_payload "$ATTESTATIONS" '{"foo": "bar"}' >"$BAD_PROV"
-        read -ra badProvenanceArg <<<"$($argr "provenance") ${BAD_PROV}"
+        local bad_prov
+        bad_prov="$(mktemp -t slsa-e2e.XXXXXXXX)"
+        e2e_set_payload "$ATTESTATIONS" '{"foo": "bar"}' >"${bad_prov}"
+        read -ra badProvenanceArg <<<"$($argr "provenance") ${bad_prov}"
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${badProvenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "wrong payload"
     fi
@@ -726,6 +786,24 @@ _new_verifier_args() {
 # $2: A boolean whether masked inputs are used
 e2e_verify_decoded_token() {
     local decoded_token="$1"
+
+    # Script Inputs
+    CHECKOUT_FETCH_DEPTH=${CHECKOUT_FETCH_DEPTH:-}
+    CHECKOUT_SHA1=${CHECKOUT_SHA1:-}
+
+    GITHUB_ACTOR_ID=${GITHUB_ACTOR_ID:-}
+    GITHUB_EVENT_NAME=${GITHUB_EVENT_NAME:-}
+    GITHUB_REF=${GITHUB_REF:-}
+    GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
+    GITHUB_REPOSITORY=${GITHUB_REPOSITORY:-}
+    GITHUB_REPOSITORY_ID=${GITHUB_REPOSITORY_ID:-}
+    GITHUB_REPOSITORY_OWNER=${GITHUB_REPOSITORY_OWNER:-}
+    GITHUB_RUN_ATTEMPT=${GITHUB_RUN_ATTEMPT:-}
+    GITHUB_RUN_ID=${GITHUB_RUN_ID:-}
+    GITHUB_RUN_NUMBER=${GITHUB_RUN_NUMBER:-}
+    GITHUB_SHA=${GITHUB_SHA:-}
+    GITHUB_WORKFLOW_REF=${GITHUB_WORKFLOW_REF:-}
+    GITHUB_WORKFLOW_SHA=${GITHUB_WORKFLOW_SHA:-}
 
     # Non-GitHub's information.
     _e2e_verify_query "$decoded_token" "delegator_generic_slsa3.yml" '.builder.audience'
