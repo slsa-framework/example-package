@@ -39,9 +39,16 @@ e2e_this_branch() {
 
 # File is BODY in current directory.
 _create_issue_body() {
+    local run_date body_file this_file
     run_date=$(date --utc)
     body_file=$(mktemp)
     this_file=$(e2e_this_file)
+
+    # External inputs
+    GITHUB_REPOSITORY=${GITHUB_REPOSITORY:-}
+    GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
+    GITHUB_RUN_ID=${GITHUB_RUN_ID:-}
+    GITHUB_EVENT_NAME=${GITHUB_EVENT_NAME:-}
 
     # see https://docs.github.com/en/actions/learn-github-actions/environment-variables
     # https://docs.github.com/en/actions/learn-github-actions/contexts.
