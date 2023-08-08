@@ -53,7 +53,7 @@ For GitHub Actions-based builds, the artifact is uploaded using
     </tr>
     <tr>
       <td rowspan="4">push to main</td>
-      <td></td>
+      <td>Default</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
