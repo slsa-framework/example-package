@@ -31,30 +31,6 @@ cd "${package_dir}"
 # Get the new version
 artifact_tag=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
-# version_major prints the major version number.
-# Expects a string like '1.19.7'
-# version_major returns "1" if the input is '1.19.7'
-version_major() {
-    VER=$(echo $1 | cut -d '.' -f1)
-    echo "$VER"
-}
-
-# version_minor prints the minor version number.
-# Expects a string like '1.19.7'.
-# version_minor returns "19" if the input is '1.19.7'
-version_minor() {
-    VER=$(echo $1 | cut -d '.' -f2)
-    echo "$VER"
-}
-
-# version_patch prints the patch version number.
-# Expects a string like '1.19.7-SNAPSHOT.jar'
-# version_patch returns "7" if the input is '1.19.7'
-version_patch() {
-    VER=$(echo $1 | cut -d '.' -f3)
-    echo "$VER"
-}
-
 # Bumps the version
 new_version() {
     current_tag=$1
