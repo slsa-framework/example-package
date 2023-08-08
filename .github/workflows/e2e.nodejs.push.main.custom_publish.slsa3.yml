@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+    paths:
+      - "e2e/e2e.nodejs.push.main.custom_publish.slsa3.yml.txt"
 
 permissions: read-all
 
@@ -25,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       # Bumps the package version pushes, creates a git tag, and pushes the tag.
-      - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
+      - run: ./.github/workflows/scripts/e2e-boostrap.sh
 
   if-bootstrap-failed:
     runs-on: ubuntu-latest
