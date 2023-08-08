@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - env:
-          PACKAGE_DIR: ./e2e/maven
+          PACKAGE_DIR: ./e2e/maven/workflow_dispatch
         id: maven-push
         run: ./.github/workflows/scripts/e2e-maven-push.sh
 
@@ -57,7 +57,7 @@ jobs:
       actions: read # For getting workflow run on private repos.
     uses: AdamKorcz/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@maven-builder-test-updates
     with:
-      directory: ./e2e/maven
+      directory: ./e2e/maven/workflow_dispatch
 
   verify:
     runs-on: ubuntu-latest
