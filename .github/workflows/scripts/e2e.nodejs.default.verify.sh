@@ -96,7 +96,7 @@ verify_provenance_content() {
 
 # =====================================
 # ===== main execution starts =========
-# a====================================
+# =====================================
 
 this_branch=$(e2e_this_branch)
 echo "branch is ${this_branch}"
