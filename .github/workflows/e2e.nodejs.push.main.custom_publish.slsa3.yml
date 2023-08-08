@@ -97,6 +97,7 @@ jobs:
           TARBALL_PATH: "${{ needs.build.outputs.package-name }}"
           PROVENANCE_PATH: "./attestations/${{ needs.build.outputs.provenance-name }}"
         run: |
+          ls -lh attestations/
           npm publish "${TARBALL_PATH}" --access=public --provenance-file="${PROVENANCE_PATH}"
 
   verify:
