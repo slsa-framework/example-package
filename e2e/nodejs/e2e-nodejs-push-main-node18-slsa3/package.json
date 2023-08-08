@@ -1,0 +1,21 @@
+{
+  "name": "@slsa-framework/e2e-nodejs-push-main-node18-slsa3",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "ci": "npm ci",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slsa-framework/example-package.git"
+  }
+}
