@@ -107,7 +107,7 @@ if [ "${branch}" != "main" ]; then
     if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
         git push --set-upstream origin "${branch}" "${tag}" -f
     else
-        git push --set-upstream origin "$branch" -f
+        git push --set-upstream origin "${branch}" -f
     fi
     git checkout main
 
