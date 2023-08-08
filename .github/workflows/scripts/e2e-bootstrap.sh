@@ -95,13 +95,6 @@ this_branch=$(e2e_this_branch)
 this_builder=$(e2e_this_builder)
 this_event=$(e2e_this_event)
 
-# If we want a workflow_dispatch and we are already in one then don't do
-# anything.
-if [ "${this_event}" == "workflow_dispatch" ] && [ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]; then
-    echo "Already in workflow_dispatch. exiting..."
-    exit 0
-fi
-
 # NOTE: We can't simply push from $branch because it is occaisonally reset to
 # the main branch. We need to maintain the version number in package.json
 # because you cannot overwrite a version in npmjs.com. Instead we commit to main,
