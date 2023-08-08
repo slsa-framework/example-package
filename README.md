@@ -75,7 +75,7 @@ For GitHub Actions-based builds, the artifact is uploaded using
     <tr>
       <td>push to branch</td>
       <td></td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.branch1.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.branch1.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.branch1.default.slsa3.yml/badge.svg" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.branch1.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.branch1.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.branch1.default.slsa3.yml/badge.svg?branch=branch1" /></a></td>
     </tr>
     <tr>
       <td rowspan="2">push to tag</td>
