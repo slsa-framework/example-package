@@ -8,6 +8,7 @@ GITHUB_REF=${GITHUB_REF:-}
 GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
 GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
 BINARY=${BINARY:-}
+BUILDER_ID=${BUILDER_ID:-}
 PROVENANCE=${PROVENANCE:-}
 BUILDER_ID=${BUILDER_ID:-}
 BUILDER_TAG=${BUILDER_TAG:-}
@@ -30,8 +31,12 @@ verify_provenance_content() {
     # Verify all common provenance fields.
     e2e_verify_common_all_v1 "${attestation}"
 
-    e2e_verify_predicate_subject_name "${attestation}" "$BINARY"
-    e2e_verify_predicate_v1_runDetails_builder_id "${attestation}" "${BUILDER_ID}@refs/tags/${BUILDER_TAG}"
+    e2e_verify_predicate_subject_name "${attestation}" "${BINARY}"
+    # NOTE: the ref must be a tag. The builder uses the delegator at head.
+    # The tag is provided as "vx.y.z", so we re-construct the git ref.
+    builder_id=$(echo "${BUILDER_ID}" | cut -d@ -f1)
+    builder_tag=$(echo "${BUILDER_ID}" | cut -d@ -f2)
+    e2e_verify_predicate_v1_runDetails_builder_id "${attestation}" "${builder_id}@refs/tags/${builder_tag}"
     e2e_verify_predicate_v1_buildDefinition_buildType "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 
     # Verify the artifact contains the expected value.

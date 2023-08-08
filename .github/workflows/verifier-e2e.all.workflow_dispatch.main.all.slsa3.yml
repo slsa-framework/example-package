@@ -25,7 +25,9 @@ env:
 jobs:
   generate_name:
     outputs:
-      binary-name: ${{ steps.create_name.outputs.binary-name }}
+      gha_generic_binary-name: ${{ steps.create_name.outputs.gha_generic_binary-name }}
+      gha_delegator_binary-name: ${{ steps.create_name.outputs.gha_delegator_binary-name }}
+      gha_delegator-lowperms_binary-name: ${{ steps.create_name.outputs.gha_lowperms_binary-name }}
       config-file: ${{ steps.create_name.outputs.config-file }}
       config-path: ${{ steps.create_name.outputs.config-path }}
     runs-on: ubuntu-latest
@@ -35,7 +37,9 @@ jobs:
         run: |
           if [ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]; then
             {
-              echo "binary-name=gha_generic-binary-linux-amd64-workflow_dispatch"
+              echo "gha_generic_binary-name=gha_generic-binary-linux-amd64-workflow_dispatch"
+              echo "gha_delegator_binary-name=gha_delegator-binary-linux-amd64-workflow_dispatch"
+              echo "gha_delegator-lowperms_binary-name=gha_delegator-lowperms-binary-linux-amd64-workflow_dispatch"
               echo "config-file=.github/configs-go/config-ldflags-workflow_dispatch.yml"
               echo "config-path=.github/configs-docker/config-workflow_dispatch.toml"
             } >> "${GITHUB_OUTPUT}"
@@ -43,7 +47,9 @@ jobs:
           fi
           # This must be a tag event.
           {
-            echo "binary-name=gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}"
+            echo "gha_generic_binary-name=gha_generic-binary-linux-amd64-${GITHUB_REF_NAME}"
+            echo "gha_delegator_binary-name=gha_delegator-binary-linux-amd64-${GITHUB_REF_NAME}"
+            echo "gha_delegator-lowperms_binary-name=gha_delegator-lowperms-binary-linux-amd64-${GITHUB_REF_NAME}"
             echo "config-file=.github/configs-go/config-ldflags-tag-name.yml"
             echo "config-path=.github/configs-docker/config-tag-${GITHUB_REF_NAME}.toml"
           } >> "${GITHUB_OUTPUT}"
@@ -51,9 +57,9 @@ jobs:
   build:
     needs: [generate_name]
     env:
-      BINARY_NAME: ${{ needs.generate_name.outputs.binary-name }}
+      BINARY_NAME: ${{ needs.generate_name.outputs.gha_generic_binary-name }}
     outputs:
-      binary-name: ${{ steps.build.outputs.binary-name }}
+      gha_generic_binary-name: ${{ steps.build.outputs.gha_generic_binary-name }}
       digest: ${{ steps.hash.outputs.digest }}
     runs-on: ubuntu-latest
     steps:
@@ -68,12 +74,12 @@ jobs:
         run: |
           bazelisk build //:hello
           cp bazel-bin/hello_/hello "${BINARY_NAME}" # Copy binary from Bazel path to root
-          echo "binary-name=$BINARY_NAME" >> "${GITHUB_OUTPUT}"
+          echo "gha_generic_binary-name=$BINARY_NAME" >> "${GITHUB_OUTPUT}"
       - name: Upload binary
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
-          name: ${{ steps.build.outputs.binary-name }}
-          path: ${{ steps.build.outputs.binary-name }}
+          name: ${{ steps.build.outputs.gha_generic_binary-name }}
+          path: ${{ steps.build.outputs.gha_generic_binary-name }}
           if-no-files-found: error
           retention-days: 5
       - name: Generate hash
@@ -89,7 +95,7 @@ jobs:
       id-token: write # For signing.
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.8.0
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       upload-assets: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -100,7 +106,7 @@ jobs:
       id-token: write # For signing.
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.8.0
     with:
       go-version: 1.18
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
@@ -160,7 +166,7 @@ jobs:
       id-token: write # For signing.
       actions: read # For reading workflow info.
       packages: write # For uploading attestations.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.8.0
     with:
       image: ${{ needs.container_build.outputs.image }}
       digest: ${{ needs.container_build.outputs.digest }}
@@ -174,14 +180,42 @@ jobs:
       id-token: write # For signing.
       actions: read # For reading workflow info.
       contents: write # For asset upload.
-    # FIXME: Update to v1.7.0
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@v1.7.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@v1.8.0
     with:
       builder-image: "bash"
       builder-digest: "sha256:9e2ba52487d945504d250de186cb4fe2e3ba023ed2921dd6ac8b97ed43e76af9"
       config-path: ${{ needs.generate_name.outputs.config-path }}
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
+
+  gha_delegator-lowperms_generic:
+    needs: [generate_name]
+    permissions:
+      id-token: write # For signing
+      contents: write # For asset uploads
+      actions: read
+    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v1.8.0
+    with:
+      artifact: ${{ needs.generate_name.outputs.gha_delegator-lowperms_binary-name }}
+      content: "hello"
+    secrets:
+      # NOTE: this password is set to 'delegator-password'.
+      password: ${{ secrets.DELEGATOR_PASSWORD }}
+
+  gha_delegator_generic:
+    needs: [generate_name]
+    permissions:
+      id-token: write # For signing
+      contents: write # For asset uploads
+      packages: write # To write to github packages
+      actions: read
+    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v1.8.0
+    with:
+      artifact: ${{ needs.generate_name.outputs.gha_delegator_binary-name }}
+      content: "hello"
+    secrets:
+      # NOTE: this password is set to 'delegator-password'.
+      password: ${{ secrets.DELEGATOR_PASSWORD }}
 
   # Delete existing tags before triggering new ones.
   delete-tags:
@@ -199,7 +233,7 @@ jobs:
           # Dispatch tags v14 v14.2 v13.0.30
           for tag in v14 v14.2 v13.0.30
           do
-            GH_TOKEN=${PAT_TOKEN} gh release delete "$tag" -y --cleanup-tag || true
+            gh release delete "$tag" -y --cleanup-tag || true
             git push --delete origin "$tag" || true
           done
 
@@ -220,5 +254,5 @@ jobs:
 
           for tag in v14 v14.2 v13.0.30
           do
-            GH_TOKEN="${PAT_TOKEN}" gh release create "${tag}" --target main --notes "gha_generic"
+            gh release create "${tag}" --target main --notes "gha_generic"
           done

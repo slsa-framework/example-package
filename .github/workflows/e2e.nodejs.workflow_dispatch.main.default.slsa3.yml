@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       # Bumps the package version pushes, creates a git tag, and pushes the tag.
-      - run: ./.github/workflows/scripts/e2e-nodejs-push.sh
+      - run: ./.github/workflows/scripts/e2e-bootstrap.sh
 
   if-bootstrap-failed:
     runs-on: ubuntu-latest
@@ -62,7 +62,7 @@ jobs:
       actions: read # For getting workflow run on private repos.
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
     with:
-      directory: nodejs/e2e-nodejs-workflow_dispatch-main-default-slsa3
+      directory: e2e/nodejs/e2e-nodejs-workflow_dispatch-main-default-slsa3
       node-version: 16
       run-scripts: "ci, build"
 

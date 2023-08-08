@@ -1,0 +1,133 @@
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "e2e/e2e.nodejs.push.main.custom_publish.slsa3.yml.txt"
+
+permissions: read-all
+
+concurrency: "e2e-nodejs-push-main-custom_publish-slsa3"
+
+env:
+  GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+jobs:
+  # Bootstrap
+  ################################################################################
+
+  bootstrap:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      # Bumps the package version pushes, creates a git tag, and pushes the tag.
+      - run: ./.github/workflows/scripts/e2e-bootstrap.sh
+
+  if-bootstrap-failed:
+    runs-on: ubuntu-latest
+    needs: [bootstrap]
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.bootstrap.result != 'success'
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  # Main workflow
+  ################################################################################
+
+  # Shim determines if the rest of the workflow should run.
+  # NOTE: it should only use the `if` to determine this and all downstream jobs
+  #      should depend on this job.
+  shim:
+    # NOTE: this must be kept in sync with the if-failed job.
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "event: ${GITHUB_EVENT_NAME}"
+          echo "ref: ${GITHUB_REF}"
+
+  build:
+    needs: [shim]
+    permissions:
+      id-token: write # For signing.
+      contents: read # For repo checkout of private repos.
+      actions: read # For getting workflow run on private repos.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
+    with:
+      directory: e2e/nodejs/e2e-nodejs-push-main-custom_publish-slsa3
+      node-version: 16
+      run-scripts: "ci, build"
+
+  publish:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node environment
+        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.7.0
+        with:
+          node-version: 18
+          registry-url: "https://registry.npmjs.org"
+
+      - run: |
+          # Install npm >9.7.0 which includes support for --provenance-file.
+          # This installs locally in the temp directory.
+          npm install -g npm@^9.7.0
+
+      - name: Download tarball
+        uses: slsa-framework/slsa-github-generator/actions/nodejs/secure-package-download@main
+        with:
+          name: ${{ needs.build.outputs.package-download-name }}
+          path: ${{ needs.build.outputs.package-name }}
+          sha256: ${{ needs.build.outputs.package-download-sha256 }}
+
+      - name: Download provenance
+        uses: slsa-framework/slsa-github-generator/actions/nodejs/secure-attestations-download@main
+        with:
+          name: ${{ needs.build.outputs.provenance-download-name }}
+          path: "attestations"
+          sha256: ${{ needs.build.outputs.provenance-download-sha256 }}
+
+      - name: Publish the package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.E2E_NODE_ACCESS_TOKEN }}
+          TARBALL_PATH: "${{ needs.build.outputs.package-name }}"
+          PROVENANCE_PATH: "./attestations/${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.provenance-name }}"
+        run: |
+          npm publish "${TARBALL_PATH}" --access=public --provenance-file="${PROVENANCE_PATH}"
+
+  verify:
+    needs: [build, publish]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Set up Node environment
+        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.7.0
+        with:
+          node-version: 16
+      # NOTE: for building the verifier.
+      - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+        with:
+          go-version: "1.18"
+      - run: ./.github/workflows/scripts/e2e.nodejs.default.verify.sh
+
+  if-succeeded:
+    needs: [build, publish, verify]
+    runs-on: ubuntu-latest
+    if: needs.build.result == 'success' && needs.publish.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    needs: [build, publish, verify]
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result != 'success' || needs.publish.result != 'success' || needs.verify.result != 'success')
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
