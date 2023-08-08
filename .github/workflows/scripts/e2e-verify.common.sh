@@ -308,8 +308,8 @@ verify_provenance_authenticity() {
     local annotated_tags
     local build_type
     local this_branch
-    annotated_tags=$(e2e_this_file | cut -d '.' -f5 | grep annotated || true)
-    build_type=$(e2e_this_file | cut -d '.' -f2)
+    annotated_tags=$(e2e_this_options | grep annotated || true)
+    build_type=$(e2e_this_builder)
     this_branch=$(e2e_this_branch)
 
     verifierCmd="$verifier"
