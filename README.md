@@ -49,24 +49,23 @@ For GitHub Actions-based builds, the artifact is uploaded using
     <tr>
       <td>create</td>
       <td></td>
-      <td>[![.github/workflows/e2e.nodejs.create.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.create.main.default.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.create.main.default.slsa3.yml) </td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.create.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.create.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.create.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td rowspan="4">push to main</td>
-      <td></td>
-      <td>[![.github/workflows/e2e.nodejs.push.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml)</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>Custom Publish</td>
-      <td>[![.github/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml)</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>Node 16</td>
-      <td>[![.github/workflows/e2e.nodejs.push.main.node16.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node16.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node16.slsa3.yml)</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node16.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.node16.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node16.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
-      <td>
-      <td>[![.github/workflows/e2e.nodejs.push.main.node18.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node18.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node18.slsa3.yml)</td>
+      <td>Node 18</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node18.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.node18.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node18.slsa3.yml/badge.svg" /></a></td>
     </tr>
   </tbody>
 </table>
