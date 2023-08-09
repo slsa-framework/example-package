@@ -44,3 +44,5 @@ export SLSA_VERIFIER_TESTING="true"
 
 # Verify provenance content.
 verify_provenance_content
+
+e2e_run_verifier_all_releases "2.3.0"
