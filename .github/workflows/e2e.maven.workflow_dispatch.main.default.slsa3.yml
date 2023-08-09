@@ -1,4 +1,3 @@
-name: Maven e2e test - simple # TODO: Remove name
 on:
   - workflow_dispatch
 # TODO: Un-comment this     
