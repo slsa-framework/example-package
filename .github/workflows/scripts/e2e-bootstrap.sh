@@ -121,11 +121,6 @@ else
     fi
 fi
 
-# Create the tag locally.
-if [ "${tag}" != "" ]; then
-    git tag "${tag}"
-fi
-
 # NOTE: push event (tag == push to tag, push == push to branch
 if [ "${this_event}" == "tag" ] || [ "${this_event}" == "push" ]; then
     # NOTE: For push events we will make a change to the file below and push it.
@@ -140,6 +135,11 @@ if [ "$(git status --porcelain)" != "" ]; then
     # Commit the changes made so far with a commit message equal to the workflow
     # name.
     git commit -am "${GITHUB_WORKFLOW}"
+
+    # Create the tag locally.
+    if [ "${tag}" != "" ]; then
+        git tag "${tag}"
+    fi
 
     # Now we need to push the changes we have made.
     if [ "${this_branch}" == "main" ]; then
