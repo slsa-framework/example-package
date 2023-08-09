@@ -64,12 +64,12 @@ jobs:
     needs: [build, bootstrap]
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - uses: slsa-framework/slsa-github-generator/.github/actions/secure-download-folder@main
+      - uses: slsa-framework/slsa-github-generator/actions/maven/secure-download-attestations@main
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
           path: slsa-attestations
-      - uses: slsa-framework/slsa-github-generator/.github/actions/secure-download-folder@main
+      - uses: slsa-framework/slsa-github-generator/actions/maven/secure-download-target@main
         with:
           name: target
           sha256: "${{ needs.build.outputs.target-download-sha256 }}"
