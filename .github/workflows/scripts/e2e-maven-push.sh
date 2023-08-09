@@ -100,7 +100,7 @@ else
         git push origin main
         git push origin "${tag}"
     else
-        git push origin maven-e2e-temp # TODO: CHANGE to main!!!!!!!!!!
+        git push origin main
     fi
 fi
 
