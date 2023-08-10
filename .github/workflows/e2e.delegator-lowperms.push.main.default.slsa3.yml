@@ -24,7 +24,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - run: ./.github/workflows/scripts/e2e-push.sh
+      # Bumps the package version pushes, creates a git tag, and pushes the tag.
+      - run: ./.github/workflows/scripts/e2e-bootstrap.sh
 
   if-bootstrap-failed:
     runs-on: ubuntu-latest
