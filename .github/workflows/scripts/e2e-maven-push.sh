@@ -14,7 +14,7 @@ branch=$(e2e_this_branch)
 # because you cannot overwrite a version in maven. Instead we commit to main,
 # set the tag, reset $branch and push both main and $branch.
 echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}"
-gh repo clone "${GITHUB_REPOSITORY}" -- -b maven-e2e-temp
+gh repo clone "${GITHUB_REPOSITORY}" -- -b main
 repo_name=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)
 cd ./"$repo_name"
 
