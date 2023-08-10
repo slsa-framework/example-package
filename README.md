@@ -74,7 +74,6 @@ For GitHub Actions-based builds, the artifact is uploaded using
     </tr>
     <tr>
       <td>non-default branch</td>
-      <td></td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.branch1.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.branch1.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.branch1.default.slsa3.yml/badge.svg?branch=branch1&event=push" /></a></td>
     </tr>
     <tr>
