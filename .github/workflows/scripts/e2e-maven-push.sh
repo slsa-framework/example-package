@@ -55,12 +55,12 @@ new_version() {
     echo $release_major.$release_minor.$release_patch
 }
 
-next_tag=$(new_version $artifact_tag)
+next_tag=$(new_version "${artifact_tag}")
 
 # Output the artifact name
 echo "artifact-version=${artifact_tag}" >> $GITHUB_OUTPUT
 
-tag=$(mvn versions:set -DnewVersion=$next_tag)
+tag=$(mvn versions:set -DnewVersion="${next_tag}")
 cd -
 
 # Commit the new version.
