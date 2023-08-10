@@ -148,41 +148,41 @@ tag_and_push() {
         # Commit the changes made so far with a commit message equal to the workflow
         # name.
         git commit -am "${GITHUB_WORKFLOW}"
+    fi
 
-        # Create the tag locally.
-        if [ "${tag}" != "" ]; then
-            git tag "${tag}"
-        fi
+    # Create the tag locally.
+    if [ "${tag}" != "" ]; then
+        git tag "${tag}"
+    fi
 
-        # Now we need to push the changes we have made.
-        if [ "${this_branch}" == "main" ]; then
-            if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
-                # TODO(#213): push tag separately until bug is fixed.
-                # NOTE: If there is a concurrent update to main we want it to fail here
-                # without pushing the tag because we will lose the changes to main.
-                git push origin main
-                git push origin "${tag}"
-            else
-                git push origin main
-            fi
+    # Now we need to push any changes we have made.
+    if [ "${this_branch}" == "main" ]; then
+        if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
+            # TODO(#213): push tag separately until bug is fixed.
+            # NOTE: If there is a concurrent update to main we want it to fail here
+            # without pushing the tag because we will lose the changes to main.
+            git push origin main
+            git push origin "${tag}"
         else
-            # Reset branch and push the new version.
-            # NOTE: we haven't pulled the branch locally so we need to create it.
-            git checkout -b "${this_branch}"
-            if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
-                git push --set-upstream origin "${this_branch}" "${tag}" -f
-            else
-                git push --set-upstream origin "${this_branch}" -f
-            fi
-            git checkout main
-
-            # Update a dummy file to avoid branch mismatches.
-            # See: https://github.com/slsa-framework/example-package/issues/44
-            date >./e2e/dummy
-            git add ./e2e/dummy
-            git commit -m "sync'ing branch1 - $(cat ./e2e/dummy)"
             git push origin main
         fi
+    else
+        # Reset branch and push the new version.
+        # NOTE: we haven't pulled the branch locally so we need to create it.
+        git checkout -b "${this_branch}"
+        if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
+            git push --set-upstream origin "${this_branch}" "${tag}" -f
+        else
+            git push --set-upstream origin "${this_branch}" -f
+        fi
+        git checkout main
+
+        # Update a dummy file to avoid branch mismatches.
+        # See: https://github.com/slsa-framework/example-package/issues/44
+        date >./e2e/dummy
+        git add ./e2e/dummy
+        git commit -m "sync'ing branch1 - $(cat ./e2e/dummy)"
+        git push origin main
     fi
 }
 
