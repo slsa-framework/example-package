@@ -8,6 +8,7 @@ permissions: read-all
 concurrency: "e2e-maven-workflow_dispatch-main-default-slsa3"
 
 env:
+  # TODO(#263): create decicated token
   GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
 
 jobs:
