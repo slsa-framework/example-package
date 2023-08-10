@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "e2e/e2e.delegator.push.main.default.slsa3.yml.txt"
+      - "e2e/e2e.delegator-generic.push.main.default.slsa3.yml.txt"
 
 permissions: read-all
 
