@@ -52,38 +52,37 @@ For GitHub Actions-based builds, the artifact is uploaded using
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.create.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.create.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.create.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
-      <td rowspan="5">push to main</td>
-      <td>default</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td rowspan="8">push</td>
+      <td>default branch</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>custom publish</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>Node 16</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node16.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.node16.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node16.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node16.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.node16.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node16.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>Node 18</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node18.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.node18.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node18.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node18.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.node18.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.node18.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>npm dist-tag</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.disttag.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.disttag.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.disttag.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.disttag.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.disttag.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.disttag.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
-      <td>push to branch</td>
+      <td>non-default branch</td>
       <td></td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.branch1.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.branch1.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.branch1.default.slsa3.yml/badge.svg?branch=branch1&event=push" /></a></td>
     </tr>
     <tr>
-      <td rowspan="2">push to tag</td>
-      <td>default</td>
+      <td>push to tag</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.tag.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
-      <td>unscoped</td>
+      <td>push to tag (unscoped package)</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
@@ -94,7 +93,7 @@ For GitHub Actions-based builds, the artifact is uploaded using
     <tr>
       <td>workflow_dispatch</td>
       <td></td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.workflow_dispatch.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.workflow_dispatch.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.workflow_dispatch.main.default.slsa3.yml/badge.svg?event=workflow_dispatch" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.workflow_dispatch.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.workflow_dispatch.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.workflow_dispatch.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
   </tbody>
 </table>
@@ -120,13 +119,12 @@ For GitHub Actions-based builds, the artifact is uploaded using
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
-      <td>push to branch</td>
-      <td></td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.push.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.push.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.push.main.default.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td rowspan="2">push</td>
+      <td>default branch</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.push.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.push.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.push.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>push to tag</td>
-      <td></td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
@@ -141,11 +139,11 @@ For GitHub Actions-based builds, the artifact is uploaded using
     <tr>
       <td rowspan="4">workflow_dispatch</td>
       <td>default branch</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml/badge.svg?event=workflow_dispatch" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>default branch w/ sha1</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml/badge.svg?event=workflow_dispatch" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>non-default branch</td>
