@@ -101,13 +101,62 @@ For GitHub Actions-based builds, the artifact is uploaded using
 
 ### BYOB generic permissions builder e2e tests
 
-| Name              | Status                                                                                                                                                                                                                                                                                                                                                                                          |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| workflow_dispatch | [![.github/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml/badge.svg?event=workflow_dispatch)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml) |
-| release           | [![.github/workflows/e2e.delegator-generic.release.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.release.main.default.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.release.main.default.slsa3.yml)                                                       |
-| create            | [![.github/workflows/e2e.delegator-generic.create.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.default.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.default.slsa3.yml)                                             |
-| push              | [![.github/workflows/e2e.delegator-generic.push.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.push.main.default.slsa3.yml/badge.svg?event=push)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.push.main.default.slsa3.yml)                                                     |
-| tag               | [![.github/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml/badge.svg?event=push)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml)                                                        |
+<table>
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Name</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">create</td>
+      <td>Default</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.create.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.default.slsa3.yml/badge.svg" /></a></td>
+    </tr>
+    <tr>
+      <td>With sha1</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml/badge.svg" /></a></td>
+    </tr>
+    <tr>
+      <td>push to branch</td>
+      <td></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.push.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.push.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.push.main.default.slsa3.yml/badge.svg?event=push" /></a></td>
+    </tr>
+    <tr>
+      <td>push to tag</td>
+      <td></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml/badge.svg?event=push" /></a></td>
+    </tr>
+    <tr>
+      <td rowspan="2">release</td>
+      <td></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.release.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.release.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.release.main.default.slsa3.yml/badge.svg" /></a></td>
+    </tr>
+    <tr>
+      <td>With sha1</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.release.main.checkout.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.release.main.checkout.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.release.main.checkout.slsa3.yml/badge.svg" /></a></td>
+    </tr>
+    <tr>
+      <td rowspan="4">workflow_dispatch</td>
+      <td>default branch</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.default.slsa3.yml/badge.svg?event=workflow_dispatch" /></a></td>
+    </tr>
+    <tr>
+      <td>default branch w/ sha1</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.main.checkout.slsa3.yml/badge.svg?event=workflow_dispatch" /></a></td>
+    </tr>
+    <tr>
+      <td>non-default branch</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.branch1.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.workflow_dispatch.branch1.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.branch1.default.slsa3.yml/badge.svg?branch=branch1&event=workflow_dispatch" /></a></td>
+    </tr>
+    <tr>
+      <td>non-default branch w/ sha1</td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.branch1.checkout.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.workflow_dispatch.branch1.checkout.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.workflow_dispatch.branch1.checkout.slsa3.yml/badge.svg?branch=branch1&event=workflow_dispatch" /></a></td>
+    </tr>
+  </tbody>
+</table>
 
 ### BYOB low permissions builder e2e tests
 
@@ -115,6 +164,6 @@ For GitHub Actions-based builds, the artifact is uploaded using
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | workflow_dispatch | [![.github/workflows/e2e.delegator-lowperms.workflow_dispatch.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.workflow_dispatch.main.default.slsa3.yml/badge.svg?event=workflow_dispatch)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.workflow_dispatch.main.default.slsa3.yml) |
 | release           | [![.github/workflows/e2e.delegator-lowperms.release.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.release.main.default.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.release.main.default.slsa3.yml)                                                       |
-| create            | [![.github/workflows/e2e.delegator-lowperms.create.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.create.main.default.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.create.main.default.slsa3.yml)                                             |
+| create            | [![.github/workflows/e2e.delegator-lowperms.create.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.create.main.default.slsa3.yml/badge.svg)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.create.main.default.slsa3.yml)                                                          |
 | push              | [![.github/workflows/e2e.delegator-lowperms.push.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.push.main.default.slsa3.yml/badge.svg?event=push)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.push.main.default.slsa3.yml)                                                     |
 | tag               | [![.github/workflows/e2e.delegator-lowperms.tag.main.default.slsa3.yml](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.tag.main.default.slsa3.yml/badge.svg?event=push)](https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-lowperms.tag.main.default.slsa3.yml)                                                        |
