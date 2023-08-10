@@ -53,11 +53,11 @@ For GitHub Actions-based builds, the artifact is uploaded using
     </tr>
     <tr>
       <td rowspan="5">push to main</td>
-      <td>Default</td>
+      <td>default</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.default.slsa3.yml/badge.svg?event=push" /></a></td>
     </tr>
     <tr>
-      <td>Custom Publish</td>
+      <td>custom publish</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.push.main.custom_publish.slsa3.yml/badge.svg?event=push" /></a></td>
     </tr>
     <tr>
@@ -79,7 +79,7 @@ For GitHub Actions-based builds, the artifact is uploaded using
     </tr>
     <tr>
       <td rowspan="2">push to tag</td>
-      <td>Default</td>
+      <td>default</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.tag.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.default.slsa3.yml/badge.svg?event=push" /></a></td>
     </tr>
     <tr>
@@ -112,11 +112,11 @@ For GitHub Actions-based builds, the artifact is uploaded using
   <tbody>
     <tr>
       <td rowspan="2">create</td>
-      <td>Default</td>
+      <td>default</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.create.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
-      <td>With sha1</td>
+      <td>with sha1</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.create.main.checkout.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
@@ -131,7 +131,7 @@ For GitHub Actions-based builds, the artifact is uploaded using
     </tr>
     <tr>
       <td rowspan="2">release</td>
-      <td></td>
+      <td>default</td>
       <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.release.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.release.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.release.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
