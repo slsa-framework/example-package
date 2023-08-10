@@ -1,8 +1,8 @@
 on:
- schedule:
-   - cron: "0 6 * * *"
- workflow_dispatch:
-   inputs:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
       trigger_build:
         description: "internal: do not check"
         required: false
@@ -15,9 +15,13 @@ concurrency: "e2e-maven-workflow_dispatch-main-default-slsa3"
 
 env:
   # TODO(#263): create dedicated token
-  GH_TOKEN: ${{ secrets.E2E_GO_TOKEN }}
+  GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
 jobs:
+  # Bootstrap
+  ################################################################################
+
   bootstrap:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.trigger_build)
