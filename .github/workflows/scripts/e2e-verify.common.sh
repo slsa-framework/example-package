@@ -666,10 +666,17 @@ e2e_run_verifier_all_releases() {
 
     # NOTE: clean the cache to avoid "module github.com/slsa-framework/slsa-verifier@main found" errors.
     # See: https://stackoverflow.com/questions/62974985/go-module-latest-found-but-does-not-contain-package
+    # TODO(#212): remove once we understand why go install doesn't work.
     go clean -cache
     go clean -modcache
 
-    go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"
+    # TODO(#212): remove retries once we understand why go install doesn't work.
+    for _ in 1 2 3 4 5; do
+        if go install "github.com/${verifier_repository}/v2/cli/slsa-verifier@main"; then
+            break
+        fi
+        echo "ERROR: Failed to go-install slsa-verifier. retrying...."
+    done
     echo "**** Verifying provenance authenticity with verifier at HEAD *****"
     verify_provenance_authenticity "slsa-verifier" "HEAD"
 
