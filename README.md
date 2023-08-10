@@ -80,11 +80,11 @@ For GitHub Actions-based builds, the artifact is uploaded using
     <tr>
       <td rowspan="2">push to tag</td>
       <td>default</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.tag.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.default.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.default.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.tag.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>unscoped</td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml"><img alt=".github/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.nodejs.tag.main.unscoped.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td>release</td>
@@ -127,7 +127,7 @@ For GitHub Actions-based builds, the artifact is uploaded using
     <tr>
       <td>push to tag</td>
       <td></td>
-      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml/badge.svg?event=push" /></a></td>
+      <td><a href="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml"><img alt=".github/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml" src="https://github.com/slsa-framework/example-package/actions/workflows/e2e.delegator-generic.tag.main.default.slsa3.yml/badge.svg" /></a></td>
     </tr>
     <tr>
       <td rowspan="2">release</td>
