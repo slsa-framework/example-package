@@ -6,9 +6,18 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-# Script inputs
-GH=${GH:-}
+# Verify GH_TOKEN is set.
+if [[ -z "${GH_TOKEN:-}" ]]; then
+    echo "GH_TOKEN is unset"
+    exit 1
+fi
 
+# Set the gh CLI.
+if [[ -z "${GH:-}" ]]; then
+    GH="gh"
+fi
+
+# Script inputs
 run_id="$1"
 output_path="$2"
 repo=slsa-framework/example-package
