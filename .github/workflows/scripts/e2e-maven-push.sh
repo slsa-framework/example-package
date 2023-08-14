@@ -9,6 +9,14 @@ source "./.github/workflows/scripts/e2e-utils.sh"
 
 branch=$(e2e_this_branch)
 
+# Script Inputs
+GITHUB_OUTPUT=${GITHUB_OUTPUT:-}
+GITHUB_REPOSITORY=${GITHUB_REPOSITORY:-}
+GITHUB_SHA=${GITHUB_SHA:-}
+GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}
+GH_TOKEN=${GH_TOKEN:-}
+PACKAGE_DIR=${PACKAGE_DIR:-} # specified in the e2e test yaml
+
 # NOTE: We can't simply push from $branch because it is occaisonally reset to
 # the main branch. We need to maintain the version number in pom.xml
 # because you cannot overwrite a version in maven. Instead we commit to main,
