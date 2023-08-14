@@ -58,7 +58,7 @@ new_version() {
 next_tag=$(new_version "${artifact_tag}")
 
 # Output the artifact name
-echo "artifact-version=${artifact_tag}" >> $GITHUB_OUTPUT
+echo "artifact-version=${artifact_tag}" >> "$GITHUB_OUTPUT"
 
 tag=$(mvn versions:set -DnewVersion="${next_tag}")
 cd -
