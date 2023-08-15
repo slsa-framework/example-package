@@ -225,6 +225,15 @@ get_builder_id() {
     "nodejs")
         builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@refs/heads/main"
         ;;
+    "maven")
+        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@refs/heads/main"
+        ;;
+    "gradle")
+        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_gradle_slsa3.yml@refs/heads/main"
+        ;;
+    "bazel")
+        builder_id="https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_bazel_slsa3.yml@refs/heads/main"
+        ;;
     "delegator-generic" | "delegator-lowperms")
         # The builder ID is set by the workflow.
         # NOTE: the TRW is referenced at a tag, but the BYOB is referenced at HEAD.
@@ -252,6 +261,15 @@ assemble_minimum_builder_args() {
         echo "--builder-id=${builder_id}"
     elif [[ "${this_builder}" == "delegator-lowperms" ]]; then
         echo "--builder-id=${builder_id}"
+    elif [[ "${this_builder}" == "maven" ]]; then
+        echo "--builder-id=${builder_id}"
+    elif [[ "${this_builder}" == "gradle" ]]; then
+        echo "--builder-id=${builder_id}"
+    elif [[ "${this_builder}" == "bazel" ]]; then
+        echo "--builder-id=${builder_id}"
+    else
+        echo "unknown builder: ${this_builder}"
+        exit 1
     fi
 }
 
@@ -400,7 +418,6 @@ verify_provenance_authenticity() {
     # https://github.com/slsa-framework/slsa-verifier/pull/192
     if [[ "$tag" == "HEAD" ]] || version_ge "$tag" "v1.3"; then
         echo "  **** Default parameters (annotated tags) *****"
-
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${provenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_eq "$?" "0" "not main default parameters (annotated_tags)"
     elif [[ -z "$annotated_tags" ]]; then

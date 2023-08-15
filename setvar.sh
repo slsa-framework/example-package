@@ -18,13 +18,25 @@ export_var() {
     export "${name}"="${value}"
 }
 
-export GH=~/slsa/slsa-github-generator/gh/gh_2.9.0_linux_amd64/bin/gh
-export GH_TOKEN=${GITHUB_AUTH_TOKEN}
+# NOTE: These must be manually updated.
+
+# BYOB
+# export CHECKOUT_SHA1=f0afb8daaa59dc649b7c839fc3afce24f319527a
+export CHECKOUT_MESSAGE="Hello world!"
 export BINARY=my-artifact
 export PROVENANCE=my-artifact.build.slsa
-export THIS_FILE=e2e.delegator-generic.workflow_dispatch.branch1.checkout.slsa3.yml
-export BUILDER_ID=https://github.com/slsa-framework/example-trw/.github/workflows/builder_example_slsa3.yml
-export BUILDER_TAG=v3.0.0
+
+# Maven
+# ln -s tmp/target/ .
+export EXPECTED_ARTIFACT_OUTPUT="Hello world!"
+export PROVENANCE_DIR=./tmp
+export POMXML=./e2e/maven/workflow_dispatch/pom.xml
+
+# Global vars.
+export GH=~/slsa/slsa-github-generator/gh/gh_2.9.0_linux_amd64/bin/gh
+export GH_TOKEN=${GITHUB_AUTH_TOKEN}
+export THIS_FILE=e2e.maven.workflow_dispatch.main.default.slsa3.yml
+export BUILDER_ID=https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml
 export SLSA_VERIFIER_TESTING=1
 
 export_var GITHUB_SHA
@@ -45,5 +57,3 @@ export_var GITHUB_WORKFLOW_SHA
 GITHUB_REF_NAME=$(echo "${GITHUB_REF}" | cut -d '/' -f3)
 export GITHUB_REF_NAME
 
-export CHECKOUT_SHA1=f0afb8daaa59dc649b7c839fc3afce24f319527a
-export CHECKOUT_MESSAGE="hello checkout"

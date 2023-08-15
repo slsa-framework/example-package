@@ -15,24 +15,35 @@ if [[ -n "${RUNNER_DEBUG}" ]]; then
     set -x
 fi
 
-artifact_version=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate  -Dexpression=project.version -q -DforceStdout -f "${POMXML}")
-artifact_id=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout -f "${POMXML}")
-artifact_name="${artifact_id}-${artifact_version}.jar"
-provenance="${PROVENANCE_DIR}/${artifact_name}.build.slsa"
+# See https://stackoverflow.com/questions/17998978/removing-colors-from-output
+# I tried -Dmaven.color=false and --batch-mode tomvn, without success.
+remove_colors() {
+    local s="$1"
+    echo "$s" | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g"
+}
 
-go env -w GOFLAGS=-mod=mod
+artifact_version=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout -f "${POMXML}")
+artifact_id=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout -f "${POMXML}")
+artifact_version=$(remove_colors "$artifact_version")
+artifact_id=$(remove_colors "$artifact_id")
+
+# Set the BINARY and PROVENANCE env variables: they
+# are expected to be set for the call to e2e_run_verifier_all_releases().
+BINARY="${artifact_id}-${artifact_version}.jar"
+PROVENANCE="${PROVENANCE_DIR}/${BINARY}.build.slsa"
 
 verify_provenance_content() {
     local attestation
-    attestation=$(jq -r '.dsseEnvelope.payload' "${provenance}" | base64 -d)
+
+    attestation=$(jq -r '.dsseEnvelope.payload' "${PROVENANCE}" | base64 -d)
 
     # Run the artifact and verify the output is correct
-    artifact_output=$(java -jar target/"${artifact_name}")
+    artifact_output=$(java -jar target/"${BINARY}")
     expected_artifact_output="${EXPECTED_ARTIFACT_OUTPUT}"
     e2e_assert_eq "${artifact_output}" "${expected_artifact_output}" "The output from the artifact should be '${expected_artifact_output}' but was '${artifact_output}'"
     
     # Verify the content of the attestation
-    e2e_verify_predicate_subject_name "${attestation}" "${artifact_name}"
+    e2e_verify_predicate_subject_name "${attestation}" "${BINARY}"
     e2e_verify_predicate_v1_runDetails_builder_id "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@refs/heads/main"
     e2e_verify_predicate_v1_buildDefinition_buildType "${attestation}" "https://github.com/slsa-framework/slsa-github-generator/delegator-generic@v0"
 }
@@ -44,7 +55,7 @@ echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $this_file"
-echo "PROVENANCE is: ${provenance}"
+echo "PROVENANCE is: ${PROVENANCE}"
 
 export SLSA_VERIFIER_TESTING="true"
 
