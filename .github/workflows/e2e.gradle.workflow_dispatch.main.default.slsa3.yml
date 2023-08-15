@@ -56,7 +56,7 @@ jobs:
           echo "ref: ${GITHUB_REF}"
 
   build:
-    needs: [shim] uncomment before merging
+    needs: [shim]
     permissions:
       id-token: write # For signing.
       contents: read # For repo checkout of private repos.
