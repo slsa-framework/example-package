@@ -10,13 +10,14 @@ GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
 GITHUB_REF=${GITHUB_REF:-}
 GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
 RUNNER_DEBUG=${RUNNER_DEBUG:-}
+PROJECT_DIR=${PROJECT_DIR:-}
 if [[ -n "${RUNNER_DEBUG}" ]]; then
     set -x
 fi
 
 cp -r  "slsa-attestations" "${PROJECT_DIR}/"
 cp -r build "${PROJECT_DIR}/"
-cd "${PROJECT_DIR}"
+cd "${PROJECT_DIR}" || exit # exit to satisfy Shellcheck
 
 artifact_version=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
 artifact_id=$(./gradlew properties -q | grep "name:" | awk '{print $2}')

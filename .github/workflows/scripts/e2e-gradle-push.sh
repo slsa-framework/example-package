@@ -62,6 +62,7 @@ new_version() {
 }
 
 next_tag=$(new_version "${artifact_tag}")
+tag=next_tag
 
 # Update the version in build.gradle.kts
 sed -i "s/version = \"${artifact_tag}\"/version = \"${next_tag}\"/g" ./build.gradle.kts
