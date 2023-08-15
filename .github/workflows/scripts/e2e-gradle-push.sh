@@ -4,7 +4,7 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "./.github/workflows/scripts/e2e-utils.sh"
 
-# This script bumps the maven package's version number, commits it, and pushes to
+# This script bumps the gradle package's version number, commits it, and pushes to
 # the repository.
 
 branch=$(e2e_this_branch)
@@ -19,7 +19,7 @@ PACKAGE_DIR=${PACKAGE_DIR:-} # specified in the e2e test yaml
 
 # NOTE: We can't simply push from $branch because it is occaisonally reset to
 # the main branch. We need to maintain the version number in gradle.build.kts
-# because you cannot overwrite a version in maven. Instead we commit to main,
+# because you cannot overwrite a version in gradle. Instead we commit to main,
 # set the tag, reset $branch and push both main and $branch.
 gh repo clone "${GITHUB_REPOSITORY}" -- -b main
 repo_name=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f2)

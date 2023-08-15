@@ -19,9 +19,3 @@ tasks.withType<Jar> {
         attributes["Main-Class"] = "hello.HelloWorld"
     }
 }
-
-
-signing {
-    useGpgCmd()
-    sign(publishing.publications["maven"])
-}
