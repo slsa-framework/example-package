@@ -82,7 +82,6 @@ git branch
 pwd
 if [ "${branch}" != "main" ]; then
     # Reset branch1 and push the new version.
-    # git branch -D "$branch"
     git checkout -b "${branch}"
     if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ]; then
         git push --set-upstream origin "${branch}" "${tag}" -f
