@@ -26,10 +26,10 @@ artifact_version=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate
 artifact_id=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout -f "${POMXML}")
 artifact_version=$(remove_colors "$artifact_version")
 artifact_id=$(remove_colors "$artifact_id")
+artifact_name="${artifact_id}-${artifact_version}.jar"
 
 # Set the BINARY and PROVENANCE env variables: they
 # are expected to be set for the call to e2e_run_verifier_all_releases().
-artifact_name="${artifact_id}-${artifact_version}.jar"
 BINARY="target/${artifact_name}"
 PROVENANCE="${PROVENANCE_DIR}/${artifact_name}.build.slsa"
 
