@@ -267,10 +267,10 @@ assemble_minimum_builder_args() {
         echo "--builder-id=${builder_id}"
     elif [[ "${this_builder}" == "bazel" ]]; then
         echo "--builder-id=${builder_id}"
-    else
-        echo "unknown builder: ${this_builder}"
-        exit 1
     fi
+    # NOTE: There is no default value we retun if
+    # not one of the buidlers above. This is on purpose,
+    # the caller will check the result whether it's non-empty.
 }
 
 # assemble_raw_builder_args assembles
