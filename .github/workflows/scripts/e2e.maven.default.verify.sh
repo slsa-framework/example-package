@@ -29,8 +29,9 @@ artifact_id=$(remove_colors "$artifact_id")
 
 # Set the BINARY and PROVENANCE env variables: they
 # are expected to be set for the call to e2e_run_verifier_all_releases().
-BINARY="${artifact_id}-${artifact_version}.jar"
-PROVENANCE="${PROVENANCE_DIR}/${BINARY}.build.slsa"
+artifact_name="${artifact_id}-${artifact_version}.jar"
+BINARY="target/${artifact_name}"
+PROVENANCE="${PROVENANCE_DIR}/${artifact_name}.build.slsa"
 
 verify_provenance_content() {
     local attestation
@@ -38,7 +39,7 @@ verify_provenance_content() {
     attestation=$(jq -r '.dsseEnvelope.payload' "${PROVENANCE}" | base64 -d)
 
     # Run the artifact and verify the output is correct
-    artifact_output=$(java -jar target/"${BINARY}")
+    artifact_output=$(java -jar "${BINARY}")
     expected_artifact_output="${EXPECTED_ARTIFACT_OUTPUT}"
     e2e_assert_eq "${artifact_output}" "${expected_artifact_output}" "The output from the artifact should be '${expected_artifact_output}' but was '${artifact_output}'"
     
