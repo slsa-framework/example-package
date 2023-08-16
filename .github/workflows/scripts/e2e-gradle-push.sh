@@ -17,7 +17,7 @@ GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}
 GH_TOKEN=${GH_TOKEN:-}
 PACKAGE_DIR=${PACKAGE_DIR:-} # specified in the e2e test yaml
 
-# NOTE: We can't simply push from $branch because it is occaisonally reset to
+# NOTE: We can't simply push from $branch because it is occasionally reset to
 # the main branch. We need to maintain the version number in gradle.build.kts
 # because you cannot overwrite a version in gradle. Instead we commit to main,
 # set the tag, reset $branch and push both main and $branch.
