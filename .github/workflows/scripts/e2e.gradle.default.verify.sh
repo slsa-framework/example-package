@@ -19,8 +19,17 @@ cp -r  "slsa-attestations" "${PROJECT_DIR}/"
 cp -r build "${PROJECT_DIR}/"
 cd "${PROJECT_DIR}" || exit # exit to satisfy Shellcheck
 
+# See https://stackoverflow.com/questions/17998978/removing-colors-from-output
+# Laurent tried -Dmaven.color=false and --batch-mode tomvn, without success.
+remove_colors() {
+    local s="$1"
+    echo "$s" | sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g"
+}
+
 artifact_version=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+artifact_version=$(remove_colors "$artifact_version")
 artifact_id=$(./gradlew properties -q | grep "name:" | awk '{print $2}')
+artifact_id=$(remove_colors "$artifact_id")
 artifact_name="${artifact_id}-${artifact_version}.jar"
 provenance="${PROVENANCE_DIR}/${artifact_name}.build.slsa"
 
