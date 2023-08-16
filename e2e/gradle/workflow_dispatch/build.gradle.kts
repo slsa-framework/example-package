@@ -5,7 +5,7 @@
 import java.io.File
 
 group = "io.github.adamkorcz"
-version = "0.1.47"
+version = "0.0.1"
 description = "Adams test java project"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
