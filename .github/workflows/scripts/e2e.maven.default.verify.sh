@@ -36,7 +36,6 @@ PROVENANCE="${PROVENANCE_DIR}/${artifact_name}.build.slsa"
 verify_provenance_content() {
     local attestation
 
-    tree
     attestation=$(jq -r '.dsseEnvelope.payload' "${PROVENANCE}" | base64 -d)
 
     # Run the artifact and verify the output is correct
