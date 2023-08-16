@@ -91,7 +91,7 @@ jobs:
           PROJECT_DIR: "e2e/gradle/workflow_dispatch"
         run: ./.github/workflows/scripts/e2e.gradle.default.verify.sh
 
-    if-succeeded:
+  if-succeeded:
     runs-on: ubuntu-latest
     needs: [build, verify]
     if: needs.build.result == 'success' && needs.verify.result == 'success'
