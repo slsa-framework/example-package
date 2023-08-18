@@ -59,7 +59,7 @@ echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
 echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
 echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is $this_file"
-echo "PROVENANCE is: ${provenance}"
+echo "PROVENANCE is: ${PROVENANCE}"
 
 export SLSA_VERIFIER_TESTING="true"
 

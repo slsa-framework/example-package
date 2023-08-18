@@ -4,6 +4,10 @@
 
 import java.io.File
 
+plugins {
+    `java-library`
+}
+
 group = "io.github.adamkorcz"
 version = "0.0.1"
 description = "Adams test java project"
