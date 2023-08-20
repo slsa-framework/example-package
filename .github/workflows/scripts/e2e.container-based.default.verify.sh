@@ -60,7 +60,7 @@ echo "DEBUG: file is ${this_file}"
 export SLSA_VERIFIER_EXPERIMENTAL="1"
 export SLSA_VERIFIER_TESTING="true"
 
-e2e_run_verifier_all_releases "v1.7.0"
+e2e_run_verifier_all_releases "v2.3.0"
 
 # Verify the provenance content.
 verify_provenance_content
