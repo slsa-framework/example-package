@@ -77,7 +77,7 @@ jobs:
           path: slsa-attestations
       - uses: slsa-framework/slsa-github-generator/actions/maven/secure-download-target@main
         with:
-          name: target
+          name: "${{ needs.build.outputs.target-download-name }}"
           sha256: "${{ needs.build.outputs.target-download-sha256 }}"
           path: ./
       # NOTE: To build slsa-verifier in e2e.maven.default.verify.sh
