@@ -78,7 +78,7 @@ jobs:
           path: slsa-attestations
       - uses: slsa-framework/slsa-github-generator/actions/gradle/secure-download-target@main
         with:
-          name: build
+          name: "${{ needs.build.outputs.target-download-name }}"
           sha256: "${{ needs.build.outputs.target-download-sha256 }}"
           path: ./
       # NOTE: To build slsa-verifier in e2e.gradle.default.verify.sh
