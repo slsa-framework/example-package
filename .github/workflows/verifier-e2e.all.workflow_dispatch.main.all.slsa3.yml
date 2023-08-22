@@ -217,6 +217,25 @@ jobs:
       # NOTE: this password is set to 'delegator-password'.
       password: ${{ secrets.DELEGATOR_PASSWORD }}
 
+  gha_maven:
+    permissions:
+      id-token: write # For signing.
+      contents: read # For repo checkout of private repos.
+      actions: read # For getting workflow run on private repos.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@v1.8.0
+    with:
+      directory: ./e2e/maven/workflow_dispatch
+
+  gha_gradle:
+    permissions:
+      id-token: write # For signing.
+      contents: read # For repo checkout of private repos.
+      actions: read # For getting workflow run on private repos.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_gradle_slsa3.yml@v1.8.0
+    with:
+      directory: ./e2e/gradle/workflow_dispatch
+      artifact-list: build/libs/workflow_dispatch-GRADLE_VERSION.jar,build/libs/workflow_dispatch-GRADLE_VERSION-javadoc.jar,build/libs/workflow_dispatch-GRADLE_VERSION-sources.jar
+
   # Delete existing tags before triggering new ones.
   delete-tags:
     if: github.event_name == 'workflow_dispatch'
