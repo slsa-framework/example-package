@@ -27,7 +27,7 @@ jobs:
     outputs:
       gha_generic_binary-name: ${{ steps.create_name.outputs.gha_generic_binary-name }}
       gha_delegator_binary-name: ${{ steps.create_name.outputs.gha_delegator_binary-name }}
-      gha_delegator-lowperms_binary-name: ${{ steps.create_name.outputs.gha_lowperms_binary-name }}
+      gha_delegator-lowperms_binary-name: ${{ steps.create_name.outputs.gha_delegator-lowperms_binary-name }}
       config-file: ${{ steps.create_name.outputs.config-file }}
       config-path: ${{ steps.create_name.outputs.config-path }}
     runs-on: ubuntu-latest
