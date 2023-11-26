@@ -67,7 +67,7 @@ jobs:
     steps:
       - id: auth
         name: "Authenticate to Google Cloud"
-        uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033 # v1.1.1
+        uses: google-github-actions/auth@f105ef0cdb3b102a020be1767fcc8a974898b7c6 # v1.2.0
         with:
           token_format: "access_token"
           service_account: ${{ env.SERVICE_ACCOUNT }}
@@ -146,12 +146,12 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - id: auth
         name: "Authenticate to Google Cloud"
-        uses: google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033 # v1.1.1
+        uses: google-github-actions/auth@f105ef0cdb3b102a020be1767fcc8a974898b7c6 # v1.2.0
         with:
           token_format: "access_token"
           service_account: ${{ env.SERVICE_ACCOUNT }}
           workload_identity_provider: ${{ env.PROVIDER_NAME }}
-      - uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 # v3.1.1
+      - uses: sigstore/cosign-installer@1fc5bd396d372bee37d608f955b336615edf79c8 # v3.2.0
       - env:
           REGISTRY_USERNAME: oauth2accesstoken
           REGISTRY_PASSWORD: ${{ steps.auth.outputs.access_token }}
@@ -171,7 +171,7 @@ jobs:
 
           echo "provenance_file=${GITHUB_WORKSPACE}/provenance.json" >> "$GITHUB_ENV"
           echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> "$GITHUB_ENV"
-      - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
         with:
           go-version: "1.20"
       - env:
