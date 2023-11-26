@@ -23,7 +23,7 @@ jobs:
       actions: write
       contents: write
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-dispatch.sh
 
   build:
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Bazelisk
         uses: bazelbuild/setup-bazelisk@95c9bf48d0c570bb3e28e57108f3450cd67c1a44 # tag=v2.0.0
         with:
@@ -78,7 +78,7 @@ jobs:
     needs: [build, provenance]
     if: github.event_name == 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build.outputs.binary-name }}
@@ -98,7 +98,7 @@ jobs:
     needs: [build, provenance, verify]
     if: github.event_name == 'workflow_dispatch' && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -106,5 +106,5 @@ jobs:
     needs: [build, provenance, verify]
     if: always() && github.event_name == 'workflow_dispatch' && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

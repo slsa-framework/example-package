@@ -23,7 +23,7 @@ jobs:
       actions: write
       contents: write
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-dispatch.sh
 
   build:
@@ -45,7 +45,7 @@ jobs:
     needs: [build]
     if: github.event_name == 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
           name: ${{ needs.build.outputs.build-outputs-name }}
@@ -81,7 +81,7 @@ jobs:
     needs: [build, verify]
     if: github.event_name == 'workflow_dispatch' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -89,5 +89,5 @@ jobs:
     needs: [build, verify]
     if: always() && github.event_name == 'workflow_dispatch' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

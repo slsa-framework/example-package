@@ -61,7 +61,7 @@ jobs:
     # to issues unless it's a schedule event.
     if: always() && github.event_name == 'schedule' && needs.build.result == 'failure'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   if-failed-provenance:
@@ -71,7 +71,7 @@ jobs:
     # to issues unless it's a schedule event.
     if: always() && github.event_name == 'schedule' && needs.build.result == 'success' && needs.provenance.result == 'failure'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-succeeded-provenance:
@@ -81,5 +81,5 @@ jobs:
     # to issues unless it's a schedule event.
     if: always() && github.event_name == 'schedule' && needs.build.result == 'success' && needs.provenance.result == 'success'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
