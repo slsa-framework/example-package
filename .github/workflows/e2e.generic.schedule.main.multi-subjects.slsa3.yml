@@ -25,7 +25,7 @@ jobs:
           echo "artifact3" > artifact3
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: artifacts
           if-no-files-found: error
@@ -70,7 +70,7 @@ jobs:
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
       - name: Setup Go
-        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
+        uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
           go-version: "1.20"
       # Note: the 3 artifacts share the same provenance file.
@@ -101,7 +101,7 @@ jobs:
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
       - name: Setup Go
-        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
+        uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
           go-version: "1.20"
       - name: Alter artifacts
