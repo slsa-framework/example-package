@@ -60,7 +60,7 @@ jobs:
     needs: [build, provenance]
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - name: Download binary
         uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
@@ -95,7 +95,7 @@ jobs:
     needs: [build, provenance]
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - name: Download provenance
         uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
@@ -121,7 +121,7 @@ jobs:
     # to issues unless it's a schedule event.
     if: always() && github.event_name == 'schedule' && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success' && needs.no-verify.result == 'failure'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -131,5 +131,5 @@ jobs:
     # to issues unless it's a schedule event.
     if: always() && github.event_name == 'schedule' && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure' || needs.no-verify.result == 'success')
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

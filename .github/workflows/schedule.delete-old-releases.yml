@@ -17,7 +17,7 @@ jobs:
     permissions:
       contents: write # Needed to delete tags
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - name: Delete old releases
         id: build
         run: ./.github/workflows/scripts/e2e-delete-old-releases.sh
