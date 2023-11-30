@@ -1,0 +1,186 @@
+# This e2e test performs the following via a GitHub Actions schedule event.
+# - Build the Go application into a Docker image
+# - Push the image to ghcr.io
+# - Generate SLSA provenance for the image
+# - Upload the provenance to ghcr.io
+# - Verify the created provenance attestation.
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency: "e2e.container.schedule.main.provenance-registry.slsa3"
+
+env:
+  GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+  IMAGE_REGISTRY: docker.io
+  IMAGE_USERNAME: laurentsimon
+
+  PROVENACE_REGISTRY: ghcr.io
+  # NOTE: This pushes a container image to a "namespace" under the
+  # slsa-framework Dockerhub org.
+  # The image name should be of the form: slsa-framework/example-package.<test name>
+  IMAGE_NAME: slsa-framework/example-package.e2e.container.schedule.main.provenance-registry.slsa3
+
+jobs:
+  # Build the Go application into a Docker image
+  # Push the image to docker.io
+  build:
+    permissions:
+      contents: read # For reading repository contents.
+      packages: write # For writing container images.
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      digest: ${{ steps.build.outputs.digest }}
+      username: ${{ env.IMAGE_USERNAME}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4c0219f9ac95b02789c1075625400b2acbff50b1 # v2.9.1
+
+      - name: Authenticate Docker
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ env.IMAGE_USERNAME }}
+          password: ${{ secrets.E2E_DOCKER_HUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175 # v4.6.0
+        with:
+          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@2eb1c1961a95fc15694676618e422e8ba1d63825 # v4.1.1
+        id: build
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Output image
+        id: image
+        run: |
+          # NOTE: We need to use the image and digest in order to make sure
+          # that the image we attest has not been modified.
+          # NOTE: The digest output from docker/build-push-action is of the
+          # form "sha256:<digest>"
+          full_image_name="${IMAGE_REGISTRY}/${IMAGE_NAME}"
+          echo "image=$full_image_name" >> "${GITHUB_OUTPUT}"
+
+  provenance-metadata:
+    needs: [build]
+    outputs:
+      registry: ${{steps.image.outputs.image}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output Provenance Image
+        id: image
+        run: |
+          # NOTE: We need to use the image and digest in order to make sure
+          # that the image we attest has not been modified.
+          # NOTE: The digest output from docker/build-push-action is of the
+          # form "sha256:<digest>"
+          full_image_name="${PROVENACE_REGISTRY}/${IMAGE_NAME}"
+          echo "image=$full_image_name" >> "${GITHUB_OUTPUT}"
+
+
+  # Generate SLSA provenance for the image
+  # Downloads the image from docker.io
+  # Upload the provenance to ghcr.io
+  provenance:
+    needs: [build, provenance-metadata]
+    permissions:
+      id-token: write # For signing.
+      actions: read # For reading workflow info.
+      packages: write # For uploading attestations.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@main
+    with:
+      image: ${{ needs.build.outputs.image }}
+      digest: ${{ needs.build.outputs.digest }}
+      registry-username: ${{ needs.build.outputs.username }}
+      provenance-registry-username:  ${{ github.actor }}
+      provenance-registry: ${{ needs.provenance-metadata.outputs.registry }}
+      compile-generator: true
+    secrets:
+      registry-password: ${{ secrets.E2E_DOCKER_HUB_TOKEN }} # Dockerhub token for contaner image
+      provenance-registry-password: ${{ secrets.E2E_CONTAINER_TOKEN }} # GH Token for provenance
+
+  # Verify the created provenance attestation.
+  verify:
+    # NOTE: this name is used as the status check name and by protected
+    # branches for required status checks. It should have a unique name among
+    # other pre-submits.
+    name: verify container provenance
+    needs: [build, provenance-metadata, provenance]
+    permissions:
+      packages: read # For reading attestations.
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 # v3.1.1
+      - env:
+          PROVENANCE_REGISTRY_USERNAME: ${{ github.actor }}
+          PROVENANCE_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_USERNAME: ${{ env.IMAGE_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.E2E_DOCKER_HUB_TOKEN }}
+          IMAGE_NAME: ${{ needs.build.outputs.image }}
+          PROVENANCE_REGISTRY: ${{ needs.provenance-metadata.outputs.registry }}
+          IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
+
+        run: |
+          cosign login "${IMAGE_REGISTRY}" -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}"
+
+          cosign login "${PROVENANCE_REGISTRY}" -u "${PROVENANCE_REGISTRY_USERNAME}" -p "${PROVENANCE_REGISTRY_PASSWORD}"
+
+
+          # TODO: use --enforce-sct
+          # TODO: add cue policy for further validation.
+          # NOTE: COSIGN_EXPERIMENTAL is needed to check the transparency log.
+          COSIGN_EXPERIMENTAL=1 \
+          COSIGN_REPOSITORY="${PROVENANCE_REGISTRY}" \
+          cosign verify-attestation \
+            --type slsaprovenance \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/heads/main \
+            "${IMAGE_NAME}@${IMAGE_DIGEST}" > "${GITHUB_WORKSPACE}/provenance.json"
+
+          echo "provenance_file=${GITHUB_WORKSPACE}/provenance.json" >> "$GITHUB_ENV"
+          echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> "$GITHUB_ENV"
+      - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+        with:
+          go-version: "1.20"
+      - env:
+          CONTAINER: "${{ env.container }}"
+          PROVENANCE: "${{ env.provenance_file }}"
+        run: ./.github/workflows/scripts/e2e.container.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, verify]
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: github.event_name == 'schedule' && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, provenance, verify]
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: always() && github.event_name == 'schedule' && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
