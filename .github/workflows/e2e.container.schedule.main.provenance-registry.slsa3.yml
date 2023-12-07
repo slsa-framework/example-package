@@ -108,7 +108,7 @@ jobs:
       image: ${{ needs.build.outputs.image }}
       digest: ${{ needs.build.outputs.digest }}
       registry-username: ${{ needs.build.outputs.username }}
-      provenance-registry-username:  ${{ github.actor }}
+      provenance-registry-username: ${{ github.actor }}
       provenance-registry: ${{ needs.provenance-metadata.outputs.registry }}
       compile-generator: true
     secrets:

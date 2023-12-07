@@ -68,6 +68,13 @@ linters:
     - whitespace
     - wrapcheck
 linters-settings:
+  depguard:
+    rules:
+      prevent_unmaintained_packages:
+        list-mode: lax # allow unless explicitely denied
+        allow:
+          - $gostd
+          - github.com/pborman/uuid
   errcheck:
     check-type-assertions: true
     check-blank: true
