@@ -18,18 +18,17 @@ env:
   GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
-  IMAGE_REGISTRY: docker.io
-  IMAGE_USERNAME: laurentsimon
+  IMAGE_REGISTRY: gchr.io
 
-  PROVENACE_REGISTRY: ghcr.io
+  PROVENACE_REGISTRY: docker.io
   # NOTE: This pushes a container image to a "namespace" under the
-  # slsa-framework Dockerhub org.
+  # slsa-framework Github org.
   # The image name should be of the form: slsa-framework/example-package.<test name>
   IMAGE_NAME: slsa-framework/example-package.e2e.container.schedule.main.provenance-registry.slsa3
 
 jobs:
   # Build the Go application into a Docker image
-  # Push the image to docker.io
+  # Push the image to ghcr.io
   build:
     permissions:
       contents: read # For reading repository contents.
@@ -37,7 +36,6 @@ jobs:
     outputs:
       image: ${{ steps.image.outputs.image }}
       digest: ${{ steps.build.outputs.digest }}
-      username: ${{ env.IMAGE_USERNAME}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -50,8 +48,8 @@ jobs:
         uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
         with:
           registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.IMAGE_USERNAME }}
-          password: ${{ secrets.E2E_DOCKER_HUB_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -80,11 +78,12 @@ jobs:
   provenance-metadata:
     needs: [build]
     outputs:
-      registry: ${{steps.image.outputs.image}}
+      image: ${{steps.provenance-image.outputs.image}}
+      username: laurentsimon
     runs-on: ubuntu-latest
     steps:
       - name: Output Provenance Image
-        id: image
+        id: provenance-image
         run: |
           # NOTE: We need to use the image and digest in order to make sure
           # that the image we attest has not been modified.
@@ -95,8 +94,8 @@ jobs:
 
 
   # Generate SLSA provenance for the image
-  # Downloads the image from docker.io
-  # Upload the provenance to ghcr.io
+  # Downloads the image from ghcr.io
+  # Upload the provenance to docker.io
   provenance:
     needs: [build, provenance-metadata]
     permissions:
@@ -107,13 +106,13 @@ jobs:
     with:
       image: ${{ needs.build.outputs.image }}
       digest: ${{ needs.build.outputs.digest }}
-      registry-username: ${{ needs.build.outputs.username }}
-      provenance-registry-username: ${{ github.actor }}
-      provenance-registry: ${{ needs.provenance-metadata.outputs.registry }}
+      registry-username: ${{ github.actor }}
+      provenance-registry-username: ${{ needs.provenance-metadata.outputs.username }}
+      provenance-registry: ${{ needs.provenance-metadata.outputs.image }}
       compile-generator: true
     secrets:
-      registry-password: ${{ secrets.E2E_DOCKER_HUB_TOKEN }} # Dockerhub token for contaner image
-      provenance-registry-password: ${{ secrets.E2E_CONTAINER_TOKEN }} # GH Token for provenance
+      registry-password: ${{ secrets.GITHUB_TOKEN }} # Github token for contaner image
+      provenance-registry-password: ${{ secrets.E2E_DOCKER_HUB_TOKEN }} # Dockerhub Token for provenance
 
   # Verify the created provenance attestation.
   verify:
@@ -130,12 +129,12 @@ jobs:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 # v3.1.1
       - env:
-          PROVENANCE_REGISTRY_USERNAME: ${{ github.actor }}
-          PROVENANCE_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          REGISTRY_USERNAME: ${{ env.IMAGE_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.E2E_DOCKER_HUB_TOKEN }}
+          PROVENANCE_IMAGE: ${{ needs.provenance-metadata.outputs.image }}
+          PROVENANCE_REGISTRY_USERNAME: ${{ needs.provenance-metadata.outputs.username }}
+          PROVENANCE_REGISTRY_PASSWORD: ${{ secrets.E2E_DOCKER_HUB_TOKEN }}
+          REGISTRY_USERNAME: ${{ github.actor }}
+          REGISTRY_PASSWORD:  ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ needs.build.outputs.image }}
-          PROVENANCE_REGISTRY: ${{ needs.provenance-metadata.outputs.registry }}
           IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
 
         run: |
@@ -148,7 +147,7 @@ jobs:
           # TODO: add cue policy for further validation.
           # NOTE: COSIGN_EXPERIMENTAL is needed to check the transparency log.
           COSIGN_EXPERIMENTAL=1 \
-          COSIGN_REPOSITORY="${PROVENANCE_REGISTRY}" \
+          COSIGN_REPOSITORY="${PROVENANCE_IMAGE}" \
           cosign verify-attestation \
             --type slsaprovenance \
             --certificate-oidc-issuer https://token.actions.githubusercontent.com \
