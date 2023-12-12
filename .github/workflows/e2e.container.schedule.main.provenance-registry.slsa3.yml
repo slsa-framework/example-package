@@ -18,7 +18,7 @@ env:
   GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
 
-  IMAGE_REGISTRY: gchr.io
+  IMAGE_REGISTRY: ghcr.io
 
   PROVENACE_REGISTRY: docker.io
   # NOTE: This pushes a container image to a "namespace" under the
