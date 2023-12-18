@@ -41,6 +41,11 @@ echo "DEBUG: file is ${this_file}"
 
 export SLSA_VERIFIER_TESTING="true"
 
+# Make sure the value is exported to slsa-verifier.
+if [[ -n "${COSIGN_REPOSITORY}" ]]; then
+    export COSIGN_REPOSITORY="${COSIGN_REPOSITORY}"
+fi
+
 # Verify provenance authenticity.
 e2e_run_verifier_all_releases "HEAD"
 
