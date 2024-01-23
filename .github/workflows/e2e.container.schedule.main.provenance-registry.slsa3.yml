@@ -112,7 +112,7 @@ jobs:
       digest: ${{ needs.build.outputs.digest }}
       registry-username: ${{ github.actor }}
       provenance-registry-username: ${{ needs.provenance-metadata.outputs.username }}
-      provenance-registry: ${{ needs.provenance-metadata.outputs.image }}
+      provenance-repository: ${{ needs.provenance-metadata.outputs.image }}
       compile-generator: true
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }} # Github token for contaner image
@@ -166,7 +166,7 @@ jobs:
           go-version: "1.20"
       - env:
           CONTAINER: "${{ env.container }}"
-          PROVENANCE: "${{ env.provenance_file }}"
+          PROVENANCE_REPOSITORY: ${{ needs.provenance-metadata.outputs.image }}
         run: ./.github/workflows/scripts/e2e.container.default.verify.sh
 
   if-succeeded:

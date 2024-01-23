@@ -8,6 +8,7 @@ GITHUB_REF=${GITHUB_REF:-}
 GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
 GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
 PROVENANCE=${PROVENANCE:-}
+PROVENANCE_REPOSITORY=${PROVENANCE_REPOSITORY:-}
 CONTAINER=${CONTAINER:-}
 RUNNER_DEBUG=${RUNNER_DEBUG:-}
 if [[ -n "${RUNNER_DEBUG}" ]]; then
@@ -40,11 +41,6 @@ echo "GITHUB_REF: $GITHUB_REF"
 echo "DEBUG: file is ${this_file}"
 
 export SLSA_VERIFIER_TESTING="true"
-
-# Make sure the value is exported to slsa-verifier.
-if [[ -n "${COSIGN_REPOSITORY}" ]]; then
-    export COSIGN_REPOSITORY="${COSIGN_REPOSITORY}"
-fi
 
 # Verify provenance authenticity.
 e2e_run_verifier_all_releases "HEAD"
