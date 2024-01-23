@@ -166,6 +166,7 @@ jobs:
           go-version: "1.20"
       - env:
           CONTAINER: "${{ env.container }}"
+          PROVENANCE: "${{ env.provenance_file }}"
           PROVENANCE_REPOSITORY: ${{ needs.provenance-metadata.outputs.image }}
         run: ./.github/workflows/scripts/e2e.container.default.verify.sh
 
