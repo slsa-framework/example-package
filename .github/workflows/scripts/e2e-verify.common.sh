@@ -321,6 +321,7 @@ verify_provenance_authenticity() {
     CONTAINER=${CONTAINER:-}
     GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
     PROVENANCE=${PROVENANCE:-}
+    PROVENANCE_REPOSITORY=${PROVENANCE_REPOSITORY:-}
 
     local verifier="$1"
     local tag="$2"
@@ -381,6 +382,10 @@ verify_provenance_authenticity() {
     provenanceArg=()
     if [[ "$build_type" == "nodejs" ]]; then
         read -ra provenanceArg <<<"--attestations-path ${ATTESTATIONS}"
+    elif [[ "$build_type" == "container" ]]; then
+        if [[ -n "$PROVENANCE_REPOSITORY" ]]; then
+            read -ra provenanceArg <<<"$($argr "provenance-repository") ${PROVENANCE_REPOSITORY}"
+        fi
     elif [[ "$build_type" != "container" ]]; then
         read -ra provenanceArg <<<"$($argr "provenance") ${PROVENANCE}"
     fi
@@ -798,6 +803,7 @@ _new_verifier_args() {
     case $arg in
     artifact-path) echo '' ;;
     provenance) echo '--provenance-path' ;;
+    provenance-repository) echo '--provenance-repository' ;;
     source) echo '--source-uri' ;;
     tag) echo '--source-tag' ;;
     versioned-tag) echo '--source-versioned-tag' ;;
