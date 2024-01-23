@@ -12,7 +12,7 @@ on:
 
 permissions: {}
 
-concurrency: "e2e.container.schedule.main.provenance-registry.slsa3"
+concurrency: "e2e.container.schedule.main.provenance-repository.slsa3"
 
 env:
   GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
@@ -24,11 +24,11 @@ env:
   # NOTE: This pushes a container image to a "namespace" under the
   # slsa-framework Github org.
   # The image name should be of the form: slsa-framework/example-package.<test name>
-  IMAGE_NAME: slsa-framework/example-package.e2e.container.schedule.main.provenance-registry.slsa3
+  IMAGE_NAME: slsa-framework/example-package.e2e.container.schedule.main.provenance-repository.slsa3
   # NOTE: This pushes a provenance image to a "account" under the
   # laurentsimon Dockerhub.
   # The image name should be of the form: laurentsimon/example-package.<test name>
-  PROVENANCE_IMAGE_NAME: laurentsimon/example-package.e2e.container.schedule.main.provenance-registry.slsa3
+  PROVENANCE_IMAGE_NAME: laurentsimon/example-package.e2e.container.schedule.main.provenance-repository.slsa3
 
 jobs:
   # Build the Go application into a Docker image
