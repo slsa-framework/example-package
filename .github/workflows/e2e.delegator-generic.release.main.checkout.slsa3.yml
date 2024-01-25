@@ -93,7 +93,7 @@ jobs:
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
       - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
-          go-version: "1.20"
+          go-version: "1.21"
       - env:
           BINARY: "${{ needs.build.outputs.artifact }}"
           PROVENANCE: "${{ needs.build.outputs.provenance-download-name }}/${{ needs.build.outputs.artifact }}.build.slsa" # This is defined by the builder.

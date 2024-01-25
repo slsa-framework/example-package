@@ -34,7 +34,7 @@ jobs:
       actions: read # For the entrypoint.
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@main
     with:
-      go-version: "1.20"
+      go-version: "1.21"
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
       config-file: .github/configs-go/config-noldflags.yml
       compile-builder: true

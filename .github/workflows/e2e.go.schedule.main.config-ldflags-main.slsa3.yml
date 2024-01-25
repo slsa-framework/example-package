@@ -49,7 +49,7 @@ jobs:
       actions: read # For the entrypoint.
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@main
     with:
-      go-version: "1.20"
+      go-version: "1.21"
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
       config-file: .github/configs-go/config-ldflags-main.yml
       evaluated-envs: "VERSION:${{needs.args.outputs.version}},COMMIT:${{needs.args.outputs.commit}},BRANCH:${{needs.args.outputs.branch}},MAIN:${{needs.args.outputs.main}}"
@@ -68,7 +68,7 @@ jobs:
           name: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
       - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
-          go-version: "1.20"
+          go-version: "1.21"
       - env:
           BINARY: ${{ needs.build.outputs.go-binary-name }}
           # NOTE: we download the artifact as `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl`,

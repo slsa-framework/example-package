@@ -91,7 +91,7 @@ jobs:
           name: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
       - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
         with:
-          go-version: "1.20"
+          go-version: "1.21"
       - env:
           BINARY: ${{ needs.build.outputs.go-binary-name }}
           # NOTE: we download the artifact as `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl`,
