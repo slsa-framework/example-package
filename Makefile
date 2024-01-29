@@ -53,7 +53,7 @@ SHELLCHECK_ARGS = -o check-unassigned-uppercase --severity=style --external-sour
 
 .PHONY: shellcheck
 shellcheck: ## Runs the shellcheck linter.
-	@set -eux;\
+	@set -e;\
 		files=$$(find . -type f -not -iwholename '*/.git/*' -not -iwholename '*/vendor/*' -not -iwholename '*/node_modules/*' -exec bash -c 'file "$$1" | cut -d':' -f2 | grep --quiet shell' _ {} \; -print); \
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			exit_code=0; \
