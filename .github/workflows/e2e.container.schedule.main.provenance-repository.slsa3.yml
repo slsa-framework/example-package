@@ -43,10 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@4c0219f9ac95b02789c1075625400b2acbff50b1 # v2.9.1
+        uses: docker/setup-buildx-action@885d1462b80bc1c1c7f0b00334ad271f09369c55 # v2.10.0
 
       - name: Authenticate Docker
         uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
@@ -62,7 +62,7 @@ jobs:
           images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@2eb1c1961a95fc15694676618e422e8ba1d63825 # v4.1.1
+        uses: docker/build-push-action@0a97817b6ade9f46837855d676c4cca3a2471fc9 # v4.2.1
         id: build
         with:
           push: true
@@ -133,8 +133,8 @@ jobs:
       # Provenance image. Used to be called `PROVENANCE_IMAGE`.
       COSIGN_REPOSITORY: ${{ needs.provenance-metadata.outputs.image }}
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 # v3.1.1
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: sigstore/cosign-installer@9614fae9e5c5eddabb09f90a270fcb487c9f7149 # v3.3.0
       - env:
           PROVENANCE_REGISTRY_USERNAME: ${{ needs.provenance-metadata.outputs.username }}
           PROVENANCE_REGISTRY_PASSWORD: ${{ secrets.E2E_DOCKER_HUB_TOKEN }}
@@ -161,7 +161,7 @@ jobs:
 
           echo "provenance_file=${GITHUB_WORKSPACE}/provenance.json" >> "$GITHUB_ENV"
           echo "container=${IMAGE_NAME}@${IMAGE_DIGEST}" >> "$GITHUB_ENV"
-      - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
         with:
           go-version: "1.21"
       - env:
@@ -177,7 +177,7 @@ jobs:
     # to issues unless it's a schedule event.
     if: github.event_name == 'schedule' && needs.build.result == 'success' && needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -187,5 +187,5 @@ jobs:
     # to issues unless it's a schedule event.
     if: always() && github.event_name == 'schedule' && (needs.build.result == 'failure' || needs.provenance.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
