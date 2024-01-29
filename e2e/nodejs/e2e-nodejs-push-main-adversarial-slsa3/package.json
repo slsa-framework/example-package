@@ -1,6 +1,6 @@
 {
   "name": "@slsa-framework/e2e-nodejs-push-main-adversarial-slsa3",
-  "version": "0.0.293",
+  "version": "0.0.294",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
