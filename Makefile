@@ -67,6 +67,9 @@ shellcheck: ## Runs the shellcheck linter.
 				message=$$(echo "$$p" | jq -c '.message // empty' | tr -d '"'); \
 				exit_code=1; \
 				case $$level in \
+				"style") \
+					echo "::notice file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+					;; \
 				"info") \
 					echo "::notice file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
 					;; \
