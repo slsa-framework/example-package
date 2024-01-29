@@ -28,7 +28,7 @@ jobs:
       actions: write
       contents: write
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - run: ./.github/workflows/scripts/e2e-dispatch.sh
 
   # Trigger the GCB build
@@ -41,15 +41,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - id: "auth"
         name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: "projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider"
           service_account: "example-package-user@slsa-tooling.iam.gserviceaccount.com"
       - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@e30db14379863a8c79331b04a9969f4c1e225e0b" # v1.1.1
+        uses: "google-github-actions/setup-gcloud@98ddc00a17442e89a24bbf282954a3b65ce6d200" # v2.1.0
       - name: Trigger build via manual invocation
         id: build
         run: |
