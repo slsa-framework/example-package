@@ -60,7 +60,7 @@ jobs:
       id-token: write # For signing
       contents: write # For asset uploads
       actions: read
-    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v3.0.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v0.0.1
     with:
       artifact: my-artifact
       content: "hello world delegator_generic_slsa3"
