@@ -4,14 +4,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: bazelisk build //:hello
       - uses: slsa-framework/github-actions-demo@v0.1
         with:
           artifact_path: bazel-bin/hello_/hello
           output_path: hello.provenance
         continue-on-error: true
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: |
             bazel-bin/hello_/hello
