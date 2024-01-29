@@ -27,7 +27,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       # Bumps the package version pushes, creates a git tag, and pushes the tag.
       - run: ./.github/workflows/scripts/e2e-bootstrap.sh
 
@@ -36,7 +36,7 @@ jobs:
     needs: [bootstrap]
     if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.bootstrap.result != 'success'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
 
   # Main workflow
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Node environment
-        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.7.0
+        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
         with:
           node-version: 18
           registry-url: "https://registry.npmjs.org"
@@ -94,13 +94,13 @@ jobs:
     needs: [build, publish]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Set up Node environment
-        uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.7.0
+        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
         with:
           node-version: 16
       # NOTE: for building the verifier.
-      - uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
         with:
           go-version: "1.21"
       - run: ./.github/workflows/scripts/e2e.nodejs.default.verify.sh
@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.build.result == 'success' && needs.publish.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -118,5 +118,5 @@ jobs:
     runs-on: ubuntu-latest
     if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result != 'success' || needs.publish.result != 'success' || needs.verify.result != 'success')
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
