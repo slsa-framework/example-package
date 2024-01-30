@@ -61,7 +61,7 @@ jobs:
       contents: write # For asset uploads
       packages: write # To write to github packages
       actions: read
-    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v3.0.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v0.0.1
     with:
       artifact: my-artifact
       content: "hello world delegator_generic_slsa3"
@@ -77,7 +77,7 @@ jobs:
       - uses: actions/download-artifact@bb3fa7fd35ab8113a980912eb9f59b846d14e3ff
         with:
           name: "${{ needs.build.outputs.artifact }}" # NOTE: This is 'my-artifact'.
-      - uses: slsa-framework/example-trw/high-perms/actions/download/attestation@v3.0.0
+      - uses: slsa-framework/example-trw/high-perms/actions/download/attestation@v0.0.1
         with:
           name: "${{ needs.build.outputs.provenance-download-name }}"
           sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
