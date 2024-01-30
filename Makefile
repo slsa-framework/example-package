@@ -81,6 +81,7 @@ shellcheck: ## Runs the shellcheck linter.
 					;; \
 				esac; \
 			done <<< "$$(echo -n "$$files" | xargs shellcheck -f json $(SHELLCHECK_ARGS) | jq -c '.[]')"; \
+			echo -n "$$files" | xargs shellcheck $(SHELLCHECK_ARGS); \
 			exit "$${exit_code}"; \
 		else \
 			echo -n "$$files" | xargs shellcheck $(SHELLCHECK_ARGS); \
