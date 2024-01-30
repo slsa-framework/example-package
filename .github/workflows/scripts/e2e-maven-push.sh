@@ -52,11 +52,11 @@ new_version() {
         release_patch=$((release_patch+1))
     elif [[ $release_patch = "99" && $release_minor != "99" ]]; then
         # Need to bump minor
-        release_minor=$(($release_minor+1))
+        release_minor=$((release_minor+1))
         release_patch="0"
     elif [[ $release_patch = "99" && $release_minor = "99" ]]; then
         # Need to bump major
-        release_major=$(($release_major+1))
+        release_major=$((release_major+1))
         release_minor="0"
         release_patch="0"
     fi

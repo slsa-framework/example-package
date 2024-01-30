@@ -32,7 +32,7 @@ jobs:
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
     # Update the reference in this line with the builder's version to test.
-    #uses: ianlewis/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.8.0-rc.2
+    # uses: ianlewis/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.8.0-rc.2
     uses: laurentsimon/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0-rc.0
     with:
       base64-subjects: "${{ needs.build.outputs.digests }}"
