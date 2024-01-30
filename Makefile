@@ -55,7 +55,36 @@ SHELLCHECK_ARGS = -o check-unassigned-uppercase --severity=style --external-sour
 shellcheck: ## Runs the shellcheck linter.
 	@set -e;\
 		files=$$(find . -type f -not -iwholename '*/.git/*' -not -iwholename '*/vendor/*' -not -iwholename '*/node_modules/*' -exec bash -c 'file "$$1" | cut -d':' -f2 | grep --quiet shell' _ {} \; -print); \
-		echo -n "$$files" | xargs shellcheck $(SHELLCHECK_ARGS);
+		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
+			exit_code=0; \
+			while IFS="" read -r p && [ -n "$$p" ]; do \
+				level=$$(echo "$$p" | jq -c '.level // empty' | tr -d '"'); \
+				file=$$(echo "$$p" | jq -c '.file // empty' | tr -d '"'); \
+				line=$$(echo "$$p" | jq -c '.line // empty' | tr -d '"'); \
+				endline=$$(echo "$$p" | jq -c '.endLine // empty' | tr -d '"'); \
+				col=$$(echo "$$p" | jq -c '.column // empty' | tr -d '"'); \
+				endcol=$$(echo "$$p" | jq -c '.endColumn // empty' | tr -d '"'); \
+				message=$$(echo "$$p" | jq -c '.message // empty' | tr -d '"'); \
+				exit_code=1; \
+				case $$level in \
+				"style") \
+					echo "::notice file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+					;; \
+				"info") \
+					echo "::notice file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+					;; \
+				"warning") \
+					echo "::warning file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+					;; \
+				"error") \
+					echo "::error file=$${file},line=$${line},endLine=$${endline},col=$${col},endColumn=$${endcol}::$${message}"; \
+					;; \
+				esac; \
+			done <<< "$$(echo -n "$$files" | xargs shellcheck -f json $(SHELLCHECK_ARGS) | jq -c '.[]')"; \
+			exit "$${exit_code}"; \
+		else \
+			echo -n "$$files" | xargs shellcheck $(SHELLCHECK_ARGS); \
+		fi
 
 yamllint: ## Runs the yamllint linter.
 	@set -e;\
