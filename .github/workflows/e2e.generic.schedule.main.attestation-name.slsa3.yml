@@ -31,7 +31,7 @@ jobs:
           cp bazel-bin/hello_/hello . # Copy binary from Bazel path to root
           echo "binary-name=hello" >> "${GITHUB_OUTPUT}"
       - name: Upload binary
-        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
         with:
           name: ${{ steps.build.outputs.binary-name }}
           path: ${{ steps.build.outputs.binary-name }}
@@ -65,11 +65,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Download binary
-        uses: actions/download-artifact@bb3fa7fd35ab8113a980912eb9f59b846d14e3ff
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ needs.build.outputs.binary-name }}
       - name: Download provenance
-        uses: actions/download-artifact@bb3fa7fd35ab8113a980912eb9f59b846d14e3ff
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ needs.provenance.outputs.attestation-name }}
       - name: Setup Go
