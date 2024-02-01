@@ -88,7 +88,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@dbef88086f6cef02e264edb7dbf63250c17cef6c # v5.5.0
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
         with:
           images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
 
@@ -151,7 +151,7 @@ jobs:
           token_format: "access_token"
           service_account: ${{ env.SERVICE_ACCOUNT }}
           workload_identity_provider: ${{ env.PROVIDER_NAME }}
-      - uses: sigstore/cosign-installer@9614fae9e5c5eddabb09f90a270fcb487c9f7149 # v3.3.0
+      - uses: sigstore/cosign-installer@e1523de7571e31dbe865fd2e80c5c7c23ae71eb4 # v3.4.0
       - env:
           REGISTRY_USERNAME: oauth2accesstoken
           REGISTRY_PASSWORD: ${{ steps.auth.outputs.access_token }}
