@@ -1,6 +1,6 @@
 {
   "name": "@slsa-framework/e2e-nodejs-push-main-default-slsa3",
-  "version": "0.0.303",
+  "version": "0.0.304",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
