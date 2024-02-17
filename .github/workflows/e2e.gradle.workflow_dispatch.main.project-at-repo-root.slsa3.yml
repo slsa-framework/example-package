@@ -1,0 +1,108 @@
+on:
+  schedule:
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+    inputs:
+      trigger_build:
+        description: "internal: do not check"
+        required: false
+        default: false
+        type: boolean
+
+permissions: read-all
+
+concurrency: "e2e-gradle-workflow_dispatch-main-default-slsa3"
+
+env:
+  # TODO(#263): create dedicated token
+  GH_TOKEN: ${{ secrets.E2E_NODEJS_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+jobs:
+  # Bootstrap
+  ################################################################################
+
+  bootstrap:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.trigger_build)
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - env:
+          PACKAGE_DIR: ./
+        run: ./.github/workflows/scripts/e2e-gradle-push.sh
+
+  if-bootstrap-failed:
+    runs-on: ubuntu-latest
+    needs: [bootstrap]
+    if: always() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.trigger_build)) && needs.bootstrap.result != 'success'
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
+
+  # Main workflow
+  ################################################################################
+  # Shim determines if the rest of the workflow should run.
+  # NOTE: it should only use the `if` to determine this and all downstream jobs
+  #      should depend on this job.
+  shim:
+    # NOTE: this must be kept in sync with the if-failed job.
+    if: github.event_name == 'workflow_dispatch' && inputs.trigger_build
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "event: ${GITHUB_EVENT_NAME}"
+          echo "ref: ${GITHUB_REF}"
+
+  build:
+    needs: [shim]
+    permissions:
+      id-token: write # For signing.
+      contents: read # For repo checkout of private repos.
+      actions: read # For getting workflow run on private repos.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_gradle_slsa3.yml@main
+    with:
+      directory: ./
+      artifact-list: build/libs/example-package-GRADLE_VERSION.jar,build/libs/example-package-GRADLE_VERSION-javadoc.jar,build/libs/example-package-GRADLE_VERSION-sources.jar
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: slsa-framework/slsa-github-generator/actions/gradle/secure-download-attestations@main
+        with:
+          name: "${{ needs.build.outputs.provenance-download-name }}"
+          sha256: "${{ needs.build.outputs.provenance-download-sha256 }}"
+          path: slsa-attestations
+      - uses: slsa-framework/slsa-github-generator/actions/gradle/secure-download-target@main
+        with:
+          name: "${{ needs.build.outputs.build-download-name }}"
+          sha256: "${{ needs.build.outputs.build-download-sha256 }}"
+          path: ./
+      # NOTE: To build slsa-verifier in e2e.gradle.default.verify.sh
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.21"
+      - env:
+          PROVENANCE_DIR: "slsa-attestations/${{ needs.build.outputs.provenance-download-name }}"
+          EXPECTED_ARTIFACT_OUTPUT: "Hello world!"
+          PROJECT_DIR: "./"
+        run: ./.github/workflows/scripts/e2e.gradle.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    if: needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    if: always() && github.event_name == 'workflow_dispatch' && inputs.trigger_build && (needs.build.result != 'success' || needs.verify.result != 'success')
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
