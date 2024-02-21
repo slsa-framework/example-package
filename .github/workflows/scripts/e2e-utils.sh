@@ -19,6 +19,13 @@ e2e_this_file() {
     echo "${THIS_FILE}"
 }
 
+# Cache THIS_FILE in main shell process so that it's applied to subshells.
+# NOTE: This means that the file is always queried once when e2e-utils is
+# sourced.
+if [ "${THIS_FILE}" == "" ]; then
+    e2e_this_file >>/dev/null
+fi
+
 # Gets the name of the "builder" for the e2e test.
 e2e_this_builder() {
     e2e_this_file | cut -d '.' -f2
