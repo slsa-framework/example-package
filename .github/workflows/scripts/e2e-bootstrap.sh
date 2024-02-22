@@ -117,85 +117,92 @@ tag_and_push() {
         set -euo pipefail
 
         local tag
+        local log_file="$1"
 
-        # cleanup in case we are retrying
-        cd "${GITHUB_WORKSPACE}" &>/dev/null
-        rm -rf repo_checkout &>/dev/null
-
-        # NOTE: We can't simply push from $branch because it is occaisonally reset to
-        # the main branch. We need to maintain the version number in package.json
-        # because you cannot overwrite a version in npmjs.com. Instead we commit to main,
-        # set the tag, reset $branch and push both main and $branch.
-        gh repo clone "${GITHUB_REPOSITORY}" repo_checkout -- -b main
-        cd repo_checkout &>/dev/null
-
-        git config --global user.name github-actions &>/dev/null
-        git config --global user.email github-actions@github.com &>/dev/null
-
-        # Set the remote url to authenticate using the token.
-        # NOTE: We must use a PAT here in order to trigger subsequent workflows.
-        # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
-        # API ref: https://docs.github.com/en/rest/repos/contents#create-a-file.
-        git remote set-url origin "https://github-actions:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" &>/dev/null
-
-        if [ "${this_builder}" == "nodejs" ]; then
-            tag="$(npm_bump_package_version)"
-        else
-            if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
-                tag="$(get_latest_tag)"
-            fi
+        if [ -n "${log_file}" ]; then
+            log_file="/dev/null"
         fi
 
-        # NOTE: push event "tag" is push to tag, "push" is push to branch
-        if [ "${this_event}" == "tag" ] || [ "${this_event}" == "push" ]; then
-            # NOTE: For push events we will make a change to the file below and push it.
-            # This allows us to filter on this file later.
-            file_to_commit=e2e/${this_file}.txt
-            echo -n "$(date --utc)" >"${file_to_commit}"
-            git add "${file_to_commit}" &>/dev/null
-        fi
+        {
+            # cleanup in case we are retrying
+            cd "${GITHUB_WORKSPACE}"
+            rm -rf repo_checkout
 
-        # Check if there are changes to commit.
-        if [ "$(git status --porcelain)" != "" ]; then
-            # Commit the changes made so far with a commit message equal to the workflow
-            # name.
-            git commit -am "${GITHUB_WORKFLOW}" &>/dev/null
-        fi
+            # NOTE: We can't simply push from $branch because it is occasionally reset to
+            # the main branch. We need to maintain the version number in package.json
+            # because you cannot overwrite a version in npmjs.com. Instead we commit to main,
+            # set the tag, reset $branch and push both main and $branch.
+            gh repo clone "${GITHUB_REPOSITORY}" repo_checkout -- -b main
+            cd repo_checkout
 
-        # Create the tag locally.
-        if [ "${tag}" != "" ]; then
-            git tag "${tag}" &>/dev/null
-        fi
+            git config --global user.name github-actions
+            git config --global user.email github-actions@github.com
 
-        # Now we need to push any changes we have made.
-        if [ "${this_branch}" == "main" ]; then
-            if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
-                # TODO(#213): push tag separately until bug is fixed.
-                # NOTE: If there is a concurrent update to main we want it to fail here
-                # without pushing the tag because we will lose the changes to main.
-                git push origin main &>/dev/null
-                git push origin "${tag}" &>/dev/null
+            # Set the remote url to authenticate using the token.
+            # NOTE: We must use a PAT here in order to trigger subsequent workflows.
+            # See: https://github.community/t/push-from-action-does-not-trigger-subsequent-action/16854
+            # API ref: https://docs.github.com/en/rest/repos/contents#create-a-file.
+            git remote set-url origin "https://github-actions:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+            if [ "${this_builder}" == "nodejs" ]; then
+                tag="$(npm_bump_package_version)"
             else
-                git push origin main &>/dev/null
+                if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
+                    tag="$(get_latest_tag)"
+                fi
             fi
-        else
-            # Reset branch and push the new version.
-            # NOTE: we haven't pulled the branch locally so we need to create it.
-            git checkout -b "${this_branch}"
-            if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
-                git push --set-upstream origin "${this_branch}" "${tag}" -f &>/dev/null
-            else
-                git push --set-upstream origin "${this_branch}" -f &>/dev/null
-            fi
-            git checkout main &>/dev/null
 
-            # Update a dummy file to avoid branch mismatches.
-            # See: https://github.com/slsa-framework/example-package/issues/44
-            date >./e2e/dummy
-            git add ./e2e/dummy &>/dev/null
-            git commit -m "sync'ing branch1 - $(cat ./e2e/dummy)" &>/dev/null
-            git push origin main &>/dev/null
-        fi
+            # NOTE: push event "tag" is push to tag, "push" is push to branch
+            if [ "${this_event}" == "tag" ] || [ "${this_event}" == "push" ]; then
+                # NOTE: For push events we will make a change to the file below and push it.
+                # This allows us to filter on this file later.
+                file_to_commit=e2e/${this_file}.txt
+                echo -n "$(date --utc)" >"${file_to_commit}"
+                git add "${file_to_commit}"
+            fi
+
+            # Check if there are changes to commit.
+            if [ "$(git status --porcelain)" != "" ]; then
+                # Commit the changes made so far with a commit message equal to the workflow
+                # name.
+                git commit -am "${GITHUB_WORKFLOW}"
+            fi
+
+            # Create the tag locally.
+            if [ "${tag}" != "" ]; then
+                git tag "${tag}"
+            fi
+
+            # Now we need to push any changes we have made.
+            if [ "${this_branch}" == "main" ]; then
+                if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
+                    # TODO(#213): push tag separately until bug is fixed.
+                    # NOTE: If there is a concurrent update to main we want it to fail here
+                    # without pushing the tag because we will lose the changes to main.
+                    git push origin main
+                    git push origin "${tag}"
+                else
+                    git push origin main
+                fi
+            else
+                # Reset branch and push the new version.
+                # NOTE: we haven't pulled the branch locally so we need to create it.
+                git checkout -b "${this_branch}"
+                if [ "${this_event}" == "tag" ] || [ "${this_event}" == "create" ] || [ "${this_event}" == "release" ]; then
+                    git push --set-upstream origin "${this_branch}" "${tag}" -f
+                else
+                    git push --set-upstream origin "${this_branch}" -f
+                fi
+                git checkout main
+
+                # Update a dummy file to avoid branch mismatches.
+                # See: https://github.com/slsa-framework/example-package/issues/44
+                date >./e2e/dummy
+                git add ./e2e/dummy
+                git commit -m "sync'ing branch1 - $(cat ./e2e/dummy)"
+                git push origin main
+            fi
+        } &>>"${log_file}"
 
         echo "${tag}"
     )
@@ -206,16 +213,21 @@ tag_and_push() {
 attempt=1
 max_attempts=5
 tag=""
-while [ ${attempt} -le ${max_attempts} ]; do
+while true; do
     echo "Creating new commit and pushing, attempt ${attempt}"
     # NOTE: Set +e so that the entire script isn't exited if tag_and_push
     # fails.
     set +e
-    tag=$(tag_and_push)
+    log_file=$(mktemp)
+    tag=$(tag_and_push "${log_file}")
     tag_and_push_result="$?"
     set -e
+
+    # Write the log file output so it can be seen in the GitHub Actions logs.
+    cat "${log_file}"
+
     # NOTE: We check $? rather than using `if tag_and_push` because the if
-    # conditional casus bash to always ignore the '-e' bash option.
+    # conditional causes bash to always ignore the '-e' bash option.
     if [[ "${tag_and_push_result}" == "0" ]]; then
         break
     fi
@@ -224,6 +236,11 @@ while [ ${attempt} -le ${max_attempts} ]; do
     jitter=$((RANDOM % 6)) # Random number 0 - 5
     sleep $((10 + jitter))
     ((attempt += 1))
+
+    if [ ${attempt} -gt ${max_attempts} ]; then
+        echo >&2 "Max retries exceeded!"
+        exit 1
+    fi
 done
 
 # If this is a test for a release event, create the release.
