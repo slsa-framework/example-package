@@ -1,6 +1,6 @@
 {
   "name": "@slsa-framework/e2e-nodejs-workflow_dispatch-main-default-slsa3",
-  "version": "0.0.286",
+  "version": "0.0.287",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
