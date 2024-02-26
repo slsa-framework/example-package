@@ -116,7 +116,7 @@ tag_and_push() {
     (
         set -euo pipefail
 
-        local tag
+        local tag=""
         local log_file="$1"
 
         if [ -z "${log_file}" ]; then
