@@ -119,7 +119,7 @@ tag_and_push() {
         local tag
         local log_file="$1"
 
-        if [ -n "${log_file}" ]; then
+        if [ -z "${log_file}" ]; then
             log_file="/dev/null"
         fi
 
