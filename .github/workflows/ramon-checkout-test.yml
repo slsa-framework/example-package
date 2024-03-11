@@ -1,0 +1,29 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [main, "*"]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  checkout-default:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: look for file
+        run: |
+          cat my-file.txt
+  checkout-explicit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          repository: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - name: look for file
+        run: |
+          cat my-file.txt
