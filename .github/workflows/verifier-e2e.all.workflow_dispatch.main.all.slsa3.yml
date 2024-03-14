@@ -194,7 +194,7 @@ jobs:
       id-token: write # For signing
       contents: write # For asset uploads
       actions: read
-    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v3.0.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v0.0.1
     with:
       artifact: ${{ needs.generate_name.outputs.gha_delegator-lowperms_binary-name }}
       content: "hello"
@@ -209,7 +209,7 @@ jobs:
       contents: write # For asset uploads
       packages: write # To write to github packages
       actions: read
-    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v3.0.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v0.0.1
     with:
       artifact: ${{ needs.generate_name.outputs.gha_delegator_binary-name }}
       content: "hello"
