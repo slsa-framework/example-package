@@ -66,7 +66,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Setup Bazelisk
-        uses: bazelbuild/setup-bazelisk@95c9bf48d0c570bb3e28e57108f3450cd67c1a44 # tag=v2.0.0
+        uses: bazelbuild/setup-bazelisk@b39c379c82683a5f25d34f0d062761f62693e0b2 # v3.0.0
         with:
           bazelisk-version: "1.11"
       - name: Build artifact
@@ -194,7 +194,7 @@ jobs:
       id-token: write # For signing
       contents: write # For asset uploads
       actions: read
-    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v1.9.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v3.0.0
     with:
       artifact: ${{ needs.generate_name.outputs.gha_delegator-lowperms_binary-name }}
       content: "hello"
@@ -209,7 +209,7 @@ jobs:
       contents: write # For asset uploads
       packages: write # To write to github packages
       actions: read
-    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v1.9.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v3.0.0
     with:
       artifact: ${{ needs.generate_name.outputs.gha_delegator_binary-name }}
       content: "hello"
