@@ -159,8 +159,10 @@ echo "BINARY: file is $BINARY"
 
 export SLSA_VERIFIER_TESTING="true"
 
-# Verify provenance authenticity with min version at release v1.0.0
-e2e_run_verifier_all_releases "v1.0.0"
+# Verify provenance authenticity with min version at release v2.4.1
+# Due to the breaking change below, we only need to verify starting at v2.4.1
+# https://github.com/slsa-framework/slsa-github-generator/issues/3350
+e2e_run_verifier_all_releases "v2.4.1"
 
 # Verify the provenance content.
 verify_provenance_content
