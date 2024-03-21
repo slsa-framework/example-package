@@ -76,7 +76,8 @@ jobs:
       actions: read # For reading workflow info.
       packages: write # For uploading attestations.
     # uses: ianlewis/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.8.0-rc.2
-    uses: laurentsimon/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.9.0-rc.0
+    # uses: laurentsimon/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.9.0-rc.0
+    uses: kpk47/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.9.1-rc.0
     with:
       image: ${{ needs.build.outputs.image }}
       digest: ${{ needs.build.outputs.digest }}
