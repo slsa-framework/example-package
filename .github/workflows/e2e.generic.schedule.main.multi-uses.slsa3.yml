@@ -50,7 +50,7 @@ jobs:
     with:
       base64-subjects: "${{ needs.build-one.outputs.digests }}"
       compile-generator: true
-      attestation-name: "attestation1.intoto.jsonl"
+      provenance-name: "attestation1.intoto.jsonl"
 
   verify-one:
     runs-on: ubuntu-latest
@@ -117,7 +117,7 @@ jobs:
     with:
       base64-subjects: "${{ needs.build-two.outputs.digests }}"
       compile-generator: true
-      attestation-name: "attestation2.intoto.jsonl"
+      provenance-name: "attestation2.intoto.jsonl"
 
   verify-two:
     runs-on: ubuntu-latest
