@@ -55,7 +55,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@main
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
-      attestation-name: "custom-name.intoto.jsonl"
+      provenance-name: "custom-name.intoto.jsonl"
       compile-generator: true
 
   verify:
@@ -76,12 +76,12 @@ jobs:
         uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
         with:
           go-version: "1.21"
-      - name: Verify attestation name
+      - name: Verify provenance name
         env:
           PROVENANCE: ${{ needs.provenance.outputs.provenance-name }}
         run: |
           source "./.github/workflows/scripts/e2e-assert.sh"
-          e2e_assert_eq "${PROVENANCE}" "custom-name.intoto.jsonl" "incorrect attestation-name"
+          e2e_assert_eq "${PROVENANCE}" "custom-name.intoto.jsonl" "incorrect provenance-name"
       - name: Verify provenance
         env:
           BINARY: ${{ needs.build.outputs.binary-name }}
