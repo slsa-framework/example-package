@@ -56,9 +56,10 @@ echo "DEBUG: file is ${this_file}"
 
 export SLSA_VERIFIER_TESTING="true"
 
-# Verify provenance authenticity.
-# TODO(233): Update to v1.8.0 tag.
-e2e_run_verifier_all_releases "HEAD"
+# Verify provenance authenticity with min version at release v2.5.1
+# Due to the breaking change below, we only need to verify starting at v2.51
+# https://github.com/slsa-framework/slsa-github-generator/issues/3350
+e2e_run_verifier_all_releases "v2.5.1"
 
 # Verify provenance content.
 verify_provenance_content

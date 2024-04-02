@@ -383,8 +383,10 @@ verify_provenance_authenticity() {
     if [[ "$build_type" == "nodejs" ]]; then
         read -ra provenanceArg <<<"--attestations-path ${ATTESTATIONS}"
     elif [[ "$build_type" == "container" ]]; then
-        if [[ -n "$PROVENANCE_REPOSITORY" ]]; then
-            read -ra provenanceArg <<<"$($argr "provenance-repository") ${PROVENANCE_REPOSITORY}"
+        if [ -n "${PROVENANCE_REPOSITORY}" ]; then
+            if version_gt "$tag" "v2.4.1" || [ "$tag" == "HEAD" ] ; then
+                read -ra provenanceArg <<<"$($argr "provenance-repository") ${PROVENANCE_REPOSITORY}"
+            fi
         fi
     elif [[ "$build_type" != "container" ]]; then
         read -ra provenanceArg <<<"$($argr "provenance") ${PROVENANCE}"

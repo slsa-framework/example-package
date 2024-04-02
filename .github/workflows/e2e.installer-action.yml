@@ -9,7 +9,7 @@ concurrency: "e2e.installer-action"
 
 env:
   # UPDATE ON RELEASE: version.
-  LATEST_VERSION: v2.4.0
+  LATEST_VERSION: v2.5.1
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
   ISSUE_REPOSITORY: slsa-framework/slsa-verifier
 
@@ -19,7 +19,7 @@ jobs:
     steps:
       # Install at tag.
       # UPDATE ON RELEASE: tag.
-      - uses: slsa-framework/slsa-verifier/actions/installer@v2.4.1
+      - uses: slsa-framework/slsa-verifier/actions/installer@v2.5.1
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
@@ -30,7 +30,7 @@ jobs:
 
       # Install at commit.
       # UPDATE ON RELEASE: commit sha.
-      - uses: slsa-framework/slsa-verifier/actions/installer@7e1e47d7d793930ab0082c15c2b971fdb53a3c95 # v2.4.1
+      - uses: slsa-framework/slsa-verifier/actions/installer@eb7007070baa04976cb9e25a0d8034f8db030a86 # v2.5.1
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
