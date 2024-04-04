@@ -1,0 +1,93 @@
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+concurrency: "e2e.container-based.push.main.default.slsa3"
+
+env:
+  # TODO: Replace this token.
+  GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-github-generator
+
+  PROVENANCE_NAME: attestation.intoto
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - run: ./.github/workflows/scripts/e2e-push.sh
+
+  build:
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    permissions:
+      id-token: write # For signing
+      actions: read
+      contents: write # For asset uploads
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@main
+    with:
+      builder-image: "bash"
+      builder-digest: "sha256:9e2ba52487d945504d250de186cb4fe2e3ba023ed2921dd6ac8b97ed43e76af9"
+      config-path: ".github/configs-docker/multi-config.toml"
+      provenance-name: attestation.intoto
+      compile-builder: true
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: ${{ needs.build.outputs.build-outputs-name }}
+          path: outputs
+      - name: Get build artifact
+        id: build
+        run: |
+          name=$(find outputs/ -type f | head -1)
+          cp "${name}" .
+          echo "name=$(basename "${name}")" >> "${GITHUB_OUTPUT}"
+      - uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: ${{ needs.build.outputs.attestations-download-name }}
+          path: attestations
+      - name: Get attestation
+        id: att
+        env:
+          FOLDER: attestations
+        run: |
+          name=$(find "${FOLDER}"/ -type f | head -1)
+          cp "${name}" .
+          echo "name=$(basename "${name}")" >> "${GITHUB_OUTPUT}"
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: "1.21"
+      - env:
+          BINARY: ${{ steps.build.outputs.name }}
+          PROVENANCE: ${{ steps.att.outputs.name }}
+        run: ./.github/workflows/scripts/e2e.container-based.default.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    if: github.event_name == 'push' && github.event.head_commit.message == github.workflow && needs.build.result == 'success' && needs.verify.result == 'success'
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [build, verify]
+    if: always() && github.event_name == 'push' && github.event.head_commit.message == github.workflow && (needs.build.result == 'failure' || needs.verify.result == 'failure')
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
