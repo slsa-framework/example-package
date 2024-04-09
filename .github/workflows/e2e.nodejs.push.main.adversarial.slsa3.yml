@@ -61,7 +61,7 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_nodejs_slsa3.yml@main
     with:
       directory: e2e/nodejs/e2e-nodejs-push-main-adversarial-slsa3
-      node-version: 16
+      node-version: 20
       run-scripts: "ci;pwd"
 
   if-succeeded:
