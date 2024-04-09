@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>io.github.adamkorcz</groupId>
    <artifactId>test-java-project</artifactId>
-   <version>1.20.90</version>
+   <version>1.20.91</version>
    <packaging>jar</packaging>
    <name>Adams test java project</name>
    <description>A test java project.</description>
