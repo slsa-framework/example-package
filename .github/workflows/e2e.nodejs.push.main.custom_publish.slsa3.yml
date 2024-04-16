@@ -74,11 +74,6 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
 
-      - run: |
-          # Install npm >9.7.0 which includes support for --provenance-file.
-          # This installs locally in the temp directory.
-          npm install -g npm@^9.7.0
-
       - name: Download tarball
         uses: slsa-framework/slsa-github-generator/actions/nodejs/secure-package-download@main
         with:
