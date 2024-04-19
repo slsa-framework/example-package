@@ -540,7 +540,8 @@ verify_provenance_authenticity() {
         echo "  **** Wrong payload *****"
         local bad_prov
         bad_prov="$(mktemp -t slsa-e2e.XXXXXXXX)"
-        e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"${bad_prov}"
+        # e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"${bad_prov}"
+        e2e_set_payload "$ATTESTATIONS" '{"foo": "bar"}' >"${bad_prov}"
         read -ra badProvenanceArg <<<"$($argr "provenance") ${bad_prov}"
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${badProvenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "wrong payload"
