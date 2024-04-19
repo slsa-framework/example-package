@@ -193,7 +193,7 @@ e2e_set_payload() {
     local this_builder
     this_builder=$(e2e_this_builder)
     if [[ "${this_builder}" == "gcb" ]]; then
-        jq -c ".provenance_summary.provenance[0].envelope.payload = \"$(echo "$2" | base64 -w0)\"" <"$1" > tmp.json $$ mv tmp.json "$1"
+        jq -c ".provenance_summary.provenance[0].envelope.payload = \"$(echo "$2" | base64 -w0)\"" <"$1" > tmp.json && mv tmp.json "$1"
     else
         jq -c ".payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
     fi
