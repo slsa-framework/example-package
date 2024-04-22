@@ -95,7 +95,7 @@ jobs:
       id-token: write # For signing.
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
     with:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       upload-assets: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -106,7 +106,7 @@ jobs:
       id-token: write # For signing.
       contents: write # For asset uploads.
       actions: read # For the entrypoint.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.10.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.0.0
     with:
       go-version: "1.21"
       # We cannot use ${{ env.CONFIG_FILE }} because env variables are not available.
@@ -166,7 +166,7 @@ jobs:
       id-token: write # For signing.
       actions: read # For reading workflow info.
       packages: write # For uploading attestations.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.10.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
     with:
       image: ${{ needs.container_build.outputs.image }}
       digest: ${{ needs.container_build.outputs.digest }}
@@ -180,7 +180,7 @@ jobs:
       id-token: write # For signing.
       actions: read # For reading workflow info.
       contents: write # For asset upload.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@v1.10.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml@v2.0.0
     with:
       builder-image: "bash"
       builder-digest: "sha256:9e2ba52487d945504d250de186cb4fe2e3ba023ed2921dd6ac8b97ed43e76af9"
@@ -194,7 +194,7 @@ jobs:
       id-token: write # For signing
       contents: write # For asset uploads
       actions: read
-    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v1.10.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_low-perms_slsa3.yml@v2.0.0
     with:
       artifact: ${{ needs.generate_name.outputs.gha_delegator-lowperms_binary-name }}
       content: "hello"
@@ -209,7 +209,7 @@ jobs:
       contents: write # For asset uploads
       packages: write # To write to github packages
       actions: read
-    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v1.10.0
+    uses: slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@v2.0.0
     with:
       artifact: ${{ needs.generate_name.outputs.gha_delegator_binary-name }}
       content: "hello"
@@ -222,7 +222,7 @@ jobs:
       id-token: write # For signing.
       contents: read # For repo checkout of private repos.
       actions: read # For getting workflow run on private repos.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@v1.10.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_maven_slsa3.yml@v2.0.0
     with:
       directory: ./e2e/maven/workflow_dispatch
 
@@ -231,7 +231,7 @@ jobs:
       id-token: write # For signing.
       contents: read # For repo checkout of private repos.
       actions: read # For getting workflow run on private repos.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_gradle_slsa3.yml@v1.10.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_gradle_slsa3.yml@v2.0.0
     with:
       directory: ./e2e/gradle/workflow_dispatch
       artifact-list: build/libs/workflow_dispatch-GRADLE_VERSION.jar,build/libs/workflow_dispatch-GRADLE_VERSION-javadoc.jar,build/libs/workflow_dispatch-GRADLE_VERSION-sources.jar
