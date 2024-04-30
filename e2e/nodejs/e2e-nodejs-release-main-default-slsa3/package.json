@@ -1,6 +1,6 @@
 {
   "name": "@slsa-framework/e2e-nodejs-release-main-default-slsa3",
-  "version": "40.0.268",
+  "version": "40.0.269",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
