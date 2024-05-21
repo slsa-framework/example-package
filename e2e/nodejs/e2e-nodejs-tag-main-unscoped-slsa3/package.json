@@ -1,6 +1,6 @@
 {
   "name": "e2e-nodejs-tag-main-unscoped-slsa3",
-  "version": "41.0.300",
+  "version": "41.0.301",
   "description": "Test package for github.com/slsa-framework/slsa-github-generator. Do not use.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
