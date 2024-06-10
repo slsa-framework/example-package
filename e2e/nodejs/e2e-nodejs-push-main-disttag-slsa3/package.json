@@ -1,6 +1,6 @@
 {
   "name": "@slsa-framework/e2e-nodejs-push-main-disttag-slsa3",
-  "version": "0.0.382",
+  "version": "0.0.383",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
