@@ -60,5 +60,5 @@ Info about e2e tests:
   manually. You can use `bash sync-branch1.sh` for that.
 
 - We have scripts to run the e2e tests via CLI:
-  [manual-run-all-e2e.sh](./manual-run-all-e2e.sh) to run them all,
-  [manual-run-e2e.sh](./manual-run-e2e.sh) to run a single one of them.
+  [manual-run-all-e2e.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/manual-run-all-e2e.sh) to run them all,
+  [manual-run-e2e.sh](https://github.com/slsa-framework/example-package/blob/main/.github/workflows/scripts/manual-run-e2e.sh) to run a single one of them.
