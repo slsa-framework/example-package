@@ -1,0 +1,69 @@
+name: e2e slsa-verifier
+
+on:
+  workflow_dispatch:
+  # Run daily as a dry-run/test.
+  schedule:
+    - cron: "0 1 * * *"
+
+env:
+  GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
+  ISSUE_REPOSITORY: slsa-framework/slsa-verifier
+
+jobs:
+  verify-attestations:
+    strategy:
+      matrix:
+        slsa-verifier-version: [
+          latest,
+          # v2.6.0,
+        ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          path: example-package
+
+      - name: Set up Go
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        with:
+          go-version: 1.22
+
+      - name: Install slsa-verifier
+        run: go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@${{ matrix.slsa-verifier-version }}
+
+      - name: Checkout gke-vsa
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          repository: GoogleCloudPlatform/gke-vsa
+          ref: main
+          path: gke-vsa
+
+      - name: Verify attestations
+        run: |
+          cd ./gke-vsa
+          ../example-package/.github/workflows/scripts/e2e.vsa.gcp.gke.verify.sh
+
+  if-succeeded:
+    runs-on: ubuntu-latest
+    needs: [verify-attestations]
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: github.event_name == 'schedule' && needs.verify-attestations.result == 'success'
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      # The builder should fail if the builder is tampered with.
+      - run: printenv
+      - run: ./.github/workflows/scripts/e2e-report-success.sh
+
+  if-failed:
+    runs-on: ubuntu-latest
+    needs: [verify-attestations]
+    # NOTE: The workflow is allowed to run for other event types but don't post
+    # to issues unless it's a schedule event.
+    if: always() && github.event_name == 'schedule' && needs.verify-attestations.result == 'failure'
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      # The builder should fail if the builder is tampered with.
+      - run: ./.github/workflows/scripts/e2e-report-failure.sh
