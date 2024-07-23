@@ -33,7 +33,7 @@ jobs:
   # The push to the main branch on the file e2e/$THIS_FILE.txt will trigger a new build
   push:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *') || inputs.trigger_build
+    # if: (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *') || inputs.trigger_build
     permissions:
       contents: write
     steps:
@@ -42,7 +42,7 @@ jobs:
 
   # Retrieve provenance of the latest build.
   provenance:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 2 * * *')
+    # if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 2 * * *')
     permissions:
       id-token: write # For auth.
     outputs:
@@ -84,7 +84,7 @@ jobs:
 
   # Verify the created provenance attestation: does not require the build job.
   verify:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 2 * * *')
+    # if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.schedule == '0 2 * * *')
     needs: provenance
     runs-on: ubuntu-latest
     steps:
