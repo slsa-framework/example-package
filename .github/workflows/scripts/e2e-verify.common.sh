@@ -193,11 +193,7 @@ e2e_set_payload() {
     local this_builder
     this_builder=$(e2e_this_builder)
     if [[ "${this_builder}" == "gcb" ]]; then
-        echo "**** HERE ****" >&2
-        echo "1: $1" >&2
-        echo "2: $2" >&2
-        echo "jq: $(jq -c ".provenance_summary.provenance[0].envelope.payload = \"$(echo "$2" | base64 -w0)\"" <"$1")" >&2
-        jq -c ".provenance_summary.provenance[0].envelope.payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
+        jq -c ".provenance_summary.provenance[].envelope.payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
     else
         jq -c ".payload = \"$(echo "$2" | base64 -w0)\"" <"$1"
     fi
@@ -546,7 +542,6 @@ verify_provenance_authenticity() {
         bad_prov="$(mktemp -t slsa-e2e.XXXXXXXX)"
         e2e_set_payload "$PROVENANCE" '{"foo": "bar"}' >"${bad_prov}"
         read -ra badProvenanceArg <<<"$($argr "provenance") ${bad_prov}"
-        echo args: $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${badProvenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY" >&2
         $verifierCmd "${artifactAndbuilderMinArgs[@]}" "${branchOpts[@]}" "${badProvenanceArg[@]}" "${packageArg[@]}" "${sourceArg[@]}" "github.com/$GITHUB_REPOSITORY"
         e2e_assert_not_eq "$?" "0" "wrong payload"
     elif [[ "$build_type" == "nodejs" ]]; then
