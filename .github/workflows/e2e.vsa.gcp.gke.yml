@@ -11,7 +11,7 @@ on:
 
 env:
   GH_TOKEN: ${{ secrets.E2E_GENERIC_TOKEN }}
-  ISSUE_REPOSITORY: ramonpetgrave64/slsa-verifier
+  ISSUE_REPOSITORY: slsa-framework/slsa-verifier
 
 jobs:
   verify-attestations:
