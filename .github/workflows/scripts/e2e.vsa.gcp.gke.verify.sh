@@ -28,7 +28,7 @@ iterate() {
 
     # development: limit the number of files to verify
     # FILE_PATHS=("${FILE_PATHS[@]:1:3}")
-    FILE_PATHS=()
+    # FILE_PATHS=()
 
     # fail if no files found
     if [ ${#FILE_PATHS[@]} -eq 0 ]; then
