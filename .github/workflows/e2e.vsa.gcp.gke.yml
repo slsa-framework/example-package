@@ -53,7 +53,7 @@ jobs:
     needs: [verify-attestations]
     # NOTE: The workflow is allowed to run for other event types but don't post
     # to issues unless it's a schedule event.
-    if: needs.verify-attestations.result == 'success'
+    if: github.event_name == 'schedule' && needs.verify-attestations.result == 'success'
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       # The builder should fail if the builder is tampered with.
@@ -65,7 +65,7 @@ jobs:
     needs: [verify-attestations]
     # NOTE: The workflow is allowed to run for other event types but don't post
     # to issues unless it's a schedule event.
-    if: always() && needs.verify-attestations.result == 'failure'
+    if: always() && github.event_name == 'schedule' && needs.verify-attestations.result == 'failure'
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       # The builder should fail if the builder is tampered with.
