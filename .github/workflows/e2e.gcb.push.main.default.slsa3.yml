@@ -33,7 +33,7 @@ jobs:
   # The push to the main branch on the file e2e/$THIS_FILE.txt will trigger a new build
   push:
     runs-on: ubuntu-latest
-    # if: (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *') || inputs.trigger_build
+    if: (github.event_name == 'schedule' && github.event.schedule == '0 3 1,15 * *') || inputs.trigger_build
     permissions:
       contents: write
     steps:
