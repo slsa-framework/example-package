@@ -28,6 +28,13 @@ iterate() {
 
     # development: limit the number of files to verify
     # FILE_PATHS=("${FILE_PATHS[@]:1:3}")
+    FILE_PATHS=()
+
+    # fail if no files found
+    if [ -z "${FILE_PATHS[@]}" ]; then
+        echo "No files found"
+        exit 1
+    fi
 
     # parse some the arguments, given the file path
     for FILE_PATH in "${FILE_PATHS[@]}"; do
