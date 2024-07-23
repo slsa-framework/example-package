@@ -31,7 +31,7 @@ iterate() {
     FILE_PATHS=()
 
     # fail if no files found
-    if [ -z "${FILE_PATHS[@]}" ]; then
+    if [ ${#FILE_PATHS[@]} -eq 0 ]; then
         echo "No files found"
         exit 1
     fi
