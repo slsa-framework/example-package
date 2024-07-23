@@ -1,9 +1,6 @@
 name: e2e slsa-verifier
 
 on:
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
   # Run daily as a dry-run/test.
   schedule:
