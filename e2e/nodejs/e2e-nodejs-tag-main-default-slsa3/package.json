@@ -1,6 +1,6 @@
 {
   "name": "@slsa-framework/e2e-nodejs-tag-main-default-slsa3",
-  "version": "36.0.431",
+  "version": "36.0.432",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
