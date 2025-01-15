@@ -1,6 +1,6 @@
 {
   "name": "@slsa-framework/e2e-nodejs-create-main-default-slsa3",
-  "version": "39.0.591",
+  "version": "39.0.592",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
