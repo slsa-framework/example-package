@@ -19,7 +19,7 @@ jobs:
     steps:
       # Install at tag.
       # UPDATE ON RELEASE: tag.
-      - uses: slsa-framework/slsa-verifier/actions/installer@v2.6.0
+      - uses: slsa-framework/slsa-verifier/actions/installer@v2.7.0
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
@@ -30,7 +30,7 @@ jobs:
 
       # Install at commit.
       # UPDATE ON RELEASE: commit sha.
-      - uses: slsa-framework/slsa-verifier/actions/installer@3714a2a4684014deb874a0e737dffa0ee02dd647 # v2.6.0
+      - uses: slsa-framework/slsa-verifier/actions/installer@6657aada084353c65e5dde35394b1a010289fab0 # v2.7.0
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
