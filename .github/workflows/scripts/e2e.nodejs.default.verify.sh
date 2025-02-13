@@ -113,7 +113,7 @@ verify_provenance_content
 
 verify_dist_tag
 
-# Verify provenance authenticity with min version at release v2.6.0
-# Due to the breaking change below, we only need to verify starting at v2.6.0
-# https://github.com/slsa-framework/slsa-verifier/issues/757#issuecomment-2627508086
-e2e_run_verifier_all_releases "v2.6.0"
+# Verify provenance authenticity with min version at release v2.7.0
+# Due to the breaking change below, we only need to verify starting at v2.7.0
+# https://github.com/slsa-framework/slsa-github-generator/pull/4089
+e2e_run_verifier_all_releases "v2.7.0"
