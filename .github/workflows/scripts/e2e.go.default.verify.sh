@@ -34,7 +34,7 @@ fi
 
 # Function used to verify the content of the provenance.
 verify_provenance_content() {
-    attestation=$(jq -r '.payload' <"$PROVENANCE" | base64 -d)
+    attestation=$(jq -r '.dsseEnvelope.payload' <"$PROVENANCE" | base64 -d)
     #TRIGGER=$(echo "$THIS_FILE" | cut -d '.' -f3)
     #BRANCH=$(echo "$THIS_FILE" | cut -d '.' -f4)
     this_file=$(e2e_this_file)
