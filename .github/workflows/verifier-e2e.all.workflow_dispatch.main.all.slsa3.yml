@@ -15,7 +15,8 @@ on:
 permissions: read-all
 
 env:
-  GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
+  # GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   IMAGE_REGISTRY: ghcr.io
   # NOTE: This pushes a container image to a "package" under the
   # slsa-framework GitHub org.
