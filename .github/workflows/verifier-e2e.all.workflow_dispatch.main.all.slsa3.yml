@@ -15,8 +15,7 @@ on:
 permissions: read-all
 
 env:
-  # GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.E2E_CONTAINER_TOKEN }}
   IMAGE_REGISTRY: ghcr.io
   # NOTE: This pushes a container image to a "package" under the
   # slsa-framework GitHub org.
@@ -246,6 +245,8 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - id: push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
@@ -268,6 +269,8 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - id: push
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Dispatch tags v14 v14.2 v13.0.30
           echo "tagging ${GITHUB_SHA}"
