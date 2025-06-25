@@ -33,9 +33,11 @@ for row in $(echo "$FILES" | jq -r '.[] | @base64'); do
     
     echo "$FILE"
     # Trigger the workflow.
-    curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
-        "https://api.github.com/repos/$REPOSITORY/actions/workflows/$FILE/dispatches" \
-        -d "{\"ref\":\"$BRANCH\"}" \
-         -H "Authorization: token $GH_TOKEN" || exit_with_msg 1
+    # curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
+    #     "https://api.github.com/repos/$REPOSITORY/actions/workflows/$FILE/dispatches" \
+    #     -d "{\"ref\":\"$BRANCH\"}" \
+    #      -H "Authorization: token $GH_TOKEN" || exit_with_msg 1
+
+    $GH workflow run "$FILE" --ref "$BRANCH"
 done
  
