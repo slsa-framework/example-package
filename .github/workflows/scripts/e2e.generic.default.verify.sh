@@ -23,7 +23,7 @@ verify_provenance_content() {
 
     local attestation has_assets is_goreleaser annotated_tags this_file
     this_file=$(e2e_this_file)
-    attestation=$(jq -r '.payload' <"${provenance}" | base64 -d)
+    attestation=$(jq -r '.dsseEnvelope.payload' <"${provenance}" | base64 -d)
     has_assets=$(echo "${this_file}" | cut -d '.' -f5 | grep assets)
     is_goreleaser=$(echo "${this_file}" | cut -d '.' -f5 | grep goreleaser)
     annotated_tags=$(echo "${this_file}" | cut -d '.' -f5 | grep annotated || true)
