@@ -1,2 +1,2 @@
-# This should a copy of slsa-github-generator/CODEOWNERS
-* @laurentsimon @joshuagl @naveensrinivasan @ramonpetgrave64
+* @slsa-framework/tool-maintainers
+* @slsa-framework/slsa-tool-reviewers
