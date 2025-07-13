@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.adamkorcz"
-version = "0.6.54"
+version = "0.6.55"
 description = "Adams test java project"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
