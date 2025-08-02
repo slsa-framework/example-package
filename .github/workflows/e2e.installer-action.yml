@@ -19,7 +19,7 @@ jobs:
     steps:
       # Install at tag.
       # UPDATE ON RELEASE: tag.
-      - uses: slsa-framework/slsa-verifier/actions/installer@v2.7.0
+      - uses: slsa-framework/slsa-verifier/actions/installer@v2.7.1
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
@@ -30,7 +30,7 @@ jobs:
 
       # Install at commit.
       # UPDATE ON RELEASE: commit sha.
-      - uses: slsa-framework/slsa-verifier/actions/installer@6657aada084353c65e5dde35394b1a010289fab0 # v2.7.0
+      - uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
       - run: |
           version=$(slsa-verifier version 2>&1 | grep GitVersion | cut -d ':' -f2 | tr -d "[:space:]")
           [ "$version" == "${LATEST_VERSION:1}" ]
@@ -40,7 +40,7 @@ jobs:
     needs: [installer]
     if: needs.installer.result == 'success'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -48,5 +48,5 @@ jobs:
     needs: [installer]
     if: always() && needs.installer.result == 'failure'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

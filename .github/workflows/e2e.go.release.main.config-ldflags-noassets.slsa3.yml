@@ -23,7 +23,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - id: create
         run: ./.github/workflows/scripts/e2e-create-release.sh
 
@@ -33,7 +33,7 @@ jobs:
     outputs:
       continue: ${{ steps.verify.outputs.continue }}
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - id: verify
         run: ./.github/workflows/scripts/e2e-verify-release.sh
 
@@ -47,7 +47,7 @@ jobs:
       branch: ${{ steps.ldflags.outputs.branch }}
     steps:
       - id: checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
       - id: ldflags
@@ -82,16 +82,16 @@ jobs:
     needs: [shim, build]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: ${{ needs.build.outputs.go-binary-name }}
-      - uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: ${{ needs.build.outputs.go-binary-name }}.intoto.jsonl
-      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
-          go-version: "1.21"
+          go-version: "1.24"
       - env:
           BINARY: ${{ needs.build.outputs.go-binary-name }}
           # NOTE: we download the artifact as `${{ needs.build.outputs.go-binary-name }}.intoto.jsonl`,
@@ -104,7 +104,7 @@ jobs:
     needs: [shim, build, verify]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -112,5 +112,5 @@ jobs:
     needs: [shim, build, verify]
     if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'release' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh

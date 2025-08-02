@@ -21,12 +21,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           path: example-package
 
       - name: Set up Go
-        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           go-version: 1.22
 
@@ -34,7 +34,7 @@ jobs:
         run: go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@${{ matrix.slsa-verifier-version }}
 
       - name: Checkout gke-vsa
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: GoogleCloudPlatform/gke-vsa
           ref: main
@@ -52,7 +52,7 @@ jobs:
     # to issues unless it's a schedule event.
     if: github.event_name == 'schedule' && needs.verify-attestations.result == 'success'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       # The builder should fail if the builder is tampered with.
       - run: printenv
       - run: ./.github/workflows/scripts/e2e-report-success.sh
@@ -64,6 +64,6 @@ jobs:
     # to issues unless it's a schedule event.
     if: always() && github.event_name == 'schedule' && needs.verify-attestations.result == 'failure'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       # The builder should fail if the builder is tampered with.
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
