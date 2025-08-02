@@ -59,7 +59,7 @@ linters:
     - staticcheck
     - stylecheck
     - thelper
-    - typecheck
+    # - typecheck
     - unconvert
     - unused
     - whitespace
