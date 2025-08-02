@@ -47,7 +47,8 @@ func main() {
 
 	for _, filename := range filenameFlags {
 		fmt.Println("Writing to filename: ", filename)
-		if err := os.WriteFile(filename, []byte(*content), 0o600); err != nil {
+		//nolint:gosec // the builder must be able to read this file
+		if err := os.WriteFile(filename, []byte(*content), 0o644); err != nil {
 			fmt.Println("error writing to file: %w", err)
 			panic(err)
 		}
