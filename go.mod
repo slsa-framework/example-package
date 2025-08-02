@@ -1,7 +1,7 @@
 module slsa-framework/example-package
 
 // NOTE: Keep in sync with Dockerfile and WORKSPACE:go_register_toolchains
-go 1.21
+go 1.24
 
 require github.com/pborman/uuid v1.2.1
 
