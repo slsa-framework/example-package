@@ -34,7 +34,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - id: create
         run: ./.github/workflows/scripts/e2e-create-release.sh
 
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v2"
@@ -57,7 +57,7 @@ jobs:
           workload_identity_provider: "projects/819720953812/locations/global/workloadIdentityPools/example-package-pool/providers/example-package-provider"
           service_account: "example-package-user@slsa-tooling.iam.gserviceaccount.com"
       - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@98ddc00a17442e89a24bbf282954a3b65ce6d200" # v2.1.0
+        uses: "google-github-actions/setup-gcloud@6a7c903a70c8625ed6700fa299f5ddb4ca6022e9" # v2.1.5
       - name: Retrieve the latest builds provenance
         id: describe
         run: |
@@ -73,7 +73,7 @@ jobs:
           gcloud artifacts docker images describe "${IMAGE_REGISTRY}/${IMAGE_NAME}@${image_digest}" --show-provenance --format json > provenance.json
           echo "provenance-name=provenance.json" >> "${GITHUB_OUTPUT}"
       - name: Upload provenance
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ steps.describe.outputs.provenance-name }}
           path: ${{ steps.describe.outputs.provenance-name }}
@@ -86,13 +86,13 @@ jobs:
     needs: provenance
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: ${{ needs.provenance.outputs.provenance-name }}
-      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
-          go-version: "1.21"
+          go-version: "1.24"
       - env:
           CONTAINER: ${{ needs.provenance.outputs.image }}
           PROVENANCE: ${{ needs.provenance.outputs.provenance-name }}
@@ -103,7 +103,7 @@ jobs:
     needs: [provenance, verify]
     if: needs.provenance.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -111,5 +111,5 @@ jobs:
     needs: [provenance, verify]
     if: always() && needs.provenance.result == 'failure' || needs.verify.result == 'failure'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
