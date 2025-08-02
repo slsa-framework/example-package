@@ -23,13 +23,11 @@ linters:
     # Some linters have been removed because of the go 1.18 issues.
     # https://github.com/golangci/golangci-lint/issues/2649
     - asciicheck
-    - deadcode
     - depguard
     - dogsled
     - errcheck
     - errorlint
     - exhaustive
-    - exportloopref
     - gci
     - gochecknoinits
     - gocognit
@@ -38,7 +36,7 @@ linters:
     - gocyclo
     - godot
     - godox
-    - goerr113
+    - err113
     - gofmt
     - gofumpt
     - goheader
@@ -64,7 +62,6 @@ linters:
     - typecheck
     - unconvert
     - unused
-    - varcheck
     - whitespace
     - wrapcheck
 linters-settings:
