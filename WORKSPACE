@@ -30,7 +30,7 @@ go_dependencies()
 go_rules_dependencies()
 
 # According to https://go.dev/blog/toolchain,
-# this minor version toolchain 1.21.6 should still be compatible with major version 1.21
-go_register_toolchains(version = "1.21.6")
+# this minor version toolchain 1.24.5 should still be compatible with major version 1.24
+go_register_toolchains(version = "1.24.5")
 
 gazelle_dependencies()

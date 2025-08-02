@@ -17,7 +17,7 @@ jobs:
     # uses: ramonpetgrave64/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.0.0-rc.0
     uses: ramonpetgrave64/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0-rc.3
     with:
-      go-version: "1.21"
+      go-version: "1.24"
       config-file: .github/configs-go/config-noldflags.yml
 
   if-succeeded:
