@@ -36,7 +36,7 @@ linters:
     - gocyclo
     - godot
     - godox
-    - err113
+    - goerr113
     - gofmt
     - gofumpt
     - goheader
