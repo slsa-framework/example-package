@@ -23,20 +23,20 @@ linters:
     # Some linters have been removed because of the go 1.18 issues.
     # https://github.com/golangci/golangci-lint/issues/2649
     - asciicheck
-    # depguard
-    # dogsled
-    # errcheck
-    # errorlint
-    # exhaustive
-    # gci
-    # gochecknoinits
-    # gocognit
-    # goconst
-    # gocritic
-    # gocyclo
-    # godot
-    # godox
-    # goerr113
+    - depguard
+    - dogsled
+    - errcheck
+    - errorlint
+    - exhaustive
+    - gci
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - godox
+    - goerr113
     # gofmt
     # gofumpt
     # goheader
