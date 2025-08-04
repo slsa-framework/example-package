@@ -23,8 +23,8 @@ linters:
     # Some linters have been removed because of the go 1.18 issues.
     # https://github.com/golangci/golangci-lint/issues/2649
     - asciicheck
-    # depguard
-    # dogsled
+    - depguard
+    - dogsled
     # errcheck
     # errorlint
     # exhaustive
@@ -37,33 +37,33 @@ linters:
     # godot
     # godox
     # goerr113
-    - gofmt
-    - gofumpt
-    - goheader
-    - goimports
-    - gomodguard
-    - goprintffuncname
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - lll
-    - makezero
-    - misspell
-    - nakedret
-    - nestif
-    - nolintlint
-    - paralleltest
-    - predeclared
-    - revive
-    - staticcheck
-    - stylecheck
-    - thelper
-    - typecheck
-    - unconvert
-    - unused
-    - whitespace
-    - wrapcheck
+    # gofmt
+    # gofumpt
+    # goheader
+    # goimports
+    # gomodguard
+    # goprintffuncname
+    # gosec
+    # gosimple
+    # govet
+    # ineffassign
+    # lll
+    # makezero
+    # misspell
+    # nakedret
+    # nestif
+    # nolintlint
+    # paralleltest
+    # predeclared
+    # revive
+    # staticcheck
+    # stylecheck
+    # thelper
+    # typecheck
+    # unconvert
+    # unused
+    # whitespace
+    # wrapcheck
 linters-settings:
   depguard:
     rules:
