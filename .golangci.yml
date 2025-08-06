@@ -48,16 +48,16 @@ linters:
     # govet
     - ineffassign
     - lll
-    # makezero
-    # misspell
-    # nakedret
-    # nestif
-    # nolintlint
-    # paralleltest
-    # predeclared
-    # revive
-    # staticcheck
-    # stylecheck
+    - makezero
+    - misspell
+    - nakedret
+    - nestif
+    - nolintlint
+    - paralleltest
+    - predeclared
+    - revive
+    - staticcheck
+    - stylecheck
     # thelper
     # typecheck
     # unconvert
