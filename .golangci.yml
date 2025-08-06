@@ -56,7 +56,7 @@ linters:
     - paralleltest
     - predeclared
     - revive
-    # staticcheck
+    - staticcheck
     # stylecheck
     # thelper
     # typecheck
