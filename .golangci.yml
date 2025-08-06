@@ -57,8 +57,8 @@ linters:
     - predeclared
     - revive
     # staticcheck
-    - stylecheck
-    # thelper
+    # stylecheck
+    - thelper
     # typecheck
     # unconvert
     # unused
