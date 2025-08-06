@@ -28,7 +28,7 @@ linters:
     - errcheck
     - errorlint
     - exhaustive
-    - gci
+    # gci
     # gochecknoinits
     # gocognit
     # goconst
