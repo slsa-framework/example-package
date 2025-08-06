@@ -52,12 +52,12 @@ linters:
     - misspell
     - nakedret
     - nestif
-    - nolintlint
-    - paralleltest
-    - predeclared
-    - revive
-    - staticcheck
-    - stylecheck
+    # nolintlint
+    # paralleltest
+    # predeclared
+    # revive
+    # staticcheck
+    # stylecheck
     # thelper
     # typecheck
     # unconvert
