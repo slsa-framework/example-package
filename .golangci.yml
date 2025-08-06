@@ -52,7 +52,7 @@ linters:
     - misspell
     - nakedret
     - nestif
-    # nolintlint
+    - nolintlint
     # paralleltest
     # predeclared
     # revive
