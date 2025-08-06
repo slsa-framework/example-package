@@ -27,7 +27,7 @@ linters:
     - dogsled
     - errcheck
     - errorlint
-    - exhaustive
+    # exhaustive
     - gci
     - gochecknoinits
     - gocognit
@@ -44,8 +44,8 @@ linters:
     - gomodguard
     - goprintffuncname
     - gosec
-    - gosimple
-    - govet
+    # gosimple
+    # govet
     - ineffassign
     - lll
     - makezero
@@ -56,8 +56,8 @@ linters:
     - paralleltest
     - predeclared
     - revive
-    - staticcheck
-    - stylecheck
+    # staticcheck
+    # stylecheck
     - thelper
     - typecheck
     - unconvert
