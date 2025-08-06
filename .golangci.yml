@@ -45,7 +45,7 @@ linters:
     - goprintffuncname
     - gosec
     # gosimple
-    # govet
+    - govet
     # ineffassign
     # lll
     # makezero
