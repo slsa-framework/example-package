@@ -29,21 +29,21 @@ linters:
     - errorlint
     # exhaustive
     - gci
-    # gochecknoinits
-    # gocognit
-    # goconst
-    # gocritic
-    # gocyclo
-    # godot
-    # godox
-    # goerr113
-    # gofmt
-    # gofumpt
-    # goheader
-    # goimports
-    # gomodguard
-    # goprintffuncname
-    # gosec
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - godox
+    - goerr113
+    - gofmt
+    - gofumpt
+    - goheader
+    - goimports
+    - gomodguard
+    - goprintffuncname
+    - gosec
     # gosimple
     # govet
     # ineffassign
