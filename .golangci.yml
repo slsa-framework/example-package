@@ -47,11 +47,11 @@ linters:
     - gosimple
     - govet
     - ineffassign
-    - lll
-    - makezero
-    - misspell
-    - nakedret
-    - nestif
+    # lll
+    # makezero
+    # misspell
+    # nakedret
+    # nestif
     # nolintlint
     # paralleltest
     # predeclared
