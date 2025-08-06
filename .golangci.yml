@@ -27,8 +27,8 @@ linters:
     - dogsled
     - errcheck
     - errorlint
-    # exhaustive
-    # gci
+    - exhaustive
+    - gci
     # gochecknoinits
     # gocognit
     # goconst
