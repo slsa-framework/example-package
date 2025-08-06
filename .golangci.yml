@@ -59,11 +59,11 @@ linters:
     # staticcheck
     # stylecheck
     - thelper
-    # typecheck
-    # unconvert
-    # unused
-    # whitespace
-    # wrapcheck
+    - typecheck
+    - unconvert
+    - unused
+    - whitespace
+    - wrapcheck
 linters-settings:
   depguard:
     rules:
