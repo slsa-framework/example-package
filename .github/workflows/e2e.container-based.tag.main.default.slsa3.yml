@@ -26,7 +26,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - run: ./.github/workflows/scripts/e2e-create-release.sh
 
   shim:
@@ -35,7 +35,7 @@ jobs:
     outputs:
       continue: ${{ steps.verify.outputs.continue }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: verify
         run: ./.github/workflows/scripts/e2e-verify-release.sh
 
@@ -59,8 +59,8 @@ jobs:
     needs: [shim, build]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag'
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ needs.build.outputs.build-outputs-name }}
           path: outputs
@@ -70,7 +70,7 @@ jobs:
           name=$(find outputs/ -type f | head -1)
           cp "${name}" .
           echo "name=$(basename "${name}")" >> "${GITHUB_OUTPUT}"
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ needs.build.outputs.attestations-download-name }}
           path: attestations
@@ -82,7 +82,7 @@ jobs:
           name=$(find "${FOLDER}"/ -type f | head -1)
           cp "${name}" .
           echo "name=$(basename "${name}")" >> "${GITHUB_OUTPUT}"
-      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version: "1.24"
       - env:
@@ -95,7 +95,7 @@ jobs:
     needs: [shim, build, verify]
     if: needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && needs.build.result == 'success' && needs.verify.result == 'success'
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -103,5 +103,5 @@ jobs:
     needs: [shim, build, verify]
     if: always() && needs.shim.outputs.continue == 'yes' && github.event_name == 'push' && github.ref_type == 'tag' && (needs.build.result == 'failure' || needs.verify.result == 'failure')
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
