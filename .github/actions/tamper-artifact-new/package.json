@@ -10,10 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@actions/artifact": "^6.2.0",
-    "@actions/core": "^1.11.1",
-    "@actions/github": "^9.0.0",
-    "@actions/http-client": "^2.0.1",
-    "@octokit/action": "^6.0.0"
+    "@actions/artifact": "^6.2.1",
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "@actions/http-client": "^4.0.1",
+    "@octokit/action": "^8.0.4"
   }
 }
