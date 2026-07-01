@@ -40,7 +40,7 @@ jobs:
     needs: [installer]
     if: needs.installer.result == 'success'
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - run: ./.github/workflows/scripts/e2e-report-success.sh
 
   if-failed:
@@ -48,5 +48,5 @@ jobs:
     needs: [installer]
     if: always() && needs.installer.result == 'failure'
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - run: ./.github/workflows/scripts/e2e-report-failure.sh
